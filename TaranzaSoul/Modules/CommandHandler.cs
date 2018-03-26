@@ -30,7 +30,7 @@ namespace TaranzaSoul
             services = _services;
             config = _services.GetService<Config>();
 
-            await commands.AddModulesAsync(Assembly.GetEntryAssembly());
+            await commands.AddModulesAsync(Assembly.GetEntryAssembly(), services);
 
             //await HelpModule.Install(commands);
 
