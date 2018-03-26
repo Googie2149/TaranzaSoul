@@ -1,0 +1,104 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+using System.Diagnostics;
+using NodaTime;
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis;
+using System.Reflection;
+using System.IO;
+using RestSharp;
+using Newtonsoft.Json;
+
+namespace TaranzaSoul.Modules.Standard
+{
+    public class Standard : ModuleBase
+    {
+        [Command("blah")]
+        [Summary("Blah!")]
+        [Priority(1000)]
+        public async Task Blah()
+        {
+            await ReplyAsync($"Blah to you too, {Context.User.Mention}.");
+        }
+
+        [Command("downloadusers")]
+        public async Task Download()
+        {
+            Task.Run(async () =>
+            {
+                int before = ((SocketGuild)Context.Guild).Users.Count();
+                await ((SocketGuild)Context.Guild).DownloadUsersAsync();
+
+                int after = ((SocketGuild)Context.Guild).Users.Count();
+                
+                await ReplyAsync($"Downloaded {after - before} users");
+            });
+        }
+
+        [Command("updateroles")]
+        public async Task UpdateRoles()
+        {
+            if (Context.User.Id != 102528327251656704)
+                return;
+
+            var update = new List<IGuildUser>();
+            var role = ((SocketGuild)Context.Guild).GetRole(346373986604810240);
+            
+            foreach (var u in ((SocketGuild)Context.Guild).Users)
+            {
+                if (!u.Roles.Contains(role))
+                    update.Add(u);
+            }
+
+            await ReplyAsync($"Adding the {role.Name} role to {update.Count()} new friends!\n" +
+                $"This should take a bit above {new TimeSpan(1200 * update.Count()).Minutes} minutes.");
+
+            Task.Run(async () =>
+            {
+                foreach (var u in update)
+                {
+                    try
+                    {
+                        await u.AddRoleAsync(role);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    
+                    await Task.Delay(1200);
+                }
+
+                await ReplyAsync("Done! Don't forget to manually add the role to anyone that may have joined after the update.");
+            });
+        }
+
+        [Command("quit")]
+        [Priority(1000)]
+        public async Task ShutDown()
+        {
+            if (Context.User.Id != 102528327251656704)
+            {
+                await ReplyAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
+                return;
+            }
+
+            Task.Run(async () =>
+            {
+                await ReplyAsync("rip");
+                //await Task.Delay(500);
+                await ((DiscordSocketClient)Context.Client).LogoutAsync();
+                Environment.Exit(0);
+            });
+        }
+    }
+}
+
