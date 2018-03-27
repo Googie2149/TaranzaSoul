@@ -47,6 +47,7 @@ namespace TaranzaSoul
             handler = new CommandHandler();
             await handler.Install(map);
 
+            client.Disconnected += Client_Disconnected;
 
             //await Task.Delay(3000);
 
@@ -56,7 +57,12 @@ namespace TaranzaSoul
             await Task.Delay(-1);
         }
 
-	private async Task Client_MessageReceived(SocketMessage msg)
+        private async Task Client_Disconnected(Exception arg)
+        {
+            Console.WriteLine("Disconnected event fired!");
+        }
+
+        private async Task Client_MessageReceived(SocketMessage msg)
         {
             if (msg.Author.Id == 267405866162978816) return;
 
