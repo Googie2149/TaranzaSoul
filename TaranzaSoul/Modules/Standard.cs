@@ -81,6 +81,28 @@ namespace TaranzaSoul.Modules.Standard
             });
         }
 
+        [Command("soostime")]
+        public async Task UpdateNames()
+        {
+            await ReplyAsync("THIS IS A BAD IDEA");
+            var users = (await Context.Guild.GetUsersAsync()).Where(x => x.Nickname != "Susie" && 
+            (x.Username != "Susie" && (x.Nickname == null || x.Nickname == "Susie" || x.Nickname == "")));
+            
+            foreach (var u in users)
+            {
+                try
+                {
+                    await u.ModifyAsync(x => x.Nickname = "Susie");
+                }
+                catch
+                {
+                    Console.WriteLine($"Couldn't change {u.Username}#{u.Discriminator}");
+                }
+
+                await Task.Delay(1000);
+            }
+        }
+
         [Command("quit")]
         [Priority(1000)]
         public async Task ShutDown()
