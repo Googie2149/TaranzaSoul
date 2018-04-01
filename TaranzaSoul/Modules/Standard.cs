@@ -91,7 +91,7 @@ namespace TaranzaSoul.Modules.Standard
             {
                 try
                 {
-                    var users = (await Context.Guild.GetUsersAsync()).Where(x => x.Nickname?.ToLower().Contains("susie") == false ||
+                    var users = (await Context.Guild.GetUsersAsync()).Where(x => x.Nickname?.ToLower().Contains("susie") == false &&
                     x.Nickname?.ToLower().Contains("soos") == false);
 
                     await ReplyAsync($"THIS IS A BAD IDEA\n{users.Count()}");
