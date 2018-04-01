@@ -108,7 +108,7 @@ namespace TaranzaSoul.Modules.Standard
                             Console.WriteLine($"{ex.Source?.ToString()}\n{ex.StackTrace}");
                         }
 
-                        await Task.Delay(10000);
+                        await Task.Delay(2000);
                     }
                 }
                 catch (Exception ex)
