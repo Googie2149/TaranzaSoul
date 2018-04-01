@@ -84,10 +84,11 @@ namespace TaranzaSoul.Modules.Standard
         [Command("soostime")]
         public async Task UpdateNames()
         {
-            await ReplyAsync("THIS IS A BAD IDEA");
-            var users = (await Context.Guild.GetUsersAsync()).Where(x => x.Nickname != "Susie" && 
-            (x.Username != "Susie" && (x.Nickname == null || x.Nickname == "Susie" || x.Nickname == "")));
-            
+            var users = (await Context.Guild.GetUsersAsync()).Where(x => x.Nickname.ToLower().Contains("susie") ||
+            x.Nickname.ToLower().Contains("soos"));
+
+            await ReplyAsync($"THIS IS A BAD IDEA\n{users.Count()}");
+
             foreach (var u in users)
             {
                 try
@@ -99,7 +100,7 @@ namespace TaranzaSoul.Modules.Standard
                     Console.WriteLine($"Couldn't change {u.Username}#{u.Discriminator}");
                 }
 
-                await Task.Delay(1000);
+                await Task.Delay(10000);
             }
         }
 
