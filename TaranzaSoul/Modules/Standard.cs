@@ -118,6 +118,43 @@ namespace TaranzaSoul.Modules.Standard
             });
         }
 
+        [Command("unsoostime")]
+        public async Task UndoNames()
+        {
+            if (Context.User.Id != 102528327251656704)
+                return;
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    var users = (await Context.Guild.GetUsersAsync()).Where(x => x.Nickname == "Susie");
+
+                    await ReplyAsync($"THIS IS slightly less of a BAD IDEA\n{users.Count()}");
+
+                    foreach (var u in users)
+                    {
+                        try
+                        {
+                            await u.ModifyAsync(x => x.Nickname = null);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Couldn't change {u.Username}#{u.Discriminator}");
+                            Console.WriteLine($"{ex.Source?.ToString()}\n{ex.StackTrace}");
+                        }
+
+                        await Task.Delay(2000);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"{ex.Source?.ToString()}\n{ex.StackTrace}");
+                }
+            });
+        }
+
+
         [Command("quit")]
         [Priority(1000)]
         public async Task ShutDown()
