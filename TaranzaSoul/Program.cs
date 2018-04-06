@@ -78,7 +78,7 @@ namespace TaranzaSoul
             {
                 var user = ((SocketGuildUser)reaction.User);
 
-                foreach (var r in user.Roles.Where(x => RoleColors.ContainsValue(x.Id)))
+                foreach (var r in user.Roles.Where(x => RoleColors.ContainsValue(x.Id) && x.Id != RoleColors[reaction.Emote.Name]))
                 {
                     await user.RemoveRoleAsync(r);
                 }
