@@ -43,6 +43,7 @@ namespace TaranzaSoul
             logger = new Logger();
             await logger.Install(map);
             SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
+            RoleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");
             client.MessageReceived += Client_MessageReceived;
 
             handler = new CommandHandler();
