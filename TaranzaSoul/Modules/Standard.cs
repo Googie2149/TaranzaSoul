@@ -43,6 +43,30 @@ namespace TaranzaSoul.Modules.Standard
             });
         }
 
+        [Command("listroles")]
+        public async Task ListRoles()
+        {
+            if (Context.User.Id != 102528327251656704)
+                return;
+
+            StringBuilder output = new StringBuilder();
+
+            foreach (var r in Context.Guild.Roles.OrderByDescending(x => x.Position))
+            {
+                var temp = $"\"{r.Name}\": \"{r.Id}\"";
+
+                if (output.Length + temp.Length + 6 > 2000)
+                {
+                    await ReplyAsync($"```{output.ToString()}```");
+                    output.Clear();
+                }
+
+                output.AppendLine(temp);
+            }
+
+            await ReplyAsync($"```{output.ToString()}```");
+        }
+
         [Command("updateroles")]
         public async Task UpdateRoles()
         {

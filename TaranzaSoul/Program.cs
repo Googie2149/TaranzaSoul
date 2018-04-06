@@ -21,6 +21,7 @@ namespace TaranzaSoul
         private CommandHandler handler;
         private Logger logger;
         private List<string> SpoilerWords = new List<string>();
+        private Dictionary<string, ulong> RoleColors = new Dictionary<string, ulong>();
 
         private async Task RunAsync()
         {
@@ -48,6 +49,8 @@ namespace TaranzaSoul
             await handler.Install(map);
 
             client.Disconnected += Client_Disconnected;
+            client.ReactionAdded += Client_ReactionAdded;
+            client.ReactionRemoved += Client_ReactionRemoved;
 
             //await Task.Delay(3000);
 
@@ -55,6 +58,33 @@ namespace TaranzaSoul
             //await client.CurrentUser.ModifyAsync(x => x.Avatar = avatar);
 
             await Task.Delay(-1);
+        }
+
+        private async Task Client_ReactionRemoved(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+            if (reaction.Channel.Id == 431953417024307210 && RoleColors.ContainsKey(reaction.Emote.Name))
+            {
+                var user = ((SocketGuildUser)reaction.User);
+
+                if (user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
+                    await user.RemoveRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
+            }
+        }
+
+        private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+            if (reaction.Channel.Id == 431953417024307210 && RoleColors.ContainsKey(reaction.Emote.Name))
+            {
+                var user = ((SocketGuildUser)reaction.User);
+
+                foreach (var r in user.Roles.Where(x => RoleColors.ContainsValue(x.Id)))
+                {
+                    await user.RemoveRoleAsync(r);
+                }
+
+                if (!user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
+                    await user.AddRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
+            }
         }
 
         private async Task Client_Disconnected(Exception arg)
@@ -66,9 +96,16 @@ namespace TaranzaSoul
         {
             if (msg.Author.Id == 267405866162978816) return;
 
-            if (msg.Author.Id == 102528327251656704 && msg.Content.ToLower() == "<@!267405866162978816> update filter")
+            if (msg.Author.Id == 102528327251656704 && msg.Content.ToLower() == "<@267405866162978816> update filter")
             {
                 SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
+                await msg.Channel.SendMessageAsync("Done!");
+                return;
+            }
+
+            if (msg.Author.Id == 102528327251656704 && msg.Content.ToLower() == "<@267405866162978816> update colors")
+            {
+                RoleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");
                 await msg.Channel.SendMessageAsync("Done!");
                 return;
             }
