@@ -98,8 +98,8 @@ namespace TaranzaSoul
         {
             if (msg.Author.Id == 267405866162978816) return;
 
-            if ((msg.Channel as IGuildChannel) == null)
-                return;
+            //if ((msg.Channel as IGuildChannel) == null)
+            //    return;
 
             if ((((SocketGuildUser)msg.Author).Roles.Select(x => x.Id).Contains((ulong)132721372848848896) ||
                 (((SocketGuildUser)msg.Author).Roles.Select(x => x.Id).Contains((ulong)190657363798261769))
