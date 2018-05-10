@@ -112,7 +112,7 @@ namespace TaranzaSoul
                 (((IGuildUser)msg.Author).RoleIds.Contains((ulong)190657363798261769)))
                 && msg.Content.ToLower() == "<@267405866162978816> get filter")
             {
-                await msg.Channel.SendFileAsync("@./filter.json");
+                await msg.Channel.SendFileAsync("@./filter.json", "Here you go.");
             }
 
             if ((((IGuildUser)msg.Author).RoleIds.Contains((ulong)132721372848848896) ||
