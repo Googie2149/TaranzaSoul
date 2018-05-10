@@ -8,6 +8,7 @@ using Discord.WebSocket;
 using Discord.Commands;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 
 namespace TaranzaSoul
 {
@@ -97,8 +98,58 @@ namespace TaranzaSoul
         {
             if (msg.Author.Id == 267405866162978816) return;
 
-            if (msg.Author.Id == 102528327251656704 && msg.Content.ToLower() == "<@267405866162978816> update filter")
+            if (((SocketGuildChannel)msg.Channel).Guild == null)
+                return;
+
+            if ((((SocketGuildUser)msg.Author).Roles.Select(x => x.Id).Contains((ulong)132721372848848896) ||
+                (((SocketGuildUser)msg.Author).Roles.Select(x => x.Id).Contains((ulong)190657363798261769))
+                && msg.Content.ToLower() == "<@267405866162978816> get filter"))
             {
+                await msg.Channel.SendFileAsync("@./filter.json");
+            }
+
+            if ((((SocketGuildUser)msg.Author).Roles.Select(x => x.Id).Contains((ulong)132721372848848896) ||
+                (((SocketGuildUser)msg.Author).Roles.Select(x => x.Id).Contains((ulong)190657363798261769))
+                && msg.Content.ToLower() == "<@267405866162978816> update filter"))
+            {
+                string file = "";
+
+                if (msg.Attachments.Count() > 0)
+                {
+                    if (msg.Attachments.FirstOrDefault().Filename.ToLower().EndsWith(".json"))
+                        file = msg.Attachments.FirstOrDefault().Url;
+                    else
+                    {
+                        await msg.Channel.SendMessageAsync("That isn't a .json file!");
+                        return;
+                    }
+                }
+                else
+                {
+                    await msg.Channel.SendMessageAsync("I don't see any attachments!");
+                    return;
+                }
+
+                using (WebClient client = new WebClient())
+                {
+                    await client.DownloadFileTaskAsync(new Uri(file), $"@./temp/{file}");
+                }
+
+                var tempWords = new List<string>();
+
+                try
+                {
+                    tempWords = JsonStorage.DeserializeObjectFromFile<List<string>>($"@./temp/{file}");
+                }
+                catch (Exception ex)
+                {
+                    await msg.Channel.SendMessageAsync($"There was an error loading that file:\n{ex.Message}");
+                    return;
+                }
+
+                File.Delete("@./filter.json");
+                File.Move($"@./temp/{file}", "@./filter.json");
+
                 SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
                 await msg.Channel.SendMessageAsync("Done!");
                 return;
@@ -150,8 +201,7 @@ namespace TaranzaSoul
 
                     await Task.Delay(100);
                     await msg.DeleteAsync();
-                    string send = $"{msg.Author.Mention} that's a spoiler!\n" +
-                        $"That belongs in <#417458111553470474>! If you don't already have access to that channel, type `+giveme spoilers`";
+                    string send = $"{msg.Author.Mention} that's a late game spoiler! That belongs in <#417458111553470474>!";
 
                     await msg.Channel.SendMessageAsync(send);
                 }
