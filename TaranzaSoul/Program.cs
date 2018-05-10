@@ -108,16 +108,16 @@ namespace TaranzaSoul
             //if ((msg.Channel as IGuildChannel) == null)
             //    return;
 
-            if ((((SocketGuildUser)msg.Author).Roles.Select(x => x.Id).Contains((ulong)132721372848848896) ||
-                (((SocketGuildUser)msg.Author).Roles.Select(x => x.Id).Contains((ulong)190657363798261769))
-                && msg.Content.ToLower() == "<@267405866162978816> get filter"))
+            if ((((IGuildUser)msg.Author).RoleIds.Contains((ulong)132721372848848896) ||
+                (((IGuildUser)msg.Author).RoleIds.Contains((ulong)190657363798261769)))
+                && msg.Content.ToLower() == "<@267405866162978816> get filter")
             {
                 await msg.Channel.SendFileAsync("@./filter.json");
             }
 
-            if ((((SocketGuildUser)msg.Author).Roles.Select(x => x.Id).Contains((ulong)132721372848848896) ||
-                (((SocketGuildUser)msg.Author).Roles.Select(x => x.Id).Contains((ulong)190657363798261769))
-                && msg.Content.ToLower() == "<@267405866162978816> update filter"))
+            if ((((IGuildUser)msg.Author).RoleIds.Contains((ulong)132721372848848896) ||
+                (((IGuildUser)msg.Author).RoleIds.Contains((ulong)190657363798261769)))
+                && msg.Content.ToLower() == "<@267405866162978816> update filter")
             {
                 string file = "";
 
