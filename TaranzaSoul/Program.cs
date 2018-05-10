@@ -45,14 +45,21 @@ namespace TaranzaSoul
             await logger.Install(map);
             SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
             RoleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");
-            client.MessageReceived += Client_MessageReceived;
 
             handler = new CommandHandler();
             await handler.Install(map);
 
-            client.Disconnected += Client_Disconnected;
-            client.ReactionAdded += Client_ReactionAdded;
-            client.ReactionRemoved += Client_ReactionRemoved;
+            try
+            {
+                client.MessageReceived += Client_MessageReceived;
+                client.Disconnected += Client_Disconnected;
+                client.ReactionAdded += Client_ReactionAdded;
+                client.ReactionRemoved += Client_ReactionRemoved;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Source}\n{ex.Message}\n{ex.StackTrace}");
+            }
 
             //await Task.Delay(3000);
 
