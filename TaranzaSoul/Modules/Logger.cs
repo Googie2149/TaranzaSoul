@@ -122,7 +122,7 @@ namespace TaranzaSoul
                 if (user.Guild.VerificationLevel < VerificationLevel.Extreme)
                     return;
 
-                if (user.CreatedAt.Date < DateTimeOffset.Now.AddDays(-3))
+                if (user.CreatedAt.Date < DateTimeOffset.Now.AddDays(-14))
                 {
                     var role = client.GetGuild(132720341058453504).GetRole(346373986604810240);
 
