@@ -169,7 +169,10 @@ namespace TaranzaSoul
                 return;
             }
 
-            if (msg.Channel.Id == 417458111553470474 || msg.Channel.Id == 423578054775013377)
+            if (msg.Channel.Id == 417458111553470474 || msg.Channel.Id == 423578054775013377 ||
+                msg.Channel.Id == 361589776433938432 || msg.Channel.Id == 425752341833187328 ||
+                msg.Channel.Id == 429821654068101120 || msg.Channel.Id == 186342269274554368 ||
+                msg.Channel.Id == 190674947381657600)
                 return;
 
             if (((IGuildChannel)msg.Channel).GuildId != 132720341058453504)
