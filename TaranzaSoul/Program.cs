@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Discord.Rest;
 using Discord.Commands;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,29 +18,56 @@ namespace TaranzaSoul
         static void Main(string[] args) =>
             new Program().RunAsync().GetAwaiter().GetResult();
 
-        private DiscordSocketClient client;
+        private DiscordSocketClient socketClient;
+        private DiscordRestClient restClient;
         private Config config;
         private CommandHandler handler;
         private Logger logger;
         private List<string> SpoilerWords = new List<string>();
         private Dictionary<string, ulong> RoleColors = new Dictionary<string, ulong>();
+        private ulong updateChannel = 0;
 
         private async Task RunAsync()
         {
-            client = new DiscordSocketClient(new DiscordSocketConfig
+            socketClient = new DiscordSocketClient(new DiscordSocketConfig
             {
                 //WebSocketProvider = WS4NetProvider.Instance,
                 LogLevel = LogSeverity.Verbose
             });
-            client.Log += Log;
+            socketClient.Log += Log;
+
+            restClient = new DiscordRestClient(new DiscordRestConfig
+            {
+                LogLevel = LogSeverity.Verbose
+            });
+            restClient.Log += Log;
+
+            if (File.Exists("./update"))
+            {
+                var temp = File.ReadAllText("./update");
+                ulong.TryParse(temp, out updateChannel);
+                File.Delete("./update");
+                Console.WriteLine($"Found an update file! It contained [{temp}] and we got [{updateChannel}] from it!");
+            }
 
             config = await Config.Load();
             
-            var map = new ServiceCollection().AddSingleton(client).AddSingleton(config).BuildServiceProvider();
+            var map = new ServiceCollection().AddSingleton(socketClient).AddSingleton(config).BuildServiceProvider();
             
-            await client.LoginAsync(TokenType.Bot, config.Token);
-            await client.StartAsync();
+            await socketClient.LoginAsync(TokenType.Bot, config.Token);
+            await socketClient.StartAsync();
 
+            await restClient.LoginAsync(TokenType.Bot, config.Token);
+
+            if (File.Exists("./deadlock"))
+            {
+                Console.WriteLine("We're recovering from a deadlock.");
+                File.Delete("./deadlock");
+                (await restClient.GetUserAsync(config.OwnerId))?.SendMessageAsync($"I recovered from a deadlock.\n`{DateTime.Now.ToShortDateString()}` `{DateTime.Now.ToLongTimeString()}`");
+            }
+
+            socketClient.GuildAvailable += Client_GuildAvailable;
+            socketClient.Disconnected += SocketClient_Disconnected;
 
             logger = new Logger();
             await logger.Install(map);
@@ -51,10 +79,9 @@ namespace TaranzaSoul
 
             try
             {
-                client.MessageReceived += Client_MessageReceived;
-                client.Disconnected += Client_Disconnected;
-                client.ReactionAdded += Client_ReactionAdded;
-                client.ReactionRemoved += Client_ReactionRemoved;
+                socketClient.MessageReceived += Client_MessageReceived;
+                socketClient.ReactionAdded += Client_ReactionAdded;
+                socketClient.ReactionRemoved += Client_ReactionRemoved;
             }
             catch (Exception ex)
             {
@@ -67,6 +94,39 @@ namespace TaranzaSoul
             //await client.CurrentUser.ModifyAsync(x => x.Avatar = avatar);
 
             await Task.Delay(-1);
+        }
+
+        private async Task Client_GuildAvailable(SocketGuild guild)
+        {
+            if (updateChannel != 0 && guild.GetTextChannel(updateChannel) != null)
+            {
+                await Task.Delay(3000); // wait 3 seconds just to ensure we can actually send it. this might not do anything.
+                await guild.GetTextChannel(updateChannel).SendMessageAsync("Successfully reconnected.");
+                updateChannel = 0;
+            }
+        }
+
+        private async Task SocketClient_Disconnected(Exception ex)
+        {
+            // If we disconnect, wait 3 minutes and see if we regained the connection.
+            // If we did, great, exit out and continue. If not, check again 3 minutes later
+            // just to be safe, and restart to exit a deadlock.
+            var task = Task.Run(async () =>
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    await Task.Delay(1000 * 60 * 3);
+
+                    if (socketClient.ConnectionState == ConnectionState.Connected)
+                        break;
+                    else if (i == 1)
+                    {
+                        File.Create("./deadlock");
+                        await config.Save();
+                        Environment.Exit((int)ExitCodes.ExitCode.DeadlockEscape);
+                    }
+                }
+            });
         }
 
         private async Task Client_ReactionRemoved(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
@@ -95,12 +155,7 @@ namespace TaranzaSoul
                     await user.AddRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
             }
         }
-
-        private async Task Client_Disconnected(Exception arg)
-        {
-            Console.WriteLine("Disconnected event fired!");
-        }
-
+        
         private async Task Client_MessageReceived(SocketMessage msg)
         {
             if (msg.Author.Id == 267405866162978816) return;
