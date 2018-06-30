@@ -33,7 +33,7 @@ namespace TaranzaSoul
             });
             client.Log += Log;
 
-            config = Config.Load();
+            config = await Config.Load();
             
             var map = new ServiceCollection().AddSingleton(client).AddSingleton(config).BuildServiceProvider();
             
