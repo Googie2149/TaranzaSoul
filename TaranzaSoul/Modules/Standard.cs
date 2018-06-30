@@ -19,28 +19,144 @@ using Newtonsoft.Json;
 
 namespace TaranzaSoul.Modules.Standard
 {
-    public class Standard : ModuleBase
+    public class Standard : MinitoriModule
     {
-        [Command("blah")]
-        [Summary("Blah!")]
+        private CommandService commands;
+        private IServiceProvider services;
+        private Config config;
+
+        public Standard(CommandService _commands, IServiceProvider _services, Config _config)
+        {
+            commands = _commands;
+            services = _services;
+            config = _config;
+        }
+
+        [Command("help")]
+        public async Task HelpCommand()
+        {
+            Context.IsHelp = true;
+
+            StringBuilder output = new StringBuilder();
+            StringBuilder module = new StringBuilder();
+            var SeenModules = new List<string>();
+            int i = 0;
+
+            output.Append("These are the commands you can use:");
+
+            foreach (var c in commands.Commands)
+            {
+                if (!SeenModules.Contains(c.Module.Name))
+                {
+                    if (i > 0)
+                        output.Append(module.ToString());
+
+                    module.Clear();
+
+                    module.Append($"\n**{c.Module.Name}:**");
+                    SeenModules.Add(c.Module.Name);
+                    i = 0;
+                }
+
+                if ((await c.CheckPreconditionsAsync(Context, services)).IsSuccess)
+                {
+                    if (i == 0)
+                        module.Append(" ");
+                    else
+                        module.Append(", ");
+
+                    i++;
+
+                    module.Append($"`{c.Name}`");
+                }
+            }
+
+            if (i > 0)
+                output.AppendLine(module.ToString());
+
+            await RespondAsync(output.ToString());
+        }
+
+        [Command("Ping")]
+        [Summary("Pong!")]
         [Priority(1000)]
         public async Task Blah()
         {
-            await ReplyAsync($"Blah to you too, {Context.User.Mention}.");
+            await RespondAsync($"Pong {Context.User.Mention}!");
         }
 
-        [Command("downloadusers")]
+        [Command("setnick")]
+        [Summary("Change my nickname!")]
+        [RequireOwner()]
+        public async Task SetNickname(string Nick = "")
+        {
+            await (Context.Guild as SocketGuild).CurrentUser.ModifyAsync(x => x.Nickname = Nick);
+            await RespondAsync(":thumbsup:");
+        }
+
+        [Command("quit", RunMode = RunMode.Async)]
+        [Priority(1000)]
+        [RequireOwner()]
+        public async Task ShutDown()
+        {
+            await RespondAsync("Disconnecting...");
+            await config.Save();
+            await Context.Client.LogoutAsync();
+            await Task.Delay(1000);
+            Environment.Exit((int)ExitCodes.ExitCode.Success);
+        }
+
+        [Command("restart", RunMode = RunMode.Async)]
+        [Priority(1000)]
+        [RequireOwner()]
+        public async Task Restart()
+        {
+            await RespondAsync("Restarting...");
+            await config.Save();
+            await File.WriteAllTextAsync("./update", Context.Channel.Id.ToString());
+
+            await Context.Client.LogoutAsync();
+            await Task.Delay(1000);
+            Environment.Exit((int)ExitCodes.ExitCode.Restart);
+        }
+
+        [Command("update", RunMode = RunMode.Async)]
+        [Priority(1000)]
+        [RequireOwner()]
+        public async Task UpdateAndRestart()
+        {
+            await File.WriteAllTextAsync("./update", Context.Channel.Id.ToString());
+
+            await RespondAsync("Pulling latest code and rebuilding from source, I'll be back in a bit.");
+            await config.Save();
+            await Context.Client.LogoutAsync();
+            await Task.Delay(1000);
+            Environment.Exit((int)ExitCodes.ExitCode.RestartAndUpdate);
+        }
+
+        [Command("deadlocksim", RunMode = RunMode.Async)]
+        [Priority(1000)]
+        [RequireOwner()]
+        public async Task DeadlockSimulation()
+        {
+            File.Create("./deadlock");
+
+            await RespondAsync("Restarting...");
+            await config.Save();
+            await Context.Client.LogoutAsync();
+            await Task.Delay(1000);
+            Environment.Exit((int)ExitCodes.ExitCode.DeadlockEscape);
+        }
+
+        [Command("downloadusers", RunMode = RunMode.Async)]
         public async Task Download()
         {
-            Task.Run(async () =>
-            {
-                int before = ((SocketGuild)Context.Guild).Users.Count();
-                await ((SocketGuild)Context.Guild).DownloadUsersAsync();
+            int before = ((SocketGuild)Context.Guild).Users.Count();
+            await ((SocketGuild)Context.Guild).DownloadUsersAsync();
 
-                int after = ((SocketGuild)Context.Guild).Users.Count();
+            int after = ((SocketGuild)Context.Guild).Users.Count();
                 
-                await ReplyAsync($"Downloaded {after - before} users");
-            });
+            await RespondAsync($"Downloaded {after - before} users");
         }
 
         [Command("listroles")]
@@ -53,21 +169,13 @@ namespace TaranzaSoul.Modules.Standard
 
             foreach (var r in Context.Guild.Roles.OrderByDescending(x => x.Position))
             {
-                var temp = $"\"{r.Name}\": \"{r.Id}\"";
-
-                if (output.Length + temp.Length + 6 > 2000)
-                {
-                    await ReplyAsync($"```{output.ToString()}```");
-                    output.Clear();
-                }
-
-                output.AppendLine(temp);
+                output.AppendLine($"\"{r.Name}\": \"{r.Id}\"");
             }
 
-            await ReplyAsync($"```{output.ToString()}```");
+            await RespondAsync($"```{output.ToString()}```");
         }
 
-        [Command("updateroles")]
+        [Command("updateroles", RunMode = RunMode.Async)]
         public async Task UpdateRoles()
         {
             if (Context.User.Id != 102528327251656704)
@@ -82,120 +190,24 @@ namespace TaranzaSoul.Modules.Standard
                     update.Add(u);
             }
 
-            await ReplyAsync($"Adding the {role.Name} role to {update.Count()} new friends!\n" +
+            await RespondAsync($"Adding the {role.Name} role to {update.Count()} new friends!\n" +
                 $"This should take a bit above {new TimeSpan(1200 * update.Count()).TotalMinutes} minutes.");
-
-            Task.Run(async () =>
+            
+            foreach (var u in update)
             {
-                foreach (var u in update)
+                try
                 {
-                    try
-                    {
-                        await u.AddRoleAsync(role);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
+                    await u.AddRoleAsync(role);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
                     
-                    await Task.Delay(1200);
-                }
-
-                await ReplyAsync("Done! Don't forget to manually add the role to anyone that may have joined after the update.");
-            });
-        }
-
-        [Command("soostime")]
-        public async Task UpdateNames()
-        {
-            if (Context.User.Id != 102528327251656704)
-                return;
-
-            Task.Run(async () =>
-            {
-                try
-                {
-                    var users = (await Context.Guild.GetUsersAsync()).Where(x => x.Nickname?.ToLower().Contains("susie") == false &&
-                    x.Nickname?.ToLower().Contains("soos") == false);
-
-                    await ReplyAsync($"THIS IS A BAD IDEA\n{users.Count()}");
-
-                    foreach (var u in users)
-                    {
-                        try
-                        {
-                            await u.ModifyAsync(x => x.Nickname = "Susie");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Couldn't change {u.Username}#{u.Discriminator}");
-                            Console.WriteLine($"{ex.Source?.ToString()}\n{ex.StackTrace}");
-                        }
-
-                        await Task.Delay(2000);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"{ex.Source?.ToString()}\n{ex.StackTrace}");
-                }
-            });
-        }
-
-        [Command("unsoostime")]
-        public async Task UndoNames()
-        {
-            if (Context.User.Id != 102528327251656704)
-                return;
-
-            Task.Run(async () =>
-            {
-                try
-                {
-                    var users = (await Context.Guild.GetUsersAsync()).Where(x => x.Nickname == "Susie");
-
-                    await ReplyAsync($"THIS IS slightly less of a BAD IDEA\n{users.Count()}");
-
-                    foreach (var u in users)
-                    {
-                        try
-                        {
-                            await u.ModifyAsync(x => x.Nickname = null);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Couldn't change {u.Username}#{u.Discriminator}");
-                            Console.WriteLine($"{ex.Source?.ToString()}\n{ex.StackTrace}");
-                        }
-
-                        await Task.Delay(2000);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"{ex.Source?.ToString()}\n{ex.StackTrace}");
-                }
-            });
-        }
-
-
-        [Command("quit")]
-        [Priority(1000)]
-        public async Task ShutDown()
-        {
-            if (Context.User.Id != 102528327251656704)
-            {
-                await ReplyAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
-                return;
+                await Task.Delay(1200);
             }
 
-            Task.Run(async () =>
-            {
-                await ReplyAsync("rip");
-                //await Task.Delay(500);
-                await ((DiscordSocketClient)Context.Client).LogoutAsync();
-                Environment.Exit(0);
-            });
+            await RespondAsync("Done! Don't forget to manually add the role to anyone that may have joined after the update.");
         }
     }
 }

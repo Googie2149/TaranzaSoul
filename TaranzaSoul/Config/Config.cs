@@ -22,7 +22,13 @@ namespace TaranzaSoul
         [JsonProperty("mention_trigger")]
         public bool TriggerOnMention { get; set; } = true;
 
-        public static Config Load()
+        [JsonProperty("success_response")]
+        public string SuccessResponse { get; set; } = ":thumbsup:";
+
+        [JsonProperty("owner_id")]
+        public ulong OwnerId { get; set; } = 0;
+
+        public async static Task<Config> Load()
         {
             if (File.Exists("config.json"))
             {
@@ -30,15 +36,15 @@ namespace TaranzaSoul
                 return JsonConvert.DeserializeObject<Config>(json);
             }
             var config = new Config();
-            config.Save();
+            await config.Save();
             throw new InvalidOperationException("configuration file created; insert token and restart.");
         }
 
-        public void Save()
+        public async Task Save()
         {
             //var json = JsonConvert.SerializeObject(this);
             //File.WriteAllText("config.json", json);
-            JsonStorage.SerializeObjectToFile(this, "config.json").Wait();
+            await JsonStorage.SerializeObjectToFile(this, "config.json");
         }
     }
 }
