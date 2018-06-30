@@ -78,12 +78,12 @@ namespace TaranzaSoul.Modules.Standard
             
             foreach (var u in ((SocketGuild)Context.Guild).Users)
             {
-                if (!u.Roles.Contains(role))
+                if (!u.Roles.Contains(role) && u.CreatedAt.Date < DateTimeOffset.Now.AddDays(-14))
                     update.Add(u);
             }
 
             await ReplyAsync($"Adding the {role.Name} role to {update.Count()} new friends!\n" +
-                $"This should take a bit above {new TimeSpan(1200 * update.Count()).Minutes} minutes.");
+                $"This should take a bit above {new TimeSpan(1200 * update.Count()).TotalMinutes} minutes.");
 
             Task.Run(async () =>
             {

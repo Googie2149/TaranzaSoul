@@ -119,6 +119,11 @@ namespace TaranzaSoul
                     $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
                     $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`");
 
+                if (user.Id == 144980421501911040) // splash
+                {
+                    await user.AddRoleAsync(client.GetGuild(132720341058453504).GetRole(250643101675159552));
+                }
+
                 if (user.Guild.VerificationLevel < VerificationLevel.Extreme)
                     return;
 
