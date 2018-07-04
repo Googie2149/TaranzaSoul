@@ -154,6 +154,15 @@ namespace TaranzaSoul
                 if (!user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
                     await user.AddRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
             }
+            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "no_entry_sign")
+            {
+                var user = ((SocketGuildUser)reaction.User);
+
+                foreach (var r in user.Roles.Where(x => RoleColors.ContainsValue(x.Id)))
+                {
+                    await user.RemoveRoleAsync(r);
+                }
+            }
         }
         
         private async Task Client_MessageReceived(SocketMessage msg)
