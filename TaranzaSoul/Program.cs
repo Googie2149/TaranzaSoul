@@ -163,6 +163,10 @@ namespace TaranzaSoul
                     await user.RemoveRoleAsync(r);
                 }
             }
+            else if (reaction.Channel.Id == 431953417024307210)
+            {
+                Console.WriteLine(reaction.Emote.Name);
+            }
         }
         
         private async Task Client_MessageReceived(SocketMessage msg)
