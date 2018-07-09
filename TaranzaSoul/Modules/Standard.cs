@@ -222,7 +222,7 @@ namespace TaranzaSoul.Modules.Standard
 
             var list = Context.Guild.Users.Where(x => blah.Select(y => y.user.id).Contains(x.Id));
 
-            await RespondAsync(string.Join('\n', list.Select(x => $"{x.Id} | {x.Username}")));
+            await RespondAsync(string.Join('\n', list.Select(x => $"`{x.Id}` | {x.Mention} | {x.Username}")));
         }
     }
 
