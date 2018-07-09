@@ -219,8 +219,9 @@ namespace TaranzaSoul.Modules.Standard
             var blah = JsonStorage.DeserializeObjectFromFile<List<JsonList>>("users.json");
 
             await Context.Guild.DownloadUsersAsync();
+            var filter = new List<ulong>() { 229337636265787402, 133020327952252928, 344284382384881665, 185162109397499904 };
 
-            var list = Context.Guild.Users.Where(x => x.IsBot == false && blah.Select(y => y.user.id).Contains(x.Id));
+            var list = Context.Guild.Users.Where(x => x.IsBot == false && blah.Select(y => y.user.id).Contains(x.Id) && filter.Contains(x.Id) == false);
 
             await RespondAsync(string.Join('\n', list.OrderByDescending(x => x.JoinedAt).Select(x => $"`{x.Id}` | {x.Mention} | {x.Username} | {x.JoinedAt.ToString()}")));
         }
