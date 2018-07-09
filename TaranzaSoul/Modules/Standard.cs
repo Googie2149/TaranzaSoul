@@ -155,7 +155,7 @@ namespace TaranzaSoul.Modules.Standard
             await ((SocketGuild)Context.Guild).DownloadUsersAsync();
 
             int after = ((SocketGuild)Context.Guild).Users.Count();
-                
+
             await RespondAsync($"Downloaded {after - before} users");
         }
 
@@ -183,7 +183,7 @@ namespace TaranzaSoul.Modules.Standard
 
             var update = new List<IGuildUser>();
             var role = ((SocketGuild)Context.Guild).GetRole(346373986604810240);
-            
+
             foreach (var u in ((SocketGuild)Context.Guild).Users)
             {
                 if (!u.Roles.Contains(role) && u.CreatedAt.Date < DateTimeOffset.Now.AddDays(-14))
@@ -192,7 +192,7 @@ namespace TaranzaSoul.Modules.Standard
 
             await RespondAsync($"Adding the {role.Name} role to {update.Count()} new friends!\n" +
                 $"This should take a bit above {new TimeSpan(1200 * update.Count()).TotalMinutes} minutes.");
-            
+
             foreach (var u in update)
             {
                 try
@@ -203,12 +203,45 @@ namespace TaranzaSoul.Modules.Standard
                 {
                     Console.WriteLine(ex.Message);
                 }
-                    
+
                 await Task.Delay(1200);
             }
 
             await RespondAsync("Done! Don't forget to manually add the role to anyone that may have joined after the update.");
         }
+
+        [Command("raidtest", RunMode = RunMode.Async)]
+        public async Task CheckRaiders()
+        {
+            if (Context.User.Id != 102528327251656704)
+                return;
+
+            var blah = JsonStorage.DeserializeObjectFromFile<List<JsonList>>("users.json");
+
+            await Context.Guild.DownloadUsersAsync();
+
+            var list = Context.Guild.Users.Where(x => blah.Select(y => y.user.id).Contains(x.Id));
+
+            await RespondAsync(string.Join('\n', list.Select(x => $"{x.Id} | {x.Username}")));
+        }
+    }
+
+    public class JsonUser
+    {
+        public string username { get; set; }
+        public string discriminator { get; set; }
+        public ulong id { get; set; }
+        public string avatar { get; set; }
+    }
+
+    public class JsonList
+    {
+        public string nick { get; set; }
+        public JsonUser user { get; set; }
+        public List<string> roles { get; set; }
+        public bool mute { get; set; }
+        public bool deaf { get; set; }
+        public DateTime joined_at { get; set; }
     }
 }
 
