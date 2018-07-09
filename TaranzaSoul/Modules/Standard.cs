@@ -222,7 +222,7 @@ namespace TaranzaSoul.Modules.Standard
 
             var list = Context.Guild.Users.Where(x => !!x.IsBot && blah.Select(y => y.user.id).Contains(x.Id));
 
-            await RespondAsync(string.Join('\n', list.OrderByDescending(x => x.JoinedAt).Select(x => $"`{x.Id}` | {x.Mention} | {x.Username}")));
+            await RespondAsync(string.Join('\n', list.OrderByDescending(x => x.JoinedAt).Select(x => $"`{x.Id}` | {x.Mention} | {x.Username} | {x.JoinedAt.ToString()}")));
         }
     }
 
