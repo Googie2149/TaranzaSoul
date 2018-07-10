@@ -225,15 +225,21 @@ namespace TaranzaSoul.Modules.Standard
 
             await RespondAsync(string.Join('\n', list.OrderByDescending(x => x.JoinedAt).Select(x => $"`{x.Id}` | {x.Mention} | {x.Username} | {x.JoinedAt.ToString()}")));
 
-            //foreach (var u in list)
-            //{
-            //    await u.BanAsync(7, "Member of a raid server");
-            //    await Task.Delay(1000);
-            //}
+            foreach (var u in list)
+            {
+                await u.BanAsync(7, "Member of a raid server");
+                //await Task.Delay(1000);
+            }
 
-            var list2 = blah.Where(x => Context.Guild.Users.Where(y => y.IsBot == false).Select(y => y.Id).Contains(x.user.id) == false);
+            var list2 = blah.Where(x => Context.Guild.Users.Select(y => y.Id).Contains(x.user.id) == false);
 
             await RespondAsync(string.Join('\n', list2.OrderByDescending(x => x.joined_at).Select(x => $"`{x.user.id}` | <@{x.user.id}> | {x.user.username} | {x.joined_at.ToString()}")));
+
+            foreach (var u in list2)
+            {
+                await Context.Guild.AddBanAsync(u.user.id, reason: "Member of a raid server");
+                await Task.Delay(1500);
+            }
         }
     }
 
