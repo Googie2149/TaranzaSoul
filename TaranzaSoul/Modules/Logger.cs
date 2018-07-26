@@ -118,13 +118,12 @@ namespace TaranzaSoul
                     $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                     $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
                     $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`");
+                
 
-                return;
-
-                if (user.Id == 144980421501911040) // splash
-                {
-                    await user.AddRoleAsync(client.GetGuild(132720341058453504).GetRole(250643101675159552));
-                }
+                //if (user.Id == 144980421501911040) // splash
+                //{
+                //    await user.AddRoleAsync(client.GetGuild(132720341058453504).GetRole(250643101675159552));
+                //}
 
                 if (user.Guild.VerificationLevel < VerificationLevel.Extreme)
                     return;
@@ -134,7 +133,9 @@ namespace TaranzaSoul
                 {
                     var role = client.GetGuild(132720341058453504).GetRole(346373986604810240);
 
-                    await Task.Delay(1500); // Delay to prevent colliding with other role-restore bots.
+                    //await Task.Delay(1500); // Delay to prevent colliding with other role-restore bots.
+
+                    await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
 
                     await user.AddRoleAsync(role);
                 }
