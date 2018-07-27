@@ -77,7 +77,7 @@ namespace TaranzaSoul.Modules.Standard
             await RespondAsync(output.ToString());
         }
 
-        [Command("Ping")]
+        [Command("ping")]
         [Summary("Pong!")]
         [Priority(1000)]
         public async Task Blah()
@@ -148,7 +148,7 @@ namespace TaranzaSoul.Modules.Standard
             Environment.Exit((int)ExitCodes.ExitCode.DeadlockEscape);
         }
 
-        [Command("downloadusers", RunMode = RunMode.Async)]
+        //[Command("downloadusers", RunMode = RunMode.Async)]
         public async Task Download()
         {
             int before = ((SocketGuild)Context.Guild).Users.Count();
@@ -210,7 +210,7 @@ namespace TaranzaSoul.Modules.Standard
             await RespondAsync("Done! Don't forget to manually add the role to anyone that may have joined after the update.");
         }
 
-        [Command("raidtest", RunMode = RunMode.Async)]
+        //[Command("raidtest", RunMode = RunMode.Async)]
         public async Task CheckRaiders()
         {
             if (Context.User.Id != 102528327251656704)
