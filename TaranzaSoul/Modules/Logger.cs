@@ -133,15 +133,22 @@ namespace TaranzaSoul
                 {
                     Task.Run(async () =>
                     {
-                        var role = client.GetGuild(132720341058453504).GetRole(346373986604810240);
-                        await user.SendMessageAsync(
-                            "Welcome to the Partnered /r/Kirby Discord Server!\n" +
-                            "To help ensure the peaceful atmosphere of the server, you'll have to wait about 10 minutes until you can see the rest of the channels, " +
-                            "but until then you can familiarize yourself with <#132720402727174144> and <#361565642027171841>. We hope you enjoy your stay!");
+                        try
+                        {
+                            var role = client.GetGuild(132720341058453504).GetRole(346373986604810240);
+                            await user.SendMessageAsync(
+                                "Welcome to the Partnered /r/Kirby Discord Server!\n" +
+                                "To help ensure the peaceful atmosphere of the server, you'll have to wait about 10 minutes until you can see the rest of the channels, " +
+                                "but until then you can familiarize yourself with <#132720402727174144> and <#361565642027171841>. We hope you enjoy your stay!");
 
-                        await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
+                            await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
 
-                        await user.AddRoleAsync(role);
+                            await user.AddRoleAsync(role);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error adding role!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                        }
                     });
                 }
                 else
