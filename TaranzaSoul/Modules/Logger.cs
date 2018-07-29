@@ -163,8 +163,7 @@ namespace TaranzaSoul
 
                     await user.SendMessageAsync("Hi, welcome to the /r/Kirby Discord server! If you're seeing this, it means **your account is new**, and as such needs to be verified before you can participate in this server. " +
                         "Toss us a mod mail on /r/Kirby with your Discord username and we'll get you set up as soon as we can https://www.reddit.com/message/compose?to=%2Fr%2FKirby" +
-                        "\n\nIf you do not have a Reddit account, or it's new/unused, you might still be able to verify yourself with another social media account. " +
-                        "If that's the case, send Googie2149#1368 a friend request, and we'll see what we can do to get you going.");
+                        "\n\nIf you do not have a Reddit account, or it's new/unused, your best bet is to register your phone number on Discord, then send an online moderator a message.");
                 }
             }
         }
