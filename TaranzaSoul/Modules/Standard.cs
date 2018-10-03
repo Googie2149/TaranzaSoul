@@ -32,6 +32,8 @@ namespace TaranzaSoul.Modules.Standard
             config = _config;
         }
 
+        
+
         [Command("help")]
         public async Task HelpCommand()
         {
@@ -83,6 +85,138 @@ namespace TaranzaSoul.Modules.Standard
         public async Task Blah()
         {
             await RespondAsync($"Pong {Context.User.Mention}!");
+        }
+
+        private void WatchListHelper(string remainder, out List<ulong> users, out string note)
+        {
+            var args = remainder.Split(' ').Where(x => x.Length > 0).ToList();
+            note = "";
+            users = new List<ulong>();
+            
+            foreach (var s in new List<string>(args))
+            {
+                var id = s.TrimStart('<').TrimStart('@').TrimStart('!').TrimEnd('>');
+                ulong temp;
+                if (ulong.TryParse(id, out temp))
+                {
+                    //var u = Context.Guild.GetUser(temp);
+
+                    //if (u != null)
+                    //    users.Add(u);
+
+                    users.Add(temp);
+
+                    args.RemoveAt(0);
+                }
+                else
+                    break;
+            }
+
+            if (users.Count() == 0)
+                return;
+            else
+                note = string.Join(" ", args).Trim();
+        }
+
+        [Command("watch")]
+        [Summary("idk go watch some tv")]
+        [Priority(1000)]
+        public async Task WatchList([Remainder]string remainder = "")
+        {
+            List<ulong> users;
+            string note;
+
+            WatchListHelper(remainder, out users, out note);
+
+            if (users.Count() == 0)
+            {
+                await RespondAsync("None of those mentioned were valid user Ids!");
+            }
+
+            if (note != "") // this means we ARE setting a note on one or more people
+            {
+                StringBuilder output = new StringBuilder();
+
+                output.AppendLine($"Added the reason {note} - {Context.User.Username}#{Context.User.Discriminator} to the following user Id(s): " +
+                    $"{users.Select(x => $"`{x.ToString()}`").Join(", ")}");
+
+                foreach (var u in users)
+                {
+                    if (config.WatchedIds.ContainsKey(u))
+                    {
+                        output.AppendLine($"`{u}` already had a note! It was: {config.WatchedIds[u]}");
+                    }
+
+                    config.WatchedIds[u] = note;
+                }
+
+                await RespondAsync(output.ToString());
+
+                await config.Save();
+            }
+            else // We are checking the contents of specifc notes, NOT setting any
+            {
+                StringBuilder output = new StringBuilder();
+
+                foreach (var u in users)
+                {
+                    if (config.WatchedIds.ContainsKey(u))
+                    {
+                        output.AppendLine($"Note for `{u}`: {config.WatchedIds[u]}");
+                    }
+                    else
+                        output.AppendLine($"`{u}` does not currently have a note set.");
+                }
+
+                await RespondAsync(output.ToString());
+            }
+        }
+
+        [Command("watch clear")]
+        [Summary("tv is boring")]
+        [Priority(1001)]
+        public async Task ClearWatch([Remainder]string remainder = "")
+        {
+            List<ulong> users;
+            string note;
+            WatchListHelper(remainder, out users, out note);
+
+            if (users.Count() == 0)
+            {
+                await RespondAsync("None of those mentioned were valid user Ids!");
+                return;
+            }
+
+            StringBuilder output = new StringBuilder();
+
+            foreach (var u in users)
+            {
+                if (config.WatchedIds.ContainsKey(u))
+                {
+                    output.AppendLine($"Note cleared for `{u}`: {config.WatchedIds[u]}");
+                }
+                else
+                    output.AppendLine($"`{u}` did not have a note.");
+            }
+
+            await RespondAsync(output.ToString());
+
+            await config.Save();
+        }
+
+        [Command("watch all")]
+        [Summary("tivo guide!!!!!")]
+        [Priority(1001)]
+        public async Task ListWatch()
+        {
+            StringBuilder output = new StringBuilder();
+
+            foreach (KeyValuePair<ulong, string> kv in config.WatchedIds)
+            {
+                output.AppendLine($"Note for `{kv.Key}`: {kv.Value}");
+            }
+
+            await RespondAsync(output.ToString());
         }
 
         [Command("setnick")]

@@ -32,7 +32,8 @@ namespace TaranzaSoul
             socketClient = new DiscordSocketClient(new DiscordSocketConfig
             {
                 //WebSocketProvider = WS4NetProvider.Instance,
-                LogLevel = LogSeverity.Verbose
+                LogLevel = LogSeverity.Verbose,
+                AlwaysDownloadUsers = true
             });
             socketClient.Log += Log;
 
