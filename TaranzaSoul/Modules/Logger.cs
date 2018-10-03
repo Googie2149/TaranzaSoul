@@ -88,6 +88,7 @@ namespace TaranzaSoul
         public async Task Install(IServiceProvider _services)
         {
             client = _services.GetService<DiscordSocketClient>();
+            config = _services.GetService<Config>();
             services = _services;
 
             client.MessageReceived += MessagesPLSWORK;
