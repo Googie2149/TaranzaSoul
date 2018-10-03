@@ -208,6 +208,7 @@ namespace TaranzaSoul.Modules.Standard
                 if (config.WatchedIds.ContainsKey(u))
                 {
                     output.AppendLine($"Note cleared for `{u}`: {config.WatchedIds[u]}");
+                    config.WatchedIds.Remove(u);
                 }
                 else
                     output.AppendLine($"`{u}` did not have a note.");
