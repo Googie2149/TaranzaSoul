@@ -123,6 +123,14 @@ namespace TaranzaSoul.Modules.Standard
         [Priority(1000)]
         public async Task WatchList([Remainder]string remainder = "")
         {
+            //451057945044582400
+
+            if (Context.Guild.Id != 132720341058453504)
+                return;
+
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451057945044582400))
+                return;
+
             List<ulong> users;
             string note;
 
@@ -177,6 +185,12 @@ namespace TaranzaSoul.Modules.Standard
         [Priority(1001)]
         public async Task ClearWatch([Remainder]string remainder = "")
         {
+            if (Context.Guild.Id != 132720341058453504)
+                return;
+
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451057945044582400))
+                return;
+
             List<ulong> users;
             string note;
             WatchListHelper(remainder, out users, out note);
@@ -209,6 +223,12 @@ namespace TaranzaSoul.Modules.Standard
         [Priority(1001)]
         public async Task ListWatch()
         {
+            if (Context.Guild.Id != 132720341058453504)
+                return;
+
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451057945044582400))
+                return;
+
             StringBuilder output = new StringBuilder();
 
             foreach (KeyValuePair<ulong, string> kv in config.WatchedIds)
