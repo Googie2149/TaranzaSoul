@@ -101,11 +101,18 @@ namespace TaranzaSoul
         {
             if (user.Guild.Id == 132720341058453504)
             {
-                await (client.GetGuild(132720341058453504).GetChannel(267377140859797515) as ISocketMessageChannel)
-                    .SendMessageAsync($":door: " +
+                string message = $":door: " +
                     $"**User Left** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                     $"{user.Username}#{user.Discriminator} ({user.Id})" +
-                    ((user.JoinedAt.HasValue) ? $"\nOriginal Join Date `{user.JoinedAt.Value.ToLocalTime().ToString("d")} {user.JoinedAt.Value.ToLocalTime().ToString("T")}`" : ""));
+                    ((user.JoinedAt.HasValue) ? $"\nOriginal Join Date `{user.JoinedAt.Value.ToLocalTime().ToString("d")} {user.JoinedAt.Value.ToLocalTime().ToString("T")}`" : "");
+
+                if (config.WatchedIds.ContainsKey(user.Id))
+                {
+                    message = $"{message}\n<@&451057945044582400> That user was flagged! {config.WatchedIds[user.Id]}";
+                }
+
+                await (client.GetGuild(132720341058453504).GetChannel(267377140859797515) as ISocketMessageChannel)
+                    .SendMessageAsync(message);
             }
         }
 
@@ -113,11 +120,20 @@ namespace TaranzaSoul
         {
             if (user.Guild.Id == 132720341058453504)
             {
-                await (client.GetGuild(132720341058453504).GetChannel(267377140859797515) as ISocketMessageChannel)
-                    .SendMessageAsync($":wave: " +
+                string message = $":wave: " +
                     $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                     $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
-                    $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`");
+                    $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`";
+
+                if (config.WatchedIds.ContainsKey(user.Id))
+                {
+                    message = $"{message}\n<@&451057945044582400> This user has been flagged! {config.WatchedIds[user.Id]}";
+                }
+
+                await (client.GetGuild(132720341058453504).GetChannel(267377140859797515) as ISocketMessageChannel)
+                    .SendMessageAsync(message);
+
+                
                 
 
                 //if (user.Id == 144980421501911040) // splash
