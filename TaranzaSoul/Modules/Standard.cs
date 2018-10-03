@@ -87,18 +87,28 @@ namespace TaranzaSoul.Modules.Standard
 
         [Command("setnick")]
         [Summary("Change my nickname!")]
-        [RequireOwner()]
         public async Task SetNickname(string Nick = "")
         {
+            if (!config.OwnerIds.Contains(Context.User.Id))
+            {
+                await RespondAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
+                return;
+            }
+
             await (Context.Guild as SocketGuild).CurrentUser.ModifyAsync(x => x.Nickname = Nick);
             await RespondAsync(":thumbsup:");
         }
 
         [Command("quit", RunMode = RunMode.Async)]
         [Priority(1000)]
-        [RequireOwner()]
         public async Task ShutDown()
         {
+            if (!config.OwnerIds.Contains(Context.User.Id))
+            {
+                await RespondAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
+                return;
+            }
+
             await RespondAsync("Disconnecting...");
             await config.Save();
             await Context.Client.LogoutAsync();
@@ -108,9 +118,14 @@ namespace TaranzaSoul.Modules.Standard
 
         [Command("restart", RunMode = RunMode.Async)]
         [Priority(1000)]
-        [RequireOwner()]
         public async Task Restart()
         {
+            if (!config.OwnerIds.Contains(Context.User.Id))
+            {
+                await RespondAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
+                return;
+            }
+
             await RespondAsync("Restarting...");
             await config.Save();
             await File.WriteAllTextAsync("./update", Context.Channel.Id.ToString());
@@ -122,9 +137,14 @@ namespace TaranzaSoul.Modules.Standard
 
         [Command("update", RunMode = RunMode.Async)]
         [Priority(1000)]
-        [RequireOwner()]
         public async Task UpdateAndRestart()
         {
+            if (!config.OwnerIds.Contains(Context.User.Id))
+            {
+                await RespondAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
+                return;
+            }
+
             await File.WriteAllTextAsync("./update", Context.Channel.Id.ToString());
 
             await RespondAsync("Pulling latest code and rebuilding from source, I'll be back in a bit.");
@@ -136,9 +156,14 @@ namespace TaranzaSoul.Modules.Standard
 
         [Command("deadlocksim", RunMode = RunMode.Async)]
         [Priority(1000)]
-        [RequireOwner()]
         public async Task DeadlockSimulation()
         {
+            if (!config.OwnerIds.Contains(Context.User.Id))
+            {
+                await RespondAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
+                return;
+            }
+
             File.Create("./deadlock");
 
             await RespondAsync("Restarting...");
@@ -162,8 +187,11 @@ namespace TaranzaSoul.Modules.Standard
         [Command("listroles")]
         public async Task ListRoles()
         {
-            if (Context.User.Id != 102528327251656704)
+            if (!config.OwnerIds.Contains(Context.User.Id))
+            {
+                await RespondAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
                 return;
+            }
 
             StringBuilder output = new StringBuilder();
 
@@ -178,8 +206,11 @@ namespace TaranzaSoul.Modules.Standard
         [Command("updateroles", RunMode = RunMode.Async)]
         public async Task UpdateRoles()
         {
-            if (Context.User.Id != 102528327251656704)
+            if (!config.OwnerIds.Contains(Context.User.Id))
+            {
+                await RespondAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
                 return;
+            }
 
             var update = new List<IGuildUser>();
             var role = ((SocketGuild)Context.Guild).GetRole(346373986604810240);
@@ -213,8 +244,11 @@ namespace TaranzaSoul.Modules.Standard
         //[Command("raidtest", RunMode = RunMode.Async)]
         public async Task CheckRaiders()
         {
-            if (Context.User.Id != 102528327251656704)
+            if (!config.OwnerIds.Contains(Context.User.Id))
+            {
+                await RespondAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
                 return;
+            }
 
             var blah = JsonStorage.DeserializeObjectFromFile<List<JsonList>>("users.json");
 

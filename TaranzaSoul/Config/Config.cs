@@ -25,8 +25,8 @@ namespace TaranzaSoul
         [JsonProperty("success_response")]
         public string SuccessResponse { get; set; } = ":thumbsup:";
 
-        [JsonProperty("owner_id")]
-        public ulong OwnerId { get; set; } = 0;
+        [JsonProperty("owner_ids")]
+        public List<ulong> OwnerIds { get; set; } = new List<ulong>();
 
         public async static Task<Config> Load()
         {
