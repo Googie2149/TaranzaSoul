@@ -28,6 +28,9 @@ namespace TaranzaSoul
         [JsonProperty("owner_ids")]
         public List<ulong> OwnerIds { get; set; } = new List<ulong>();
 
+        [JsonProperty("watched_ids")]
+        public Dictionary<ulong, string> WatchedIds { get; set; } = new Dictionary<ulong, string>();
+
         public async static Task<Config> Load()
         {
             if (File.Exists("config.json"))
