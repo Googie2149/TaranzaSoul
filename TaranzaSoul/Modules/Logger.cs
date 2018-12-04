@@ -209,25 +209,34 @@ namespace TaranzaSoul
 
                     if (user.CreatedAt.Date < DateTimeOffset.Now.AddDays(-14))
                     {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         Task.Run(async () =>
                         {
                             try
                             {
-                                var role = client.GetGuild(132720341058453504).GetRole(346373986604810240);
                                 await user.SendMessageAsync(
                                     "Welcome to the Partnered /r/Kirby Discord Server!\n" +
                                     "To help ensure the peaceful atmosphere of the server, you'll have to wait about 10 minutes until you can see the rest of the channels, " +
                                     "but until then you can familiarize yourself with <#132720402727174144> and <#361565642027171841>. We hope you enjoy your stay!");
-
-                                await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
-
-                            await user.AddRoleAsync(role);
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"Error adding role!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                                Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                            }
+
+                            try
+                            {
+                                var role = client.GetGuild(132720341058453504).GetRole(346373986604810240);
+                                await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
+
+                                await user.AddRoleAsync(role);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error adding role to {user.Id}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
                             }
                         });
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     }
                     else
                     {
@@ -239,9 +248,16 @@ namespace TaranzaSoul
                             $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
                             $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`");
 
-                        await user.SendMessageAsync("Hi, welcome to the /r/Kirby Discord server! If you're seeing this, it means **your account is new**, and as such needs to be verified before you can participate in this server. " +
-                            "Toss us a mod mail on /r/Kirby with your Discord username and we'll get you set up as soon as we can https://www.reddit.com/message/compose?to=%2Fr%2FKirby" +
-                            "\n\nIf you do not have a Reddit account, or it's new/unused, your best bet is to register your phone number on Discord, then send an online moderator a message.");
+                        try
+                        {
+                            await user.SendMessageAsync("Hi, welcome to the /r/Kirby Discord server! If you're seeing this, it means **your account is new**, and as such needs to be verified before you can participate in this server. " +
+                                "Toss us a mod mail on /r/Kirby with your Discord username and we'll get you set up as soon as we can https://www.reddit.com/message/compose?to=%2Fr%2FKirby" +
+                                "\n\nIf you do not have a Reddit account, or it's new/unused, your best bet is to register your phone number on Discord, then send an online moderator a message.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error sending new user message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                        }
                     }
                 }
             }
