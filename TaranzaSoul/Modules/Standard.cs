@@ -400,7 +400,11 @@ namespace TaranzaSoul.Modules.Standard
                     output.Append($"\n- Rolecount: {u.RoleIds.Count()}");
             }
 
-            output.Append("\n\nThe following **old** users do not have access to the server:\n");
+            await RespondAsync(output.ToString());
+
+            output.Clear();
+
+            output.Append("The following **old** users do not have access to the server:\n");
 
             foreach (var u in oldUsers)
             {
