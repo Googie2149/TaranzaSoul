@@ -385,7 +385,7 @@ namespace TaranzaSoul.Modules.Standard
 
             StringBuilder output = new StringBuilder();
 
-            output.AppendLine("The following **new** users do not have access to the server:");
+            output.AppendLine("The following **new** users do not have access to the server:\n");
 
             foreach (var u in newUsers)
             {
@@ -396,11 +396,11 @@ namespace TaranzaSoul.Modules.Standard
                     $"  - Age   `{c.Days}d {c.Hours}h {c.Minutes}m`\n" +
                     $"  - Joined `{j.Value.Days}d {j.Value.Hours}h {j.Value.Minutes}m`");
 
-                if (u.RoleIds.Count() > 0)
+                if (u.RoleIds.Where(x => x != Context.Guild.Id).Count() > 0)
                     output.Append($"\n- Rolecount: {u.RoleIds.Count()}");
             }
 
-            output.Append("\nThe following **old** users do not have access tot he server:");
+            output.Append("\n\nThe following **old** users do not have access to the server:\n");
 
             foreach (var u in oldUsers)
             {
@@ -411,7 +411,7 @@ namespace TaranzaSoul.Modules.Standard
                     $"  - Age   `{c.Days}d {c.Hours}h {c.Minutes}m`\n" +
                     $"  - Joined `{j.Value.Days}d {j.Value.Hours}h {j.Value.Minutes}m`");
 
-                if (u.RoleIds.Count() > 0)
+                if (u.RoleIds.Where(x => x != Context.Guild.Id).Count() > 0)
                     output.Append($"\n- Rolecount: {u.RoleIds.Count()}");
             }
 
