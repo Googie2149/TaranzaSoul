@@ -358,6 +358,66 @@ namespace TaranzaSoul.Modules.Standard
             await RespondAsync($"```{output.ToString()}```");
         }
 
+        [Command("checknew", RunMode = RunMode.Async)]
+        public async Task CheckNewUsers()
+        {
+            if (!config.OwnerIds.Contains(Context.User.Id))
+            {
+                await RespondAsync(":no_good::skin-tone-3: You don't have permission to run this command!");
+                return;
+            }
+
+            var newUsers = new List<IGuildUser>();
+            var oldUsers = new List<IGuildUser>();
+            var role = ((SocketGuild)Context.Guild).GetRole(346373986604810240);
+
+            foreach (var u in (Context.Guild.Users))
+            {
+                if (!u.Roles.Contains(role))
+                {
+                    if ((u.JoinedAt - u.CreatedAt.Date) < TimeSpan.FromDays(14))
+                        newUsers.Add(u);
+                    else
+                        oldUsers.Add(u);
+                }
+            }
+
+
+            StringBuilder output = new StringBuilder();
+
+            output.AppendLine("The following **new** users do not have access to the server:");
+
+            foreach (var u in newUsers)
+            {
+                var c = DateTimeOffset.Now - u.CreatedAt;
+                var j = DateTimeOffset.Now - u.JoinedAt;
+
+                output.Append($"\n{u.Mention}\n" +
+                    $"  - Age   `{c.Days}d {c.Hours}h {c.Minutes}m`\n" +
+                    $"  - Joined `{j.Value.Days}d {j.Value.Hours}h {j.Value.Minutes}m`");
+
+                if (u.RoleIds.Count() > 0)
+                    output.Append($"\n- Rolecount: {u.RoleIds.Count()}");
+            }
+
+            output.Append("\nThe following **old** users do not have access tot he server:");
+
+            foreach (var u in oldUsers)
+            {
+                var c = DateTimeOffset.Now - u.CreatedAt;
+                var j = DateTimeOffset.Now - u.JoinedAt;
+
+                output.Append($"\n{u.Mention}\n" +
+                    $"  - Age   `{c.Days}d {c.Hours}h {c.Minutes}m`\n" +
+                    $"  - Joined `{j.Value.Days}d {j.Value.Hours}h {j.Value.Minutes}m`");
+
+                if (u.RoleIds.Count() > 0)
+                    output.Append($"\n- Rolecount: {u.RoleIds.Count()}");
+            }
+
+            await RespondAsync(output.ToString());
+        }
+
         [Command("updateroles", RunMode = RunMode.Async)]
         public async Task UpdateRoles()
         {
