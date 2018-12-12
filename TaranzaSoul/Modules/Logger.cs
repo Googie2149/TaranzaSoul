@@ -356,16 +356,17 @@ namespace TaranzaSoul
                 {
                     var user = await channel.Guild.GetUserAsync(msg.Value.Author.Id);
                     //await mchannel.SendMessageAsync($"")
-                    EmbedBuilder builder = new EmbedBuilder();
-                    builder
-                        .WithTitle($"{user.Nickname ?? user.Username} said...")
-                        .WithThumbnailUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
-                        .WithColor(user.GetRoles().First().Color)
-                        .WithDescription(msg.Value.Content)
-                        .WithFooter("Please stop abusing the bots.")
-                        .WithTimestamp(msg.Value.Timestamp);
+                    await mchannel.SendMessageAsync(msg.Value.Content);
+                    //EmbedBuilder builder = new EmbedBuilder();
+                    //builder
+                    //    .WithTitle($"{user.Nickname ?? user.Username} said...")
+                    //    .WithThumbnailUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
+                    //    .WithColor(user.GetRoles().First().Color)
+                    //    .WithDescription(msg.Value.Content)
+                    //    .WithFooter("Please stop abusing the bots.")
+                    //    .WithTimestamp(msg.Value.Timestamp);
 
-                    await mchannel.SendMessageAsync(embed: builder.Build());
+                    //await mchannel.SendMessageAsync(embed: builder.Build());
                 }
             }
         }
