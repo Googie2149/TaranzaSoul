@@ -355,7 +355,7 @@ namespace TaranzaSoul
                 if (msg.HasValue && msg.Value.Content.ToLower().StartsWith("!say"))
                 {
                     var user = await channel.Guild.GetUserAsync(msg.Value.Author.Id);
-                    var role = user.GetRoles().OrderBy(x => x.Position).First();
+                    var role = user.GetRoles().OrderBy(x => x.Position).Last();
                     //await mchannel.SendMessageAsync($"")
                     //await mchannel.SendMessageAsync(msg.Value.Content);
                     EmbedBuilder builder = new EmbedBuilder();
