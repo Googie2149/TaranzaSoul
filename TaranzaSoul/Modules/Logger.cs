@@ -93,7 +93,7 @@ namespace TaranzaSoul
 
             client.MessageReceived += MessagesPLSWORK;
             //client.MessageUpdated += Client_MessageUpdated;
-            //client.MessageDeleted += Client_MessageDeleted;
+            client.MessageDeleted += Client_MessageDeleted;
 
             //client.UserUpdated += Client_UserUpdated;
             //client.GuildMemberUpdated += Client_GuildMemberUpdated;
@@ -293,7 +293,7 @@ namespace TaranzaSoul
         //                $"**New:** {after.Username}#{after.Discriminator}");
         //    }
         //}
-        
+
         //private async Task Client_MessageUpdated(Cacheable<IMessage, ulong> ebore, SocketMessage after, ISocketMessageChannel mchannel)
         //{
         //    if ((mchannel as IGuildChannel) == null) return;
@@ -343,6 +343,32 @@ namespace TaranzaSoul
         //        }
         //    }
         //}
+
+        private async Task Client_MessageDeleted(Cacheable<IMessage, ulong> msg, ISocketMessageChannel mchannel)
+        {
+            if ((mchannel as IGuildChannel) == null) return;
+
+            IGuildChannel channel = (mchannel as IGuildChannel);
+
+            if (channel.GuildId == 132720341058453504)
+            {
+                if (msg.HasValue && msg.Value.Content.ToLower().StartsWith("!say"))
+                {
+                    var user = await channel.Guild.GetUserAsync(msg.Value.Author.Id);
+                    //await mchannel.SendMessageAsync($"")
+                    EmbedBuilder builder = new EmbedBuilder();
+                    builder
+                        .WithTitle($"{user.Nickname ?? user.Username} said...")
+                        .WithThumbnailUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
+                        .WithColor(user.GetRoles().First().Color)
+                        .WithDescription(msg.Value.Content)
+                        .WithFooter("Please stop abusing the bots.")
+                        .WithTimestamp(msg.Value.Timestamp);
+
+                    await mchannel.SendMessageAsync(embed: builder.Build());
+                }
+            }
+        }
 
         public async Task MessagesPLSWORK(SocketMessage pMsg)
         {
