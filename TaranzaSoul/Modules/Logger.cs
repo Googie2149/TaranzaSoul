@@ -355,22 +355,18 @@ namespace TaranzaSoul
                 if (msg.HasValue && msg.Value.Content.ToLower().StartsWith("!say"))
                 {
                     var user = await channel.Guild.GetUserAsync(msg.Value.Author.Id);
-                    var role = user.GetRoles().Where(x => x.Color != Color.Default).OrderBy(x => x.Position).First();
-                    //await mchannel.SendMessageAsync($"")
-                    //await mchannel.SendMessageAsync(msg.Value.Content);
+                    var role = user.GetRoles().Where(x => x.Color != Color.Default).OrderBy(x => x.Position).Last();
                     EmbedBuilder builder = new EmbedBuilder();
                     EmbedAuthorBuilder authorBuilder = new EmbedAuthorBuilder();
 
                     await mchannel.SendMessageAsync(embed:
                     builder
-                        //.WithTitle($"{user.Nickname ?? user.Username} said...")
-                        //.WithThumbnailUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
                         .WithAuthor(
                             authorBuilder.WithIconUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
                             .WithName($"{user.Nickname ?? user.Username} said...")
                             )
                         .WithColor(role.Color)
-                        .WithDescription(msg.Value.Content + $"\n{role.Name}")
+                        .WithDescription(msg.Value.Content)
                         .WithFooter("Please stop abusing the bots.")
                         .WithTimestamp(msg.Value.Timestamp)
                         .Build()
