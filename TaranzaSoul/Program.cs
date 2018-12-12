@@ -33,7 +33,8 @@ namespace TaranzaSoul
             {
                 //WebSocketProvider = WS4NetProvider.Instance,
                 LogLevel = LogSeverity.Verbose,
-                AlwaysDownloadUsers = true
+                AlwaysDownloadUsers = true,
+                MessageCacheSize = 100
             });
             socketClient.Log += Log;
 
