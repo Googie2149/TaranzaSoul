@@ -349,7 +349,7 @@ namespace TaranzaSoul
             if ((mchannel as IGuildChannel) == null) return;
 
             IGuildChannel channel = (mchannel as IGuildChannel);
-
+            
             if (channel.GuildId == 132720341058453504)
             {
                 if (msg.HasValue && msg.Value.Content.ToLower().StartsWith("!say"))
@@ -360,8 +360,9 @@ namespace TaranzaSoul
                     EmbedBuilder builder = new EmbedBuilder();
                     builder
                         .WithTitle($"{user.Nickname ?? user.Username} said...")
-                        .WithThumbnailUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
-                        .WithColor(user.GetRoles().First().Color)
+                        //.WithThumbnailUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
+                        .WithAuthor(user)
+                        .WithColor(user.GetRoles().LastOrDefault().Color)
                         .WithDescription(msg.Value.Content)
                         .WithFooter("Please stop abusing the bots.")
                         .WithTimestamp(msg.Value.Timestamp);
