@@ -91,19 +91,11 @@ namespace TaranzaSoul
             config = _services.GetService<Config>();
             services = _services;
 
-            client.MessageReceived += MessagesPLSWORK;
-            //client.MessageUpdated += Client_MessageUpdated;
-            client.MessageDeleted += Client_MessageDeleted;
-
-            //client.UserUpdated += Client_UserUpdated;
-            //client.GuildMemberUpdated += Client_GuildMemberUpdated;
-
+            client.MessageReceived += DMResponse;
+            
             client.UserJoined += Client_UserJoined;
             client.UserLeft += Client_UserLeft;
-
-            //client.UserBanned += Client_UserBanned;
-            //client.UserUnbanned += Client_UserUnbanned;
-
+            
             //Task.Run(async () =>
             //{
             //    while (true)
@@ -126,28 +118,6 @@ namespace TaranzaSoul
             //        await Task.Delay(20 * 1000);
             //    }
             //});
-        }
-
-        private async Task Client_UserUnbanned(SocketUser user, SocketGuild guild)
-        {
-            if (guild.Id == 132720341058453504)
-            {
-                await (client.GetGuild(132720341058453504).GetChannel(267377140859797515) as ISocketMessageChannel)
-                    .SendMessageAsync($":shrug::skin-tone-3: " +
-                    $"**User Unbanned** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
-                    $"{user.Username}#{user.Discriminator} ({user.Id})");
-            }
-        }
-
-        private async Task Client_UserBanned(SocketUser user, SocketGuild guild)
-        {
-            if (guild.Id == 132720341058453504)
-            {
-                await (client.GetGuild(132720341058453504).GetChannel(267377140859797515) as ISocketMessageChannel)
-                    .SendMessageAsync($"<:banneDDD:270669936752328704> " +
-                    $"**User Banned** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
-                    $"{user.Username}#{user.Discriminator} ({user.Id})");
-            }
         }
 
         private async Task Client_UserLeft(SocketGuildUser user)
@@ -194,15 +164,7 @@ namespace TaranzaSoul
 
                     await (client.GetGuild(132720341058453504).GetChannel(267377140859797515) as ISocketMessageChannel)
                         .SendMessageAsync(message);
-
-
-
-
-                    //if (user.Id == 144980421501911040) // splash
-                    //{
-                    //    await user.AddRoleAsync(client.GetGuild(132720341058453504).GetRole(250643101675159552));
-                    //}
-
+                    
                     if (user.Guild.VerificationLevel < VerificationLevel.Extreme)
                         return;
 
@@ -265,116 +227,8 @@ namespace TaranzaSoul
                 Log(ex);
             }
         }
-
-        //private async Task Client_GuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
-        //{
-        //    if (before.Guild.Id == 132720341058453504)
-        //    {
-        //        if (before.Nickname != after.Nickname)
-        //            await (client.GetGuild(132720341058453504).GetChannel(361367393462910978) as ISocketMessageChannel)
-        //                .SendMessageAsync($":cartwheel: " +
-        //                $"**Nickname Changed** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
-        //                $"**User:** {before.Username}#{before.Discriminator} ({before.Id})\n" +
-        //                $"**Old:** {((before.Nickname == null) ? "`none`" : before.Nickname)}\n" +
-        //                $"**New:** {((after.Nickname == null) ? "`none`" : after.Nickname)}");
-        //    }
-        //}
-
-        //private async Task Client_UserUpdated(SocketUser before, SocketUser after)
-        //{
-        //    if (client.GetGuild(132720341058453504).Users.Contains(before))
-        //    {
-        //        if (before.Username != after.Username)
-        //            await (client.GetGuild(132720341058453504).GetChannel(361367393462910978) as ISocketMessageChannel)
-        //                .SendMessageAsync($":name_badge: " +
-        //                $"**Username Changed** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
-        //                $"**User:** {before.Username}#{before.Discriminator} ({before.Id})\n" +
-        //                $"**New:** {after.Username}#{after.Discriminator}");
-        //    }
-        //}
-
-        //private async Task Client_MessageUpdated(Cacheable<IMessage, ulong> ebore, SocketMessage after, ISocketMessageChannel mchannel)
-        //{
-        //    if ((mchannel as IGuildChannel) == null) return;
-
-        //    IGuildChannel channel = (mchannel as IGuildChannel);
-
-        //    if (channel.GuildId == 132720341058453504)
-        //    {
-        //        if (MessageLogs.ContainsKey(after.Id) && MessageLogs[after.Id].RawText != after.Content)
-        //        {
-        //            await ((await channel.Guild.GetChannelAsync(346371452620111872)) as ISocketMessageChannel)
-        //                .SendMessageAsync($":pencil: " +
-        //                $"**Message Edited** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
-        //                $"**User:** {after.Author.Username}#{after.Author.Discriminator} ({after.Author.Id})\n" +
-        //                $"**Channel:**<#{channel.Id}>\n" +
-        //                $"**Original send time:** `{MessageLogs[after.Id].Timestamp.ToLocalTime().ToString("d")} {MessageLogs[after.Id].Timestamp.ToLocalTime().ToString("T")}`\n" +
-        //                $"**Old:** {MessageLogs[after.Id].RawText}\n" +
-        //                $"**New:** {after.Content}");
-
-        //            MessageLogs[after.Id] = new StoredMessage((SocketUserMessage)after);
-        //        }
-        //    }
-        //}
-
-        //private async Task Client_MessageDeleted(Cacheable<IMessage, ulong> msg, ISocketMessageChannel mchannel)
-        //{
-        //    if ((mchannel as IGuildChannel) == null) return;
-
-        //    IGuildChannel channel = (mchannel as IGuildChannel);
-
-        //    if (channel.GuildId == 132720341058453504)
-        //    {
-        //        if (MessageLogs.ContainsKey(msg.Id) && MessageLogs[msg.Id].Timestamp.ToUniversalTime() > DateTimeOffset.UtcNow.AddSeconds(-45))
-        //        {
-        //            await ((await channel.Guild.GetChannelAsync(346371452620111872)) as ISocketMessageChannel)
-        //                .SendMessageAsync($":x: " +
-        //                $"**Message Deleted** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
-        //                $"**User:** {MessageLogs[msg.Id].User.Username}#{MessageLogs[msg.Id].User.Discriminator} ({MessageLogs[msg.Id].User.Id})\n" +
-        //                $"**Channel:**<#{channel.Id}>\n" +
-        //                $"**Original send time:** `{MessageLogs[msg.Id].Timestamp.ToLocalTime().ToString("d")} {MessageLogs[msg.Id].Timestamp.ToLocalTime().ToString("T")}`\n" +
-        //                $"{((MessageLogs[msg.Id].MentionedUsers.Count > 0) ? $"**Mentioned Users:** {MessageLogs[msg.Id].MentionedUsers.Count}\n" : "")}" +
-        //                $"{((MessageLogs[msg.Id].MentionedRoles.Count > 0) ? $"**Mentioned Roles:** {MessageLogs[msg.Id].MentionedRoles.Count}\n" : "")}" +
-        //                $"{((MessageLogs[msg.Id].Attachments.Count() > 0) ? $"**Attachments:** {MessageLogs[msg.Id].Attachments.Count()}\n{string.Join("\n", MessageLogs[msg.Id].Attachments.Select(x => $"<{x.Url}>"))}\n" : "")}" +
-        //                $"{((MessageLogs[msg.Id].RawText.Length > 0) ? $"**Message:** {MessageLogs[msg.Id].RawText}" : "")}");
-
-        //            MessageLogs.Remove(msg.Id);
-        //        }
-        //    }
-        //}
-
-        private async Task Client_MessageDeleted(Cacheable<IMessage, ulong> msg, ISocketMessageChannel mchannel)
-        {
-            if ((mchannel as IGuildChannel) == null) return;
-
-            IGuildChannel channel = (mchannel as IGuildChannel);
-            
-            if (channel.GuildId == 132720341058453504)
-            {
-                if (msg.HasValue && msg.Value.Content.ToLower().StartsWith("!say"))
-                {
-                    var user = await channel.Guild.GetUserAsync(msg.Value.Author.Id);
-                    var role = user.GetRoles().Where(x => x.Color != Color.Default).OrderBy(x => x.Position).Last();
-                    EmbedBuilder builder = new EmbedBuilder();
-                    EmbedAuthorBuilder authorBuilder = new EmbedAuthorBuilder();
-
-                    await mchannel.SendMessageAsync(embed:
-                    builder
-                        .WithAuthor(
-                            authorBuilder.WithIconUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
-                            .WithName($"{user.Nickname ?? user.Username} said...")
-                            )
-                        .WithColor(role.Color)
-                        .WithDescription(msg.Value.Content)
-                        .WithFooter("Please stop abusing the bots.")
-                        .WithTimestamp(msg.Value.Timestamp)
-                        .Build()
-                            );
-                }
-            }
-        }
         
-        public async Task MessagesPLSWORK(SocketMessage pMsg)
+        public async Task DMResponse(SocketMessage pMsg)
         {
             if (!(pMsg is SocketUserMessage message)) return;
 
@@ -391,53 +245,7 @@ namespace TaranzaSoul
 
                 return;
             }
-            
-            //IGuildChannel channel = (message.Channel as IGuildChannel);
-
-            //if (channel.GuildId == 132720341058453504)
-            //{
-            //    MessageLogs.Add(message.Id, new StoredMessage(message));
-
-            //    if (message.MentionedRoles.Select(x => x.Id).ToList().Contains(132721372848848896))
-            //    {
-            //        await ((await channel.Guild.GetChannelAsync(267377140859797515)) as ISocketMessageChannel)
-            //            .SendMessageAsync($":information_desk_person::skin-tone-3: " +
-            //            $"**Mod mention** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
-            //            $"**User:** {message.Author.Username}#{message.Author.Discriminator} ({message.Author.Id})\n" +
-            //            $"**Message:** {message.Content.Replace(channel.Guild.GetRole(132721372848848896).Mention, "@" + channel.Guild.GetRole(132721372848848896).Name)}");
-            //    }
-            //}
         }
     }
-
-    //public class StoredMessage
-    //{
-    //    public ulong Id;
-    //    public SocketGuildChannel Channel;
-    //    public SocketUser User;
-    //    public string RawText;
-    //    public DateTimeOffset Timestamp;
-    //    public DateTimeOffset? EditedTimestamp;
-    //    public List<Attachment> Attachments;
-    //    public List<Embed> Embeds;
-    //    public List<SocketUser> MentionedUsers;
-    //    public List<SocketGuildChannel> MentionedChannels;
-    //    public List<SocketRole> MentionedRoles;
-
-    //    public StoredMessage(SocketUserMessage input)
-    //    {
-    //        Id = input.Id;
-    //        Channel = (SocketGuildChannel)input.Channel;
-    //        User = input.Author;
-    //        RawText = input.Content;
-    //        Timestamp = input.Timestamp;
-    //        EditedTimestamp = input.EditedTimestamp;
-    //        Attachments = input.Attachments.ToList();
-    //        Embeds = input.Embeds.ToList();
-    //        MentionedUsers = input.MentionedUsers.ToList();
-    //        MentionedChannels = input.MentionedChannels.ToList();
-    //        MentionedRoles = input.MentionedRoles.ToList();
-    //    }
-    //}
 }
 
