@@ -374,6 +374,8 @@ namespace TaranzaSoul
             }
         }
 
+        private List<ulong> seenUsers = new List<ulong>();
+
         public async Task MessagesPLSWORK(SocketMessage pMsg)
         {
             if (!(pMsg is SocketUserMessage message)) return;
@@ -385,7 +387,7 @@ namespace TaranzaSoul
             {
                 if (!messagedUsers.Contains(message.Author.Id))
                 {
-                    await message.Channel.SendMessageAsync("I am a utility bot for /r/Kirby. I have no commands, and am otherwise useless in DMs. If you have any questions, message the owner of this bot, Googie2149#2149.");
+                    await message.Channel.SendMessageAsync("I am a utility bot for /r/Kirby. I have no commands, and am otherwise useless in DMs. If you have any questions, please message an online moderator.");
                     messagedUsers.Add(message.Author.Id);
                 }
 
