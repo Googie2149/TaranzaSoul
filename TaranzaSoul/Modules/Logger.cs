@@ -124,7 +124,7 @@ namespace TaranzaSoul
         {
             try
             {
-                if (user.Guild.Id == 132720341058453504)
+                if (user.Guild.Id == config.HomeGuildId)
                 {
                     string message = $":door: " +
                         $"**User Left** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
@@ -133,10 +133,13 @@ namespace TaranzaSoul
 
                     if (config.WatchedIds.ContainsKey(user.Id))
                     {
-                        message = $"{message}\n<@&451057945044582400> That user was flagged! {config.WatchedIds[user.Id]}";
+                        if (config.AlternateStaffMention)
+                            message = $"{message}\n<@&{config.AlternateStaffId}> That user was flagged! {config.WatchedIds[user.Id]}";
+                        else
+                            message = $"{message}\n<@&{config.StaffId}> That user was flagged! {config.WatchedIds[user.Id]}";
                     }
 
-                    await (client.GetGuild(132720341058453504).GetChannel(267377140859797515) as ISocketMessageChannel)
+                    await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
                         .SendMessageAsync(message);
                 }
             }
@@ -150,7 +153,7 @@ namespace TaranzaSoul
         {
             try
             {
-                if (user.Guild.Id == 132720341058453504)
+                if (user.Guild.Id == config.HomeGuildId)
                 {
                     string message = $":wave: " +
                         $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
@@ -159,17 +162,20 @@ namespace TaranzaSoul
 
                     if (config.WatchedIds.ContainsKey(user.Id))
                     {
-                        message = $"{message}\n<@&451057945044582400> This user has been flagged! {config.WatchedIds[user.Id]}";
+                        if (config.AlternateStaffMention)
+                            message = $"{message}\n<@&{config.AlternateStaffId}> This user has been flagged! {config.WatchedIds[user.Id]}";
+                        else
+                            message = $"{message}\n<@&{config.StaffId}> This user has been flagged! {config.WatchedIds[user.Id]}";
                     }
 
-                    await (client.GetGuild(132720341058453504).GetChannel(267377140859797515) as ISocketMessageChannel)
+                    await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
                         .SendMessageAsync(message);
                     
                     if (user.Guild.VerificationLevel < VerificationLevel.Extreme)
                         return;
 
 
-                    if (user.CreatedAt.Date < DateTimeOffset.Now.AddDays(-14))
+                    if (user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1))
                     {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         Task.Run(async () =>
@@ -188,7 +194,7 @@ namespace TaranzaSoul
 
                             try
                             {
-                                var role = client.GetGuild(132720341058453504).GetRole(346373986604810240);
+                                var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
                                 await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
 
                                 await user.AddRoleAsync(role);
@@ -204,7 +210,7 @@ namespace TaranzaSoul
                     {
                         await Task.Delay(1000);
 
-                        await (client.GetGuild(132720341058453504).GetChannel(346371601564172298) as ISocketMessageChannel)
+                        await (client.GetGuild(config.HomeGuildId).GetChannel(config.FilteredChannelId) as ISocketMessageChannel)
                             .SendMessageAsync($"<:marxist_think:305877855366152193> " +
                             $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                             $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
@@ -235,11 +241,18 @@ namespace TaranzaSoul
             if (pMsg.Author.Id == client.CurrentUser.Id) return;
             if (message.Author.IsBot) return;
 
+            var name = client.GetGuild(config.HomeGuildId)?.Name;
+
+            if (name == null)
+                // TODO: Add an error log here, we're not in our home guild anymore.
+                return;
+
             if ((message.Channel as IGuildChannel) == null)
             {
                 if (!messagedUsers.Contains(message.Author.Id))
                 {
-                    await message.Channel.SendMessageAsync("I am a utility bot for /r/Kirby. I have no commands, and am otherwise useless in DMs. If you have any questions, please message an online moderator.");
+                    await message.Channel.SendMessageAsync($"I am a utility bot for {name}. I have no commands, and am otherwise useless in DMs.\n" +
+                        $"If you have any questions, please message an online moderator.");
                     messagedUsers.Add(message.Author.Id);
                 }
 

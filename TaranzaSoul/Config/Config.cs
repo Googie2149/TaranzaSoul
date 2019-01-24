@@ -25,6 +25,30 @@ namespace TaranzaSoul
         [JsonProperty("success_response")]
         public string SuccessResponse { get; set; } = ":thumbsup:";
 
+        [JsonProperty("guild_id")]
+        public ulong HomeGuildId { get; set; }
+
+        [JsonProperty("log_channel")]
+        public ulong MainChannelId { get; set; }
+
+        [JsonProperty("filtered_channel")]
+        public ulong FilteredChannelId { get; set; }
+
+        [JsonProperty("access_role")]
+        public ulong AccessRoleId { get; set; }
+
+        [JsonProperty("staff_role")]
+        public ulong StaffId { get; set; }
+
+        [JsonProperty("staff_role_secondary_mention")]
+        public bool AlternateStaffMention { get; set; } = false;
+
+        [JsonProperty("staff_mention_role")]
+        public ulong AlternateStaffId { get; set; } = 0;
+
+        [JsonProperty("minimum_age")]
+        public int MinimumAccountAge { get; set; } = 14; // Age in days
+
         [JsonProperty("owner_ids")]
         public List<ulong> OwnerIds { get; set; } = new List<ulong>();
 
