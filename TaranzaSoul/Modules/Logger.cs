@@ -197,6 +197,10 @@ namespace TaranzaSoul
                                 var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
                                 await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
 
+                                if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
+                                    Console.WriteLine("This user isn't in the server anymore!");
+                                    return;
+
                                 await user.AddRoleAsync(role);
                             }
                             catch (Exception ex)
