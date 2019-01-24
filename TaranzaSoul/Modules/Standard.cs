@@ -31,9 +31,7 @@ namespace TaranzaSoul.Modules.Standard
             services = _services;
             config = _config;
         }
-
         
-
         [Command("help")]
         public async Task HelpCommand()
         {
