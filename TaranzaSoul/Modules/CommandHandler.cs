@@ -26,7 +26,6 @@ namespace TaranzaSoul
             // Create Command Service, inject it into Dependency Map
             client = _services.GetService<DiscordSocketClient>();
             commands = new CommandService();
-            //_map.Add(commands);
             services = _services;
             config = _services.GetService<Config>();
 
@@ -46,7 +45,6 @@ namespace TaranzaSoul
             // Mark where the prefix ends and the command begins
             int argPos = 0;
             // Determine if the message has a valid prefix, adjust argPos 
-            //if (!(message.HasMentionPrefix(client.CurrentUser, ref argPos) || message.HasCharPrefix('!', ref argPos))) return;
             if (!ParseTriggers(message, ref argPos)) return;
 
             // Create a Command Context
@@ -60,56 +58,7 @@ namespace TaranzaSoul
             //if (!result.IsSuccess)
             //    await message.Channel.SendMessageAsync($"**Error:** {result.ErrorReason}");
         }
-
-        //private readonly IDependencyMap _map;
-        //private readonly CommandService _commands;
-        //private readonly DiscordSocketClient _client;
-        //private readonly Config _config;
-
-        //public CommandHandler(DependencyMap map)
-        //{
-        //    _map = map;
-        //    _client = _map.Get<DiscordSocketClient>();
-        //    _client.MessageReceived += ProcessCommandAsync;
-        //    _commands = _map.Get<CommandService>();
-        //    _config = _map.Get<Config>();
-        //}
-
-        //public async Task ConfigureAsync()
-        //{
-        //    await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
-        //}
-
-        //private async Task ProcessCommandAsync(SocketMessage pMsg)
-        //{
-        //    var message = pMsg as SocketUserMessage;
-        //    if (message == null) return;
-        //    if (message.Content.StartsWith("##")) return;
-
-        //    int argPos = 0;
-        //    if (!ParseTriggers(message, ref argPos)) return;
-
-        //    var context = new SocketCommandContext(_client, message);
-        //    var result = await _commands.ExecuteAsync(context, argPos, _map);
-        //    if (result is SearchResult search && !search.IsSuccess)
-        //    {
-        //        await message.AddReactionAsync(UnicodeEmoji.FromText(":mag_right:"));
-        //    }
-        //    else if (result is PreconditionResult precondition && !precondition.IsSuccess)
-        //        await message.AddReactionAsync(UnicodeEmoji.FromText(":no_entry:"));
-        //    else if (result is ParseResult parse && !parse.IsSuccess)
-        //        await message.Channel.SendMessageAsync($"**Parse Error:** {parse.ErrorReason}");
-        //    else if (result is TypeReaderResult reader && !reader.IsSuccess)
-        //        await message.Channel.SendMessageAsync($"**Read Error:** {reader.ErrorReason}");
-        //    else if (result is ExecuteResult execute && !execute.IsSuccess)
-        //    {
-        //        await message.AddReactionAsync(UnicodeEmoji.FromText(":loudspeaker:"));
-        //        await message.Channel.SendMessageAsync($"**Error:** {execute.ErrorReason}");
-        //    }
-        //    else if (!result.IsSuccess)
-        //        await message.AddReactionAsync(UnicodeEmoji.FromText(":rage:"));
-        //}
-
+        
         private bool ParseTriggers(SocketUserMessage message, ref int argPos)
         {
             bool flag = false;

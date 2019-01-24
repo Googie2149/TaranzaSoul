@@ -36,12 +36,6 @@ namespace TaranzaSoul
                     await Task.Delay(1000);
                 }
             }
-
-            //string serializedJson = JsonConvert.SerializeObject(obj);
-
-            //StreamWriter sw = new StreamWriter(fileName, false);
-            //sw.Write(serializedJson);
-            //sw.Close();
         }
 
         public static T DeserializeObjectFromFile<T>(string fileName)
@@ -55,11 +49,7 @@ namespace TaranzaSoul
                 throw new FileNotFoundException($"{fileName} is missing.");
 
             #endregion
-
-            //StreamReader sr = new StreamReader(fileName);
-            //string serializedJson = sr.ReadToEnd();
-            //sr.Close();
-
+            
             return JsonConvert.DeserializeObject<T>(File.ReadAllText(fileName));
         }
     }
