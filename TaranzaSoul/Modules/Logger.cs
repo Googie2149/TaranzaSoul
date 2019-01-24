@@ -373,9 +373,7 @@ namespace TaranzaSoul
                 }
             }
         }
-
-        private List<ulong> seenUsers = new List<ulong>();
-
+        
         public async Task MessagesPLSWORK(SocketMessage pMsg)
         {
             if (!(pMsg is SocketUserMessage message)) return;
