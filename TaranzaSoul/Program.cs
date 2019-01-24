@@ -31,7 +31,6 @@ namespace TaranzaSoul
         {
             socketClient = new DiscordSocketClient(new DiscordSocketConfig
             {
-                //WebSocketProvider = WS4NetProvider.Instance,
                 LogLevel = LogSeverity.Verbose,
                 AlwaysDownloadUsers = true,
                 MessageCacheSize = 100
@@ -93,8 +92,6 @@ namespace TaranzaSoul
             {
                 Console.WriteLine($"{ex.Source}\n{ex.Message}\n{ex.StackTrace}");
             }
-
-            //await Task.Delay(3000);
 
             //var avatar = new Image(File.OpenRead(".\\TaranzaSOUL.png"));
             //await client.CurrentUser.ModifyAsync(x => x.Avatar = avatar);
