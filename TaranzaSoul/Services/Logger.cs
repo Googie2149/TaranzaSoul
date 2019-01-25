@@ -25,6 +25,7 @@ namespace TaranzaSoul
         private DiscordSocketClient client;
         private IServiceProvider services;
         private Config config;
+        private DatabaseHelper dbhelper;
 
         private Dictionary<ulong, Dictionary<ulong, DateTime>> cooldown = new Dictionary<ulong, Dictionary<ulong, DateTime>>();
         private Dictionary<string, Dictionary<ulong, string>> lastImage = new Dictionary<string, Dictionary<ulong, string>>();
@@ -87,6 +88,7 @@ namespace TaranzaSoul
         {
             client = _services.GetService<DiscordSocketClient>();
             config = _services.GetService<Config>();
+            dbhelper = _services.GetService<DatabaseHelper>();
             services = _services;
 
             client.MessageReceived += DMResponse;
@@ -124,6 +126,15 @@ namespace TaranzaSoul
             {
                 if (user.Guild.Id == config.HomeGuildId)
                 {
+                    await Task.Delay(1000);
+
+                    var logs = user.Guild.GetAuditLogsAsync(5);
+                    
+                    foreach(var log in logs.GetEnumerator().Current)
+                    {
+                        Console.WriteLine($"BLAH {log.Reason}");
+                    }
+
                     string message = $":door: " +
                         $"**User Left** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                         $"{user.Username}#{user.Discriminator} ({user.Id})" +
@@ -172,7 +183,42 @@ namespace TaranzaSoul
                     if (user.Guild.VerificationLevel < VerificationLevel.Extreme)
                         return;
 
+                    //LoggedUser loggedUser = await dbhelper.GetLoggedUser(user.Id);
 
+                    //if (loggedUser == null)
+                    //{
+                    //    loggedUser = await dbhelper.AddLoggedUser(user.Id, newAccount: user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1));
+                    //}
+
+                    //if (loggedUser.ApprovedAccess)
+                    //{
+                    //    try
+                    //    {
+                    //        await user.SendMessageAsync(
+                    //            "Welcome back to the Partnered /r/Kirby Discord Server! We hope you enjoy your stay!");
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                    //    }
+
+                    //    try
+                    //    {
+                    //        var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
+
+                    //        if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
+                    //        {
+                    //            Console.WriteLine($"{user.Id} isn't in the server anymore!");
+                    //            return;
+                    //        }
+
+                    //        await user.AddRoleAsync(role);
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        Console.WriteLine($"Error adding role to {user.Id}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                    //    }
+                    //}
                     if (user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1))
                     {
                         Task.Run(async () =>
@@ -196,11 +242,12 @@ namespace TaranzaSoul
 
                                 if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
                                 {
-                                    Console.WriteLine("This user isn't in the server anymore!");
+                                    Console.WriteLine($"{user.Id} isn't in the server anymore!");
                                     return;
                                 }
 
                                 await user.AddRoleAsync(role);
+                                //dbhelper.AutoApproveUser(user.Id);
                             }
                             catch (Exception ex)
                             {
