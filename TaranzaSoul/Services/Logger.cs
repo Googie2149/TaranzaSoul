@@ -126,15 +126,6 @@ namespace TaranzaSoul
             {
                 if (user.Guild.Id == config.HomeGuildId)
                 {
-                    await Task.Delay(1000);
-
-                    var logs = user.Guild.GetAuditLogsAsync(5);
-                    
-                    foreach(var log in logs.GetEnumerator().Current)
-                    {
-                        Console.WriteLine($"BLAH {log.Reason}");
-                    }
-
                     string message = $":door: " +
                         $"**User Left** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                         $"{user.Username}#{user.Discriminator} ({user.Id})" +
