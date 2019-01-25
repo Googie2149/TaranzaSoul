@@ -155,107 +155,79 @@ namespace TaranzaSoul
             {
                 if (user.Guild.Id == config.HomeGuildId)
                 {
-                    using (var db = new UserLogContext())
+                    string message = $":wave: " +
+                        $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
+                        $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
+                        $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`";
+
+                    if (config.WatchedIds.ContainsKey(user.Id))
                     {
-                        var loggedUser = db.UserList.FirstOrDefault(x => x.UserId == user.Id);
-                        var watchedUser = db.WatchedUserList.FirstOrDefault(x => x.UserId == user.Id);
+                        if (config.AlternateStaffMention)
+                            message = $"{message}\n<@&{config.AlternateStaffId}> This user has been flagged! {config.WatchedIds[user.Id]}";
+                        else
+                            message = $"{message}\n<@&{config.StaffId}> This user has been flagged! {config.WatchedIds[user.Id]}";
+                    }
 
-                        if (loggedUser == null)
-                        {
-                            loggedUser = new Users { UserId = user.Id, ApprovedAccess = false, NewAccount = user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1) };
-                            db.UserList.Add(loggedUser);
-                            await db.SaveChangesAsync();
-                            Console.WriteLine($"Added {user.Id} to database");
-                        }
-
-                        string message = $":wave: " +
-                            $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
-                            $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
-                            $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`";
-
-                        if (watchedUser != null)
-                        {
-                            if (config.AlternateStaffMention)
-                                message = $"{message}\n<@&{config.AlternateStaffId}> This user has been flagged! {watchedUser.Reason}";
-                            else
-                                message = $"{message}\n<@&{config.StaffId}> This user has been flagged! {watchedUser.Reason}";
-                        }
-
-                        await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
-                            .SendMessageAsync(message);
+                    await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
+                        .SendMessageAsync(message);
                     
-                        if (user.Guild.VerificationLevel < VerificationLevel.Extreme)
-                            return;
+                    if (user.Guild.VerificationLevel < VerificationLevel.Extreme)
+                        return;
 
-                        if (loggedUser.ApprovedAccess)
+
+                    if (user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1))
+                    {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        Task.Run(async () =>
                         {
                             try
                             {
-                                await user.SendMessageAsync("Welcome back to the Partnered /r/Kirby Discord Server!");
+                                await user.SendMessageAsync(
+                                    "Welcome to the Partnered /r/Kirby Discord Server!\n" +
+                                    "To help ensure the peaceful atmosphere of the server, you'll have to wait about 10 minutes until you can see the rest of the channels, " +
+                                    "but until then you can familiarize yourself with <#132720402727174144> and <#361565642027171841>. We hope you enjoy your stay!");
                             }
                             catch (Exception ex)
                             {
                                 Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
                             }
 
-                            var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
-                        }
-                        else if (!loggedUser.NewAccount)
-                        {
-    #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                            Task.Run(async () =>
-                            {
-                                try
-                                {
-                                    await user.SendMessageAsync(
-                                        "Welcome to the Partnered /r/Kirby Discord Server!\n" +
-                                        "To help ensure the peaceful atmosphere of the server, you'll have to wait about 10 minutes until you can see the rest of the channels, " +
-                                        "but until then you can familiarize yourself with <#132720402727174144> and <#361565642027171841>. We hope you enjoy your stay!");
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
-                                }
-
-                                try
-                                {
-                                    var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
-                                    await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
-
-                                    if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
-                                    {
-                                        Console.WriteLine("This user isn't in the server anymore!");
-                                        return;
-                                    }
-
-                                    await user.AddRoleAsync(role);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine($"Error adding role to {user.Id}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
-                                }
-                            });
-    #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                        }
-                        else
-                        {
-                            await Task.Delay(1000);
-
-                            await (client.GetGuild(config.HomeGuildId).GetChannel(config.FilteredChannelId) as ISocketMessageChannel)
-                                .SendMessageAsync($"<:marxist_think:305877855366152193> " +
-                                $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
-                                $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
-                                $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`");
-
                             try
                             {
-                                await user.SendMessageAsync("Hi, welcome to the /r/Kirby Discord server! If you're seeing this, it means **your account is new**, and as such needs to be verified before you can participate in this server. " +
-                                    "Toss us a mod mail on /r/Kirby with your Discord username and we'll get you set up as soon as we can https://www.reddit.com/message/compose?to=%2Fr%2FKirby");
+                                var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
+                                await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
+
+                                if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
+                                    Console.WriteLine("This user isn't in the server anymore!");
+                                    return;
+
+                                await user.AddRoleAsync(role);
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"Error sending new user message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                                Console.WriteLine($"Error adding role to {user.Id}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
                             }
+                        });
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    }
+                    else
+                    {
+                        await Task.Delay(1000);
+
+                        await (client.GetGuild(config.HomeGuildId).GetChannel(config.FilteredChannelId) as ISocketMessageChannel)
+                            .SendMessageAsync($"<:marxist_think:305877855366152193> " +
+                            $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
+                            $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
+                            $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`");
+
+                        try
+                        {
+                            await user.SendMessageAsync("Hi, welcome to the /r/Kirby Discord server! If you're seeing this, it means **your account is new**, and as such needs to be verified before you can participate in this server. " +
+                                "Toss us a mod mail on /r/Kirby with your Discord username and we'll get you set up as soon as we can https://www.reddit.com/message/compose?to=%2Fr%2FKirby");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error sending new user message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
                         }
                     }
                 }
