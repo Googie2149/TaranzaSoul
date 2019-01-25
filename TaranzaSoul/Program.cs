@@ -23,6 +23,7 @@ namespace TaranzaSoul
         private Config config;
         private CommandHandler handler;
         private Logger logger;
+        private DatabaseHelper dbhelper;
         private List<string> SpoilerWords = new List<string>();
         private Dictionary<string, ulong> RoleColors = new Dictionary<string, ulong>();
         private ulong updateChannel = 0;
@@ -76,6 +77,8 @@ namespace TaranzaSoul
 
             logger = new Logger();
             await logger.Install(map);
+            dbhelper = new DatabaseHelper();
+            await dbhelper.Install(map);
             SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
             RoleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");
 

@@ -5,6 +5,10 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1998;4014</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Discord.Addons.EmojiTools" Version="2.0.2" />
     <PackageReference Include="Discord.Net" Version="2.0.2-dev-01059" />
@@ -19,6 +23,7 @@
     <PackageReference Include="NodaTime" Version="2.4.4" />
     <PackageReference Include="RestSharp.NetCore" Version="105.2.4-rc4-24214-01" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />
     <PackageReference Include="System.IO" Version="4.3.0" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />

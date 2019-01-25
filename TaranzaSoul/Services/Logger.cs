@@ -18,8 +18,6 @@ using RestSharp;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-
 namespace TaranzaSoul
 {
     class Logger
@@ -177,7 +175,6 @@ namespace TaranzaSoul
 
                     if (user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1))
                     {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         Task.Run(async () =>
                         {
                             try
@@ -198,8 +195,10 @@ namespace TaranzaSoul
                                 await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
 
                                 if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
+                                {
                                     Console.WriteLine("This user isn't in the server anymore!");
                                     return;
+                                }
 
                                 await user.AddRoleAsync(role);
                             }
@@ -208,7 +207,6 @@ namespace TaranzaSoul
                                 Console.WriteLine($"Error adding role to {user.Id}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
                             }
                         });
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     }
                     else
                     {
