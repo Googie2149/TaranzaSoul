@@ -16,6 +16,35 @@ namespace TaranzaSoul
             ConnectionString = _services.GetService<Config>().DatabaseConnectionString;
         }
 
+        public async Task<bool> InitializeDB()
+        {
+            bool tableExists = false;
+
+            using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
+            {
+                await db.OpenAsync();
+
+                using (var cmd = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type='table' AND name='users';", db))
+                {
+                    if ((await cmd.ExecuteScalarAsync()) != null)
+                        tableExists = true;
+                }
+
+                if (!tableExists)
+                {
+                    using (var cmd = new SQLiteCommand("CREATE TABLE IF NOT EXISTS users " +
+                        "(UserId INTEGER NOT NULL PRIMARY KEY, ApprovedAccess BOOLEAN NOT NULL, NewAccount BOOLEAN NOT NULL, ApprovalModId INTEGER, ApprovalReason TEXT);", db))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                db.Close();
+            }
+
+            return tableExists;
+        }
+
         public async Task<LoggedUser> GetLoggedUser(ulong userId)
         {
             LoggedUser temp = null;
@@ -24,7 +53,7 @@ namespace TaranzaSoul
             {
                 await db.OpenAsync();
 
-                using (var cmd = new SQLiteCommand($"select * from users where UserId = @1;", db))
+                using (var cmd = new SQLiteCommand("select * from users where UserId = @1;", db))
                 {
                     cmd.Parameters.AddWithValue("@1", userId);
 
@@ -50,21 +79,22 @@ namespace TaranzaSoul
             return temp;
         }
 
-        public async Task<List<LoggedUser>> GetAllusers()
+        public async Task<Dictionary<ulong, LoggedUser>> GetAllusers()
         {
-            List<LoggedUser> temp = new List<LoggedUser>();
+            Dictionary<ulong, LoggedUser> temp = new Dictionary<ulong, LoggedUser>();
 
             using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
             {
                 await db.OpenAsync();
 
-                using (var cmd = new SQLiteCommand($"select * from users;", db))
+                using (var cmd = new SQLiteCommand("select * from users;", db))
                 {
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
-                            temp.Add(new LoggedUser()
+                            temp.Add((ulong)reader["UserId"],
+                                new LoggedUser()
                             {
                                 UserId = (ulong)reader["UserId"],
                                 ApprovedAccess = (bool)reader["ApprovedAccess"],
@@ -100,7 +130,7 @@ namespace TaranzaSoul
                 {
                     foreach (var u in users)
                     {
-                        using (var cmd = new SQLiteCommand($"insert into users (UserId, ApprovedAccess, NewAccount, ApprovalModId, ApprovalReason) values (@1, @2, @3, @4, @5);", db))
+                        using (var cmd = new SQLiteCommand("insert into users (UserId, ApprovedAccess, NewAccount, ApprovalModId, ApprovalReason) values (@1, @2, @3, @4, @5);", db))
                         {
                             cmd.Parameters.AddWithValue("@1", u.UserId);
                             cmd.Parameters.AddWithValue("@2", u.ApprovedAccess);
@@ -125,9 +155,27 @@ namespace TaranzaSoul
             {
                 await db.OpenAsync();
 
-                using (var cmd = new SQLiteCommand($"update users set ApprovedAccess = @1 where UserId = @2;", db))
+                using (var cmd = new SQLiteCommand("update users set ApprovedAccess = @1 where UserId = @2;", db))
                 {
                     cmd.Parameters.AddWithValue("@1", true);
+                    cmd.Parameters.AddWithValue("@2", userId);
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                db.Close();
+            }
+        }
+
+        public async Task RevokeApproval(ulong userId)
+        {
+            using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
+            {
+                await db.OpenAsync();
+
+                using (var cmd = new SQLiteCommand("update users set ApprovedAccess = @1 where UserId = @2;", db))
+                {
+                    cmd.Parameters.AddWithValue("@1", false);
                     cmd.Parameters.AddWithValue("@2", userId);
 
                     await cmd.ExecuteNonQueryAsync();

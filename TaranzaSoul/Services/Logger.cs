@@ -17,6 +17,7 @@ using System.IO;
 using RestSharp;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading;
 
 namespace TaranzaSoul
 {
@@ -31,6 +32,26 @@ namespace TaranzaSoul
         private Dictionary<string, Dictionary<ulong, string>> lastImage = new Dictionary<string, Dictionary<ulong, string>>();
         //private Dictionary<ulong, StoredMessage> MessageLogs = new Dictionary<ulong, StoredMessage>();
         private List<ulong> messagedUsers = new List<ulong>();
+        private bool initialized = false;
+        private bool existingTable = false;
+        private Dictionary<ulong, CancellationTokenSource> waitingUsers = new Dictionary<ulong, CancellationTokenSource>();
+
+        private const string WelcomeMessage = 
+                                "Welcome to the Partnered /r/Kirby Discord Server!\n" +
+                                "To help ensure the peaceful atmosphere of the server, you'll have to wait about 10 minutes until you can see the rest of the channels, " +
+                                "but until then you can familiarize yourself with <#132720402727174144> and <#361565642027171841>. We hope you enjoy your stay!";
+
+        private const string WelcomeBackMessage = 
+                                "Welcome back to the Partnered /r/Kirby Discord Server! We hope you enjoy your stay!";
+
+        private const string OfflineJoinWelcome =
+                                "Welcome to the Partnered /r/Kirby Discord Server!\n" +
+                                "This bot was offline when you had joined (probably another Discord outage), but you should have access to the rest of the server now.\n" +
+                                "If you haven't already, please familiarize yourself with <#132720402727174144> and <#361565642027171841>. We hope you enjoy your stay!";
+
+        private const string NewUserNotice = 
+                                "Hi, welcome to the /r/Kirby Discord server! If you're seeing this, it means **your account is new**, and as such needs to be verified before you can participate in this server. " +
+                                "Toss us a mod mail on /r/Kirby with your Discord username and we'll get you set up as soon as we can https://www.reddit.com/message/compose?to=%2Fr%2FKirby";
 
         private void Log(Exception ex)
         {
@@ -92,32 +113,196 @@ namespace TaranzaSoul
             services = _services;
 
             client.MessageReceived += DMResponse;
-            
-            client.UserJoined += Client_UserJoined;
-            client.UserLeft += Client_UserLeft;
-            
-            //Task.Run(async () =>
-            //{
-            //    while (true)
-            //    {
-            //        try
-            //        {
-            //            var temp = new Dictionary<ulong, StoredMessage>(MessageLogs);
+            client.GuildAvailable += Client_GuildAvailable;
 
-            //            foreach (var kv in temp)
-            //            {
-            //                if (kv.Value.Timestamp.ToUniversalTime() > DateTime.UtcNow.AddSeconds(-120))
-            //                    MessageLogs.Remove(kv.Key);
-            //            }
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            //_manager.Client.Log.Error("Message Logs", ex);
-            //        }
+            existingTable = await dbhelper.InitializeDB();
+        }
 
-            //        await Task.Delay(20 * 1000);
-            //    }
-            //});
+        private async Task DelayAddRole(ulong u, CancellationToken cancellationToken, double minutes = 10)
+        {
+            try
+            {
+                var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
+                //await Task.Delay(1000 * 60 * 10); 
+
+                if (minutes > 0)
+                {
+                    TimeSpan wait = TimeSpan.FromMinutes(minutes);
+
+                    for (int i = 0; i < 20; i++)
+                    {
+                        await Task.Delay(TimeSpan.FromMinutes(wait.TotalMinutes / 20));
+                        cancellationToken.ThrowIfCancellationRequested();
+                    }
+
+                    if (client.GetGuild(config.HomeGuildId).GetUser(u) == null)
+                    {
+                        Console.WriteLine($"{u} isn't in the server anymore!");
+                        return;
+                    }
+                }
+
+                await client.GetGuild(config.HomeGuildId).GetUser(u).AddRoleAsync(role, new RequestOptions() { AuditLogReason = "Automatic approval" });
+                dbhelper.AutoApproveUser(u);
+                waitingUsers.Remove(u);
+            }
+            catch (OperationCanceledException ex)
+            {
+                Console.WriteLine($"{u} left the server, ending early.");
+                waitingUsers.Remove(u);
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding role to {u}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+            }
+        }
+
+        private async Task Client_GuildAvailable(SocketGuild guild)
+        {
+            if (guild.Id == config.HomeGuildId && !initialized)
+            {
+                initialized = true;
+
+                Task.Run(async () =>
+                {
+                    await guild.DownloadUsersAsync();
+
+                    var loggedUsers = await dbhelper.GetAllusers();
+                    var role = guild.GetRole(config.AccessRoleId);
+
+                    List<LoggedUser> newUsers = new List<LoggedUser>();
+                    List<LoggedUser> unapprovedUsers = new List<LoggedUser>();
+
+                    if (existingTable)
+                    {
+                        foreach (var u in guild.Users)
+                        {
+                            if (!loggedUsers.ContainsKey(u.Id))
+                            {
+                                // We haven't seen this user yet, get to them later
+                                // Probably due to someone joining while the bot was offline
+                                
+                                // If the account is past the minimum age, just let them in. Don't bother checking the 10 minute timer.
+                                
+                                newUsers.Add(new LoggedUser() {
+                                    UserId = u.Id,
+                                    NewAccount = u.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1),
+                                    ApprovedAccess = !(u.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1))
+                                });
+
+                                continue;
+                            }
+                            else
+                            {
+                                // We have this user in the list, ensure they have the roles they should
+                                if (u.Roles.Contains(role))
+                                {
+                                    // They have access to the server
+                                    if (loggedUsers[u.Id].ApprovedAccess)
+                                        continue; // and this matches our records
+                                    else
+                                    {
+                                        // and this does not match our records
+                                        // revoke access, notify admins that someone has a role that they shouldn't
+
+                                        await u.RemoveRoleAsync(role, new RequestOptions() { AuditLogReason = "Unapproved access." });
+
+                                        string output = "";
+                                        
+                                        if (config.AlternateStaffMention)
+                                            output = $"<@&{config.AlternateStaffId}> {u.Mention} had access to the server when they shouldn't. Check audit log and see who gave them the role.";
+                                        else
+                                            output = $"<@&{config.StaffId}> {u.Mention} had access to the server when they shouldn't. Check audit log and see who gave them the role.";
+
+                                        await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
+                                            .SendMessageAsync(output);
+                                    }
+                                }
+                                else
+                                {
+                                    // They don't have the role
+                                    if (loggedUsers[u.Id].ApprovedAccess)
+                                    {
+                                        // they don't have the role when they should
+                                        // send a post to admins so this can be dealt with manualy
+
+                                        string output = "";
+
+                                        if (config.AlternateStaffMention)
+                                            output = $"<@&{config.AlternateStaffId}> {u.Mention} needs access. They've previously been approved by <@{loggedUsers[u.Id].ApprovalModId}> with the reason `{loggedUsers[u.Id].ApprovalReason}`";
+                                        else
+                                            output = $"<@&{config.StaffId}> {u.Mention} needs access. They've previously been approved by <@{loggedUsers[u.Id].ApprovalModId}> with the reason `{loggedUsers[u.Id].ApprovalReason}`";
+
+                                        await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
+                                            .SendMessageAsync(output);
+                                    }
+                                    else
+                                        continue; // and this matches our records
+                                }
+                            }
+                        }
+
+                        // Add all the new users to the database
+                        await dbhelper.BulkAddLoggedUser(newUsers);
+
+                        foreach (var u in newUsers)
+                        {
+                            if (u.NewAccount)
+                            {
+                                try
+                                {
+                                    await guild.GetUser(u.UserId).SendMessageAsync(NewUserNotice);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Error sending new user message to {u.UserId}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                                }
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    await guild.GetUser(u.UserId).SendMessageAsync(OfflineJoinWelcome);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Error sending offline user message to {u.UserId}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                                }
+
+                                CancellationTokenSource source = new CancellationTokenSource();
+                                waitingUsers.Add(u.UserId, source);
+
+                                Task.Run(async () => DelayAddRole(u.UserId, source.Token, minutes: 0), source.Token);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Fresh table, add everyone to the table
+                        List<LoggedUser> users = new List<LoggedUser>();
+
+                        foreach (var u in guild.Users)
+                        {
+                            users.Add(new LoggedUser()
+                            {
+                                UserId = u.Id,
+                                NewAccount = u.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1),
+                                ApprovedAccess = u.Roles.Contains(role)
+                            });
+                        }
+
+                        await dbhelper.BulkAddLoggedUser(users);
+                    }
+
+                    client.UserJoined += Client_UserJoined;
+                    client.UserLeft += Client_UserLeft;
+                });
+            }
+            else if (guild.Id != config.HomeGuildId)
+            {
+                await guild.LeaveAsync(); // seriously this bot is only set up to work with a single server
+            }
         }
 
         private async Task Client_UserLeft(SocketGuildUser user)
@@ -130,6 +315,9 @@ namespace TaranzaSoul
                         $"**User Left** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                         $"{user.Username}#{user.Discriminator} ({user.Id})" +
                         ((user.JoinedAt.HasValue) ? $"\nOriginal Join Date `{user.JoinedAt.Value.ToLocalTime().ToString("d")} {user.JoinedAt.Value.ToLocalTime().ToString("T")}`" : "");
+
+                    if (waitingUsers.ContainsKey(user.Id))
+                        waitingUsers[user.Id].Cancel();
 
                     if (config.WatchedIds.ContainsKey(user.Id))
                     {
@@ -174,77 +362,56 @@ namespace TaranzaSoul
                     if (user.Guild.VerificationLevel < VerificationLevel.Extreme)
                         return;
 
-                    //LoggedUser loggedUser = await dbhelper.GetLoggedUser(user.Id);
+                    LoggedUser loggedUser = await dbhelper.GetLoggedUser(user.Id);
 
-                    //if (loggedUser == null)
-                    //{
-                    //    loggedUser = await dbhelper.AddLoggedUser(user.Id, newAccount: user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1));
-                    //}
-
-                    //if (loggedUser.ApprovedAccess)
-                    //{
-                    //    try
-                    //    {
-                    //        await user.SendMessageAsync(
-                    //            "Welcome back to the Partnered /r/Kirby Discord Server! We hope you enjoy your stay!");
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-                    //        Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
-                    //    }
-
-                    //    try
-                    //    {
-                    //        var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
-
-                    //        if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
-                    //        {
-                    //            Console.WriteLine($"{user.Id} isn't in the server anymore!");
-                    //            return;
-                    //        }
-
-                    //        await user.AddRoleAsync(role);
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-                    //        Console.WriteLine($"Error adding role to {user.Id}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
-                    //    }
-                    //}
-                    if (user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1))
+                    if (loggedUser == null)
                     {
-                        Task.Run(async () =>
+                        loggedUser = await dbhelper.AddLoggedUser(user.Id, newAccount: user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1));
+                    }
+
+                    if (loggedUser.ApprovedAccess)
+                    {
+                        try
                         {
-                            try
+                            await user.SendMessageAsync(WelcomeBackMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                        }
+
+                        try
+                        {
+                            var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
+
+                            if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
                             {
-                                await user.SendMessageAsync(
-                                    "Welcome to the Partnered /r/Kirby Discord Server!\n" +
-                                    "To help ensure the peaceful atmosphere of the server, you'll have to wait about 10 minutes until you can see the rest of the channels, " +
-                                    "but until then you can familiarize yourself with <#132720402727174144> and <#361565642027171841>. We hope you enjoy your stay!");
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                                Console.WriteLine($"{user.Id} isn't in the server anymore!");
+                                return;
                             }
 
-                            try
-                            {
-                                var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
-                                await Task.Delay(1000 * 60 * 10); // wait 10 minutes to be closer to Discord's tier 3 verification level and give us a chance to react
+                            await user.AddRoleAsync(role);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error adding role to {user.Id}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                        }
+                    }
+                    else if (!loggedUser.NewAccount)
+                    {
+                        try
+                        {
+                            await user.SendMessageAsync(WelcomeMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                        }
 
-                                if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
-                                {
-                                    Console.WriteLine($"{user.Id} isn't in the server anymore!");
-                                    return;
-                                }
+                        CancellationTokenSource source = new CancellationTokenSource();
+                        waitingUsers.Add(user.Id, source);
 
-                                await user.AddRoleAsync(role);
-                                //dbhelper.AutoApproveUser(user.Id);
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"Error adding role to {user.Id}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
-                            }
-                        });
+                        Task.Run(async () => DelayAddRole(user.Id, source.Token), source.Token);
                     }
                     else
                     {
@@ -258,8 +425,7 @@ namespace TaranzaSoul
 
                         try
                         {
-                            await user.SendMessageAsync("Hi, welcome to the /r/Kirby Discord server! If you're seeing this, it means **your account is new**, and as such needs to be verified before you can participate in this server. " +
-                                "Toss us a mod mail on /r/Kirby with your Discord username and we'll get you set up as soon as we can https://www.reddit.com/message/compose?to=%2Fr%2FKirby");
+                            await user.SendMessageAsync(NewUserNotice);
                         }
                         catch (Exception ex)
                         {
