@@ -53,7 +53,10 @@ namespace TaranzaSoul
             }
 
             config = await Config.Load();
-            
+
+            dbhelper = new DatabaseHelper();
+            logger = new Logger();
+
             var map = new ServiceCollection().AddSingleton(socketClient).AddSingleton(config).AddSingleton(logger).AddSingleton(dbhelper).BuildServiceProvider();
             
             await socketClient.LoginAsync(TokenType.Bot, config.Token);
@@ -75,9 +78,7 @@ namespace TaranzaSoul
             socketClient.GuildAvailable += Client_GuildAvailable;
             socketClient.Disconnected += SocketClient_Disconnected;
 
-            dbhelper = new DatabaseHelper();
             await dbhelper.Install(map);
-            logger = new Logger();
             await logger.Install(map);
             SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
             RoleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");
