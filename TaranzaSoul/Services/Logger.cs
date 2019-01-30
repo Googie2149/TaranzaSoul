@@ -252,6 +252,13 @@ namespace TaranzaSoul
                         }
 
                         Console.WriteLine("Alright, checked through the user lists");
+
+                        if (newUsers.Count() > 10)
+                        {
+                            Console.WriteLine($"aaaaaaaaaAAAAAAAAAAAAAAAAAAAAA {newUsers.Count()}");
+                            throw new Exception("EVERYTHING IS BROKEN");
+                        }
+
                         // Add all the new users to the database
                         await dbhelper.BulkAddLoggedUser(newUsers);
 
