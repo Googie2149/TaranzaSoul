@@ -253,7 +253,7 @@ namespace TaranzaSoul
 
                         Console.WriteLine("Alright, checked through the user lists");
 
-                        if (newUsers.Count() > 10)
+                        if (newUsers.Count() > 1)
                         {
                             Console.WriteLine($"aaaaaaaaaAAAAAAAAAAAAAAAAAAAAA {newUsers.Count()}");
                             throw new Exception("EVERYTHING IS BROKEN");
