@@ -33,7 +33,7 @@ namespace TaranzaSoul
                 if (!tableExists)
                 {
                     using (var cmd = new SQLiteCommand("CREATE TABLE IF NOT EXISTS users " +
-                        "(UserId TEXT NOT NULL PRIMARY KEY, ApprovedAccess BOOLEAN NOT NULL, NewAccount BOOLEAN NOT NULL, ApprovalModId TEXT, ApprovalReason TEXT);", db))
+                        "(UserId TEXT NOT NULL PRIMARY KEY, ApprovedAccess INTEGER NOT NULL, NewAccount INTEGER NOT NULL, ApprovalModId TEXT, ApprovalReason TEXT);", db))
                     {
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -64,10 +64,10 @@ namespace TaranzaSoul
                             temp = new LoggedUser()
                             {
                                 UserId = Convert.ToUInt64((string)reader["UserId"]),
-                                ApprovedAccess = (bool)reader["ApprovedAccess"],
-                                NewAccount = (bool)reader["NewAccount"],
-                                ApprovalModId = (reader["ApprovalModId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["ApprovalModId"]),
-                                ApprovalReason = (reader["ApprovalReason"] == DBNull.Value) ? null : (string)reader["ApprovalReason"]
+                                ApprovedAccess = (int)reader["ApprovedAccess"] == 1 ? true : false,
+                                NewAccount = (int)reader["NewAccount"] == 1 ? true : false,
+                                ApprovalModId = reader["ApprovalModId"] == DBNull.Value ? 0 : Convert.ToUInt64((string)reader["ApprovalModId"]),
+                                ApprovalReason = reader["ApprovalReason"] == DBNull.Value ? null : (string)reader["ApprovalReason"]
                             };
                         }
                     }
@@ -91,14 +91,14 @@ namespace TaranzaSoul
                 {
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        if (await reader.ReadAsync())
+                        while (await reader.ReadAsync())
                         {
                             temp.Add(Convert.ToUInt64((string)reader["UserId"]),
                                 new LoggedUser()
                             {
                                 UserId = Convert.ToUInt64((string)reader["UserId"]),
-                                ApprovedAccess = (bool)reader["ApprovedAccess"],
-                                NewAccount = (bool)reader["NewAccount"],
+                                ApprovedAccess = (int)reader["ApprovedAccess"] == 1 ? true : false,
+                                NewAccount = (int)reader["NewAccount"] == 1 ? true : false,
                                 ApprovalModId = (reader["ApprovalModId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["ApprovalModId"]),
                                 ApprovalReason = (reader["ApprovalReason"] == DBNull.Value) ? null : (string)reader["ApprovalReason"]
                             });
@@ -135,8 +135,8 @@ namespace TaranzaSoul
                             using (var cmd = new SQLiteCommand("insert into users (UserId, ApprovedAccess, NewAccount, ApprovalModId, ApprovalReason) values (@1, @2, @3, @4, @5);", db))
                             {
                                 cmd.Parameters.AddWithValue("@1", u.UserId.ToString());
-                                cmd.Parameters.AddWithValue("@2", u.ApprovedAccess);
-                                cmd.Parameters.AddWithValue("@3", u.NewAccount);
+                                cmd.Parameters.AddWithValue("@2", u.ApprovedAccess ? 1 : 0); // to the me from the future: this is converting true/false into 1/0
+                                cmd.Parameters.AddWithValue("@3", u.NewAccount ? 1 : 0);
                                 cmd.Parameters.AddWithValue("@4", u.ApprovalModId.ToString() ?? null);
                                 cmd.Parameters.AddWithValue("@5", u.ApprovalReason ?? null);
 
@@ -164,7 +164,7 @@ namespace TaranzaSoul
 
                 using (var cmd = new SQLiteCommand("update users set ApprovedAccess = @1 where UserId = @2;", db))
                 {
-                    cmd.Parameters.AddWithValue("@1", true);
+                    cmd.Parameters.AddWithValue("@1", 1);
                     cmd.Parameters.AddWithValue("@2", userId.ToString());
 
                     await cmd.ExecuteNonQueryAsync();
@@ -182,7 +182,7 @@ namespace TaranzaSoul
 
                 using (var cmd = new SQLiteCommand("update users set ApprovedAccess = @1 where UserId = @2;", db))
                 {
-                    cmd.Parameters.AddWithValue("@1", false);
+                    cmd.Parameters.AddWithValue("@1", 0);
                     cmd.Parameters.AddWithValue("@2", userId.ToString());
 
                     await cmd.ExecuteNonQueryAsync();
