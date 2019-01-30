@@ -75,10 +75,10 @@ namespace TaranzaSoul
             socketClient.GuildAvailable += Client_GuildAvailable;
             socketClient.Disconnected += SocketClient_Disconnected;
 
-            logger = new Logger();
-            await logger.Install(map);
             dbhelper = new DatabaseHelper();
             await dbhelper.Install(map);
+            logger = new Logger();
+            await logger.Install(map);
             SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
             RoleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");
 
