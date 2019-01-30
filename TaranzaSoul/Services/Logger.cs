@@ -279,17 +279,19 @@ namespace TaranzaSoul
                             {
                                 try
                                 {
-                                    await guild.GetUser(u.UserId).SendMessageAsync(OfflineJoinWelcome);
+                                    //await guild.GetUser(u.UserId).SendMessageAsync(OfflineJoinWelcome);
                                 }
                                 catch (Exception ex)
                                 {
                                     Console.WriteLine($"Error sending offline user message to {u.UserId}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
                                 }
 
-                                CancellationTokenSource source = new CancellationTokenSource();
-                                waitingUsers.Add(u.UserId, source);
+                                //CancellationTokenSource source = new CancellationTokenSource();
+                                //waitingUsers.Add(u.UserId, source);
 
-                                Task.Run(async () => DelayAddRole(u.UserId, source.Token, minutes: 0), source.Token);
+                                //Task.Run(async () => DelayAddRole(u.UserId, source.Token, minutes: 0), source.Token);
+
+                                Console.WriteLine($"Apparently adding user {u.UserId}");
                             }
                         }
                     }
