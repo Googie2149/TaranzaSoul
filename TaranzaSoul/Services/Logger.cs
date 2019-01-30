@@ -178,6 +178,8 @@ namespace TaranzaSoul
                     List<LoggedUser> newUsers = new List<LoggedUser>();
                     List<LoggedUser> unapprovedUsers = new List<LoggedUser>();
 
+                    Console.WriteLine("Grabbed lists of users");
+
                     if (existingTable)
                     {
                         Console.WriteLine("Table exists");
