@@ -83,30 +83,38 @@ namespace TaranzaSoul
         {
             Dictionary<ulong, LoggedUser> temp = new Dictionary<ulong, LoggedUser>();
 
-            using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
+            try
             {
-                await db.OpenAsync();
-
-                using (var cmd = new SQLiteCommand("select * from users;", db))
+                using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
                 {
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    await db.OpenAsync();
+
+                    using (var cmd = new SQLiteCommand("select * from users;", db))
                     {
-                        while (await reader.ReadAsync())
+                        using (var reader = await cmd.ExecuteReaderAsync())
                         {
-                            temp.Add(Convert.ToUInt64((string)reader["UserId"]),
-                                new LoggedUser()
+                            while (await reader.ReadAsync())
                             {
-                                UserId = Convert.ToUInt64((string)reader["UserId"]),
-                                ApprovedAccess = (int)reader["ApprovedAccess"] == 1 ? true : false,
-                                NewAccount = (int)reader["NewAccount"] == 1 ? true : false,
-                                ApprovalModId = (reader["ApprovalModId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["ApprovalModId"]),
-                                ApprovalReason = (reader["ApprovalReason"] == DBNull.Value) ? null : (string)reader["ApprovalReason"]
-                            });
+                                temp.Add(Convert.ToUInt64((string)reader["UserId"]),
+                                    new LoggedUser()
+                                    {
+                                        UserId = Convert.ToUInt64((string)reader["UserId"]),
+                                        ApprovedAccess = (int)reader["ApprovedAccess"] == 1 ? true : false,
+                                        NewAccount = (int)reader["NewAccount"] == 1 ? true : false,
+                                        ApprovalModId = (reader["ApprovalModId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["ApprovalModId"]),
+                                        ApprovalReason = (reader["ApprovalReason"] == DBNull.Value) ? null : (string)reader["ApprovalReason"]
+                                    });
+                            }
                         }
                     }
-                }
 
-                db.Close();
+                    db.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error bulk saving!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                System.Environment.Exit(0);
             }
 
             return temp;
