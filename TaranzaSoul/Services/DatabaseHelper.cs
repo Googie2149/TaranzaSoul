@@ -66,9 +66,13 @@ namespace TaranzaSoul
                                 UserId = Convert.ToUInt64((string)reader["UserId"]),
                                 ApprovedAccess = (bool)reader["ApprovedAccess"],
                                 NewAccount = (bool)reader["NewAccount"],
-                                ApprovalModId = Convert.ToUInt64((string)reader["ApprovalModId"]),
                                 ApprovalReason = (string)reader["ApprovalReason"]
                             };
+
+                            if (reader["ApprovalModId"].GetType() != typeof(DBNull))
+                            {
+                                temp.ApprovalModId = Convert.ToUInt64((string)reader["ApprovalModId"]);
+                            }
                         }
                     }
                 }
@@ -93,15 +97,19 @@ namespace TaranzaSoul
                     {
                         if (await reader.ReadAsync())
                         {
-                            temp.Add((ulong)reader["UserId"],
+                            temp.Add(Convert.ToUInt64((string)reader["UserId"]),
                                 new LoggedUser()
                             {
                                 UserId = Convert.ToUInt64((string)reader["UserId"]),
                                 ApprovedAccess = (bool)reader["ApprovedAccess"],
                                 NewAccount = (bool)reader["NewAccount"],
-                                ApprovalModId = Convert.ToUInt64((string)reader["ApprovalModId"]),
                                 ApprovalReason = (string)reader["ApprovalReason"]
                             });
+
+                            if (reader["ApprovalModId"].GetType() != typeof(DBNull))
+                            {
+                                temp[Convert.ToUInt64((string)reader["UserId"])].ApprovalModId = Convert.ToUInt64((string)reader["ApprovalModId"]);
+                            }
                         }
                     }
                 }
