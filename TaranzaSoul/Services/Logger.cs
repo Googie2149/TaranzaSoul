@@ -178,7 +178,7 @@ namespace TaranzaSoul
                     List<LoggedUser> newUsers = new List<LoggedUser>();
                     List<LoggedUser> unapprovedUsers = new List<LoggedUser>();
 
-                    Console.WriteLine("Grabbed lists of users");
+                    Console.WriteLine($"Grabbed lists of users [{loggedUsers.Count()} vs {guild.Users.Count()}]");
 
                     if (existingTable)
                     {
