@@ -114,7 +114,7 @@ namespace TaranzaSoul
             catch (Exception ex)
             {
                 Console.WriteLine($"Error bulk saving!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
-                System.Environment.Exit(0);
+                //System.Environment.Exit(0);
             }
 
             return temp;
