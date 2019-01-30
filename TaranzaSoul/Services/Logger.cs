@@ -187,8 +187,8 @@ namespace TaranzaSoul
                                 
                                 newUsers.Add(new LoggedUser() {
                                     UserId = u.Id,
-                                    NewAccount = u.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1),
-                                    ApprovedAccess = !(u.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1))
+                                    NewAccount = u.CreatedAt.Date > DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1),
+                                    ApprovedAccess = !(u.CreatedAt.Date > DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1))
                                 });
 
                                 continue;
@@ -287,7 +287,7 @@ namespace TaranzaSoul
                             users.Add(new LoggedUser()
                             {
                                 UserId = u.Id,
-                                NewAccount = u.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1),
+                                NewAccount = u.CreatedAt.Date > DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1),
                                 ApprovedAccess = u.Roles.Contains(role)
                             });
                         }
@@ -366,7 +366,7 @@ namespace TaranzaSoul
 
                     if (loggedUser == null)
                     {
-                        loggedUser = await dbhelper.AddLoggedUser(user.Id, newAccount: user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1));
+                        loggedUser = await dbhelper.AddLoggedUser(user.Id, newAccount: user.CreatedAt.Date > DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1));
                     }
 
                     if (loggedUser.ApprovedAccess)
