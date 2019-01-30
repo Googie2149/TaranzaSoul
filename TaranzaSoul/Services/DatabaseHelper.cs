@@ -66,13 +66,9 @@ namespace TaranzaSoul
                                 UserId = Convert.ToUInt64((string)reader["UserId"]),
                                 ApprovedAccess = (bool)reader["ApprovedAccess"],
                                 NewAccount = (bool)reader["NewAccount"],
-                                ApprovalReason = (string)reader["ApprovalReason"]
+                                ApprovalModId = (reader["ApprovalModId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["ApprovalModId"]),
+                                ApprovalReason = (reader["ApprovalReason"] == DBNull.Value) ? null : (string)reader["ApprovalReason"]
                             };
-
-                            if (reader["ApprovalModId"].GetType() != typeof(DBNull))
-                            {
-                                temp.ApprovalModId = Convert.ToUInt64((string)reader["ApprovalModId"]);
-                            }
                         }
                     }
                 }
@@ -103,13 +99,9 @@ namespace TaranzaSoul
                                 UserId = Convert.ToUInt64((string)reader["UserId"]),
                                 ApprovedAccess = (bool)reader["ApprovedAccess"],
                                 NewAccount = (bool)reader["NewAccount"],
-                                ApprovalReason = (string)reader["ApprovalReason"]
+                                ApprovalModId = (reader["ApprovalModId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["ApprovalModId"]),
+                                ApprovalReason = (reader["ApprovalReason"] == DBNull.Value) ? null : (string)reader["ApprovalReason"]
                             });
-
-                            if (reader["ApprovalModId"].GetType() != typeof(DBNull))
-                            {
-                                temp[Convert.ToUInt64((string)reader["UserId"])].ApprovalModId = Convert.ToUInt64((string)reader["ApprovalModId"]);
-                            }
                         }
                     }
                 }
