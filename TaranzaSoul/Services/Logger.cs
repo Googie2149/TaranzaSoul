@@ -116,6 +116,8 @@ namespace TaranzaSoul
             client.GuildAvailable += Client_GuildAvailable;
 
             existingTable = await dbhelper.InitializeDB();
+
+            Console.WriteLine($"Table initialized (New: {existingTable})");
         }
 
         private async Task DelayAddRole(ulong u, CancellationToken cancellationToken, double minutes = 10)
@@ -164,6 +166,8 @@ namespace TaranzaSoul
             {
                 initialized = true;
 
+                Console.WriteLine("Starting db");
+
                 Task.Run(async () =>
                 {
                     await guild.DownloadUsersAsync();
@@ -176,6 +180,8 @@ namespace TaranzaSoul
 
                     if (existingTable)
                     {
+                        Console.WriteLine("Table exists");
+
                         foreach (var u in guild.Users)
                         {
                             if (!loggedUsers.ContainsKey(u.Id))
@@ -243,6 +249,7 @@ namespace TaranzaSoul
                             }
                         }
 
+                        Console.WriteLine("Alright, checked through the user lists");
                         // Add all the new users to the database
                         await dbhelper.BulkAddLoggedUser(newUsers);
 
@@ -279,6 +286,8 @@ namespace TaranzaSoul
                     }
                     else
                     {
+                        Console.WriteLine("Creating new table");
+
                         // Fresh table, add everyone to the table
                         List<LoggedUser> users = new List<LoggedUser>();
 
@@ -293,7 +302,11 @@ namespace TaranzaSoul
                         }
 
                         await dbhelper.BulkAddLoggedUser(users);
+
+                        Console.WriteLine("Table created");
                     }
+
+                    Console.WriteLine("Adding handlers");
 
                     client.UserJoined += Client_UserJoined;
                     client.UserLeft += Client_UserLeft;
@@ -371,6 +384,8 @@ namespace TaranzaSoul
 
                     if (loggedUser.ApprovedAccess)
                     {
+                        Console.WriteLine($"Found approved user {loggedUser.UserId}");
+
                         try
                         {
                             await user.SendMessageAsync(WelcomeBackMessage);
@@ -399,6 +414,8 @@ namespace TaranzaSoul
                     }
                     else if (!loggedUser.NewAccount)
                     {
+                        Console.WriteLine("Found old account but new join");
+
                         try
                         {
                             await user.SendMessageAsync(WelcomeMessage);
@@ -415,6 +432,8 @@ namespace TaranzaSoul
                     }
                     else
                     {
+                        Console.WriteLine("Found new account");
+
                         await Task.Delay(1000);
 
                         await (client.GetGuild(config.HomeGuildId).GetChannel(config.FilteredChannelId) as ISocketMessageChannel)
