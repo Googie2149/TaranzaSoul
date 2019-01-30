@@ -64,8 +64,8 @@ namespace TaranzaSoul
                             temp = new LoggedUser()
                             {
                                 UserId = Convert.ToUInt64((string)reader["UserId"]),
-                                ApprovedAccess = (int)reader["ApprovedAccess"] == 1 ? true : false,
-                                NewAccount = (int)reader["NewAccount"] == 1 ? true : false,
+                                ApprovedAccess = (long)reader["ApprovedAccess"] == 1 ? true : false,
+                                NewAccount = (long)reader["NewAccount"] == 1 ? true : false,
                                 ApprovalModId = reader["ApprovalModId"] == DBNull.Value ? 0 : Convert.ToUInt64((string)reader["ApprovalModId"]),
                                 ApprovalReason = reader["ApprovalReason"] == DBNull.Value ? null : (string)reader["ApprovalReason"]
                             };
@@ -99,8 +99,8 @@ namespace TaranzaSoul
                                     new LoggedUser()
                                     {
                                         UserId = Convert.ToUInt64((string)reader["UserId"]),
-                                        ApprovedAccess = ((int)reader["ApprovedAccess"] == 1) ? true : false,
-                                        NewAccount = ((int)reader["NewAccount"] == 1) ? true : false,
+                                        ApprovedAccess = ((long)reader["ApprovedAccess"] == 1) ? true : false,
+                                        NewAccount = ((long)reader["NewAccount"] == 1) ? true : false,
                                         ApprovalModId = (reader["ApprovalModId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["ApprovalModId"]),
                                         ApprovalReason = (reader["ApprovalReason"] == DBNull.Value) ? null : (string)reader["ApprovalReason"]
                                     });
