@@ -54,7 +54,7 @@ namespace TaranzaSoul
 
             config = await Config.Load();
             
-            var map = new ServiceCollection().AddSingleton(socketClient).AddSingleton(config).BuildServiceProvider();
+            var map = new ServiceCollection().AddSingleton(socketClient).AddSingleton(config).AddSingleton(logger).AddSingleton(dbhelper).BuildServiceProvider();
             
             await socketClient.LoginAsync(TokenType.Bot, config.Token);
             await socketClient.StartAsync();
