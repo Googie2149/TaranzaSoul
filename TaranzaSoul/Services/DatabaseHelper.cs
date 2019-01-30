@@ -33,7 +33,7 @@ namespace TaranzaSoul
                 if (!tableExists)
                 {
                     using (var cmd = new SQLiteCommand("CREATE TABLE IF NOT EXISTS users " +
-                        "(UserId INTEGER NOT NULL PRIMARY KEY, ApprovedAccess BOOLEAN NOT NULL, NewAccount BOOLEAN NOT NULL, ApprovalModId INTEGER, ApprovalReason TEXT);", db))
+                        "(UserId UNSIGNED BIG INT NOT NULL PRIMARY KEY, ApprovedAccess BOOLEAN NOT NULL, NewAccount BOOLEAN NOT NULL, ApprovalModId INTEGER, ApprovalReason TEXT);", db))
                     {
                         await cmd.ExecuteNonQueryAsync();
                     }
