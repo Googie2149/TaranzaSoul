@@ -123,29 +123,36 @@ namespace TaranzaSoul
 
         public async Task BulkAddLoggedUser(IEnumerable<LoggedUser> users)
         {
-            using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
+            try
             {
-                await db.OpenAsync();
-                using (var tr = db.BeginTransaction())
+                using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
                 {
-                    foreach (var u in users)
+                    await db.OpenAsync();
+                    using (var tr = db.BeginTransaction())
                     {
-                        using (var cmd = new SQLiteCommand("insert into users (UserId, ApprovedAccess, NewAccount, ApprovalModId, ApprovalReason) values (@1, @2, @3, @4, @5);", db))
+                        foreach (var u in users)
                         {
-                            cmd.Parameters.AddWithValue("@1", u.UserId.ToString());
-                            cmd.Parameters.AddWithValue("@2", u.ApprovedAccess);
-                            cmd.Parameters.AddWithValue("@3", u.NewAccount);
-                            cmd.Parameters.AddWithValue("@4", u.ApprovalModId.ToString());
-                            cmd.Parameters.AddWithValue("@5", u.ApprovalReason);
+                            using (var cmd = new SQLiteCommand("insert into users (UserId, ApprovedAccess, NewAccount, ApprovalModId, ApprovalReason) values (@1, @2, @3, @4, @5);", db))
+                            {
+                                cmd.Parameters.AddWithValue("@1", u.UserId.ToString());
+                                cmd.Parameters.AddWithValue("@2", u.ApprovedAccess);
+                                cmd.Parameters.AddWithValue("@3", u.NewAccount);
+                                cmd.Parameters.AddWithValue("@4", u.ApprovalModId.ToString() ?? null);
+                                cmd.Parameters.AddWithValue("@5", u.ApprovalReason ?? null);
 
-                            await cmd.ExecuteNonQueryAsync();
+                                await cmd.ExecuteNonQueryAsync();
+                            }
                         }
+
+                        tr.Commit();
                     }
 
-                    tr.Commit();
+                    db.Close();
                 }
-
-                db.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error bulk saving!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
             }
         }
 
