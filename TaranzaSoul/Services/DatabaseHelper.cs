@@ -33,7 +33,7 @@ namespace TaranzaSoul
                 if (!tableExists)
                 {
                     using (var cmd = new SQLiteCommand("CREATE TABLE IF NOT EXISTS users " +
-                        "(UserId UNSIGNED BIG INT NOT NULL PRIMARY KEY, ApprovedAccess BOOLEAN NOT NULL, NewAccount BOOLEAN NOT NULL, ApprovalModId UNSIGNED BIG INT, ApprovalReason TEXT);", db))
+                        "(UserId TEXT NOT NULL PRIMARY KEY, ApprovedAccess BOOLEAN NOT NULL, NewAccount BOOLEAN NOT NULL, ApprovalModId TEXT, ApprovalReason TEXT);", db))
                     {
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -63,10 +63,10 @@ namespace TaranzaSoul
                         {
                             temp = new LoggedUser()
                             {
-                                UserId = (ulong)reader["UserId"],
+                                UserId = Convert.ToUInt64((string)reader["UserId"]),
                                 ApprovedAccess = (bool)reader["ApprovedAccess"],
                                 NewAccount = (bool)reader["NewAccount"],
-                                ApprovalModId = (ulong)reader["ApprovalModId"],
+                                ApprovalModId = Convert.ToUInt64((string)reader["ApprovalModId"]),
                                 ApprovalReason = (string)reader["ApprovalReason"]
                             };
                         }
@@ -96,10 +96,10 @@ namespace TaranzaSoul
                             temp.Add((ulong)reader["UserId"],
                                 new LoggedUser()
                             {
-                                UserId = (ulong)reader["UserId"],
+                                UserId = Convert.ToUInt64((string)reader["UserId"]),
                                 ApprovedAccess = (bool)reader["ApprovedAccess"],
                                 NewAccount = (bool)reader["NewAccount"],
-                                ApprovalModId = (ulong)reader["ApprovalModId"],
+                                ApprovalModId = Convert.ToUInt64((string)reader["ApprovalModId"]),
                                 ApprovalReason = (string)reader["ApprovalReason"]
                             });
                         }
@@ -132,10 +132,10 @@ namespace TaranzaSoul
                     {
                         using (var cmd = new SQLiteCommand("insert into users (UserId, ApprovedAccess, NewAccount, ApprovalModId, ApprovalReason) values (@1, @2, @3, @4, @5);", db))
                         {
-                            cmd.Parameters.AddWithValue("@1", u.UserId);
+                            cmd.Parameters.AddWithValue("@1", u.UserId.ToString());
                             cmd.Parameters.AddWithValue("@2", u.ApprovedAccess);
                             cmd.Parameters.AddWithValue("@3", u.NewAccount);
-                            cmd.Parameters.AddWithValue("@4", u.ApprovalModId);
+                            cmd.Parameters.AddWithValue("@4", u.ApprovalModId.ToString());
                             cmd.Parameters.AddWithValue("@5", u.ApprovalReason);
 
                             await cmd.ExecuteNonQueryAsync();
@@ -158,7 +158,7 @@ namespace TaranzaSoul
                 using (var cmd = new SQLiteCommand("update users set ApprovedAccess = @1 where UserId = @2;", db))
                 {
                     cmd.Parameters.AddWithValue("@1", true);
-                    cmd.Parameters.AddWithValue("@2", userId);
+                    cmd.Parameters.AddWithValue("@2", userId.ToString());
 
                     await cmd.ExecuteNonQueryAsync();
                 }
@@ -176,7 +176,7 @@ namespace TaranzaSoul
                 using (var cmd = new SQLiteCommand("update users set ApprovedAccess = @1 where UserId = @2;", db))
                 {
                     cmd.Parameters.AddWithValue("@1", false);
-                    cmd.Parameters.AddWithValue("@2", userId);
+                    cmd.Parameters.AddWithValue("@2", userId.ToString());
 
                     await cmd.ExecuteNonQueryAsync();
                 }
