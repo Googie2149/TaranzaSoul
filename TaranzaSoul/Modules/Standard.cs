@@ -24,12 +24,14 @@ namespace TaranzaSoul.Modules.Standard
         private CommandService commands;
         private IServiceProvider services;
         private Config config;
+        private DatabaseHelper dbhelper;
 
-        public Standard(CommandService _commands, IServiceProvider _services, Config _config)
+        public Standard(CommandService _commands, IServiceProvider _services, Config _config, DatabaseHelper _dbhelper)
         {
             commands = _commands;
             services = _services;
             config = _config;
+            dbhelper = _dbhelper;
         }
         
         [Command("help")]
@@ -116,17 +118,13 @@ namespace TaranzaSoul.Modules.Standard
                 note = string.Join(" ", args).Trim();
         }
 
-        [Command("watch")]
-        [Summary("idk go watch some tv")]
-        [Priority(1000)]
-        public async Task WatchList([Remainder]string remainder = "")
+        [Command("approve", RunMode = RunMode.Async)]
+        public async Task ApproveNewUserAccess([Remainder]string remainder = "")
         {
-            //451057945044582400
-
-            if (Context.Guild.Id != 132720341058453504)
+            if (Context.Guild.Id != config.HomeGuildId)
                 return;
 
-            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451057945044582400))
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451058863995879463))
                 return;
 
             List<ulong> users;
@@ -137,6 +135,129 @@ namespace TaranzaSoul.Modules.Standard
             if (users.Count() == 0)
             {
                 await RespondAsync("None of those mentioned were valid user Ids!");
+                return;
+            }
+
+            if (users.Count() > 1)
+            {
+                await RespondAsync("You're not supposed to approve more than one user with a single note.");
+                return;
+            }
+
+            if (note == "")
+            {
+                await RespondAsync("The note cannot be blank!");
+                return;
+            }
+
+            if (Context.Guild.GetUser(users.First()) == null)
+            {
+                await RespondAsync("That user isn't in this server!");
+                return;
+            }
+
+            if ((await dbhelper.GetLoggedUser(users.First())) == null)
+            {
+                await RespondAsync("That user hasn't been seen in this server.");
+                return;
+            }
+
+            var role = Context.Guild.GetRole(config.AccessRoleId);
+
+            await dbhelper.ModApproveUser(users.First(), Context.User.Id, note);
+            await Task.Delay(500);
+            await Context.Guild.GetUser(users.First()).AddRoleAsync(role);
+        }
+
+        [Command("revoke", RunMode = RunMode.Async)]
+        public async Task RevokeUserAccess([Remainder]string remainder = "")
+        {
+            if (Context.Guild.Id != config.HomeGuildId)
+                return;
+
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451058863995879463))
+                return;
+
+            List<ulong> users;
+            string note;
+
+            WatchListHelper(remainder, out users, out note);
+
+            if (users.Count() == 0)
+            {
+                await RespondAsync("None of those mentioned were valid user Ids!");
+                return;
+            }
+
+            //if (users.Count() > 1)
+            //{
+            //    await RespondAsync("You're not supposed to approve more than one user with a single note.");
+            //    return;
+            //}
+
+            //if (note == "")
+            //{
+            //    await RespondAsync("The note cannot be blank!");
+            //    return;
+            //}
+
+            //if ((await dbhelper.GetLoggedUser(users.First())) == null)
+            //{
+            //    await RespondAsync("That user hasn't been seen in this server.");
+            //    return;
+            //}
+
+            StringBuilder unrecognized = new StringBuilder();
+            StringBuilder removed = new StringBuilder();
+
+            var role = Context.Guild.GetRole(config.AccessRoleId);
+
+            foreach (var u in users)
+            {
+                if ((await dbhelper.GetLoggedUser(u) == null))
+                {
+                    if (unrecognized.Length == 0)
+                        unrecognized.Append("The following user Ids(s) were not recognized: ");
+
+                    unrecognized.Append($"{u} ");
+                }
+                else
+                {
+                    if (removed.Length == 0)
+                        removed.Append("Removed the following user Id(s): ");
+
+                    unrecognized.Append($"{u} ");
+                    
+                    await dbhelper.RevokeApproval(u);
+                    await Context.Guild.GetUser(u).RemoveRoleAsync(role);
+                }
+            }
+
+            await RespondAsync($"{unrecognized.ToString()}\n{removed.ToString()}");
+        }
+
+        [Command("watch")]
+        [Summary("idk go watch some tv")]
+        [Priority(1000)]
+        public async Task WatchList([Remainder]string remainder = "")
+        {
+            //451057945044582400
+
+            if (Context.Guild.Id != config.HomeGuildId)
+                return;
+
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(config.StaffId))
+                return;
+
+            List<ulong> users;
+            string note;
+
+            WatchListHelper(remainder, out users, out note);
+
+            if (users.Count() == 0)
+            {
+                await RespondAsync("None of those mentioned were valid user Ids!");
+                return;
             }
 
             if (note != "") // this means we ARE setting a note on one or more people
@@ -183,10 +304,10 @@ namespace TaranzaSoul.Modules.Standard
         [Priority(1001)]
         public async Task ClearWatch([Remainder]string remainder = "")
         {
-            if (Context.Guild.Id != 132720341058453504)
+            if (Context.Guild.Id != config.HomeGuildId)
                 return;
 
-            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451057945044582400))
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(config.StaffId))
                 return;
 
             List<ulong> users;
@@ -222,10 +343,10 @@ namespace TaranzaSoul.Modules.Standard
         [Priority(1001)]
         public async Task ListWatch()
         {
-            if (Context.Guild.Id != 132720341058453504)
+            if (Context.Guild.Id != config.HomeGuildId)
                 return;
 
-            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451057945044582400))
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(config.StaffId))
                 return;
 
             StringBuilder output = new StringBuilder();

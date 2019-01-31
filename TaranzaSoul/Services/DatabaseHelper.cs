@@ -182,6 +182,26 @@ namespace TaranzaSoul
             }
         }
 
+        public async Task ModApproveUser(ulong userId, ulong modId, string reason)
+        {
+            using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
+            {
+                await db.OpenAsync();
+
+                using (var cmd = new SQLiteCommand("update users set (ApprovedAccess, ApprovalModId, ApprovalReason) = (@1, @2, @3) where UserId = @4;", db))
+                {
+                    cmd.Parameters.AddWithValue("@1", 1);
+                    cmd.Parameters.AddWithValue("@2", modId.ToString());
+                    cmd.Parameters.AddWithValue("@3", reason);
+                    cmd.Parameters.AddWithValue("@4", userId.ToString());
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                db.Close();
+            }
+        }
+
         public async Task RevokeApproval(ulong userId)
         {
             using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
