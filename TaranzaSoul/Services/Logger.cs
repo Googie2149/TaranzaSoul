@@ -496,31 +496,37 @@ namespace TaranzaSoul
             }
             else
             {
-                if (pMsg.Content.Count(x => x == '|') > 3 || pMsg.Attachments.Any(x => x.Filename.StartsWith("SPOILER_")))
+                try
                 {
-                    await pMsg.DeleteAsync();
+                    if (pMsg.Content.Count(x => x == '|') > 3 || pMsg.Attachments.Any(x => x.Filename.StartsWith("SPOILER_")))
+                    {
+                        await pMsg.DeleteAsync();
 
-                    var channel = pMsg.Channel as ITextChannel;
+                        var channel = pMsg.Channel as ITextChannel;
 
-                    var user = await channel.Guild.GetUserAsync(pMsg.Author.Id);
-                    var role = user.GetRoles().Where(x => x.Color != Color.Default).OrderBy(x => x.Position).Last();
-                    EmbedBuilder builder = new EmbedBuilder();
-                    EmbedAuthorBuilder authorBuilder = new EmbedAuthorBuilder();
+                        var user = await channel.Guild.GetUserAsync(pMsg.Author.Id);
+                        var role = user.GetRoles().Where(x => x.Color != Color.Default).OrderBy(x => x.Position).Last();
+                        EmbedBuilder builder = new EmbedBuilder();
+                        EmbedAuthorBuilder authorBuilder = new EmbedAuthorBuilder();
 
-                    await channel.SendMessageAsync(embed:
-                    builder
-                        .WithAuthor(
-                            authorBuilder.WithIconUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
-                            .WithName($"{user.Nickname ?? user.Username} said...")
-                            )
-                        .WithColor(role.Color)
-                        .WithDescription(pMsg.Content.Replace('|', ' '))
-                        .WithFooter("Please do not use spoilers outside of spoiler channels.")
-                        .WithTimestamp(pMsg.Timestamp)
-                        .Build()
-                            );
+                        await channel.SendMessageAsync(embed:
+                        builder
+                            .WithAuthor(
+                                authorBuilder.WithIconUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
+                                .WithName($"{user.Nickname ?? user.Username} said...")
+                                )
+                            .WithColor(role.Color)
+                            .WithDescription(pMsg.Content.Replace('|', ' '))
+                            .WithFooter("Please do not use spoilers outside of spoiler channels.")
+                            .WithTimestamp(pMsg.Timestamp)
+                            .Build()
+                                );
+                    }
                 }
-            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error deleting spoiler!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                }
         }
     }
 }
