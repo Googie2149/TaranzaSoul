@@ -180,32 +180,7 @@ namespace TaranzaSoul
                 await msg.Channel.SendMessageAsync("Done!");
                 return;
             }
-
-            if (msg.Content.Count(x => x == '|') > 3 || msg.Attachments.Any(x => x.Filename.StartsWith("SPOILER_")))
-            {
-                await msg.DeleteAsync();
-
-                var channel = msg.Channel as ITextChannel;
-
-                var user = await channel.Guild.GetUserAsync(msg.Author.Id);
-                var role = user.GetRoles().Where(x => x.Color != Color.Default).OrderBy(x => x.Position).Last();
-                EmbedBuilder builder = new EmbedBuilder();
-                EmbedAuthorBuilder authorBuilder = new EmbedAuthorBuilder();
-                
-                await channel.SendMessageAsync(embed:
-                builder
-                    .WithAuthor(
-                        authorBuilder.WithIconUrl(user.GetAvatarUrl(ImageFormat.Png) ?? user.GetDefaultAvatarUrl())
-                        .WithName($"{user.Nickname ?? user.Username} said...")
-                        )
-                    .WithColor(role.Color)
-                    .WithDescription(msg.Content.Replace('|', ' '))
-                    .WithFooter("Please do not use spoilers outside of spoiler channels.")
-                    .WithTimestamp(msg.Timestamp)
-                    .Build()
-                        );
-            }
-
+            
             //if (msg.Author.Id == 267405866162978816) return;
 
             ////if ((msg.Channel as IGuildChannel) == null)
