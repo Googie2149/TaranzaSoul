@@ -527,6 +527,7 @@ namespace TaranzaSoul
                 {
                     Console.WriteLine($"Error deleting spoiler!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
                 }
+            }
         }
     }
 }
