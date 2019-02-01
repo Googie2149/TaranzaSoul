@@ -354,14 +354,16 @@ namespace TaranzaSoul
                         string output = "";
 
                         if (config.AlternateStaffMention)
-                            output = $"<@&{config.AlternateStaffId}> {before.Mention} needs access.";
+                            output = $"<@&{config.AlternateStaffId}> {before.Mention} was given the role when they shouldn't have it.";
                         else
-                            output = $"<@&{config.StaffId}> {before.Mention} needs access.";
+                            output = $"<@&{config.StaffId}> {before.Mention} was given the role when they shouldn't have it.";
 
                         if (loggedUser.ApprovalModId != 0)
                         {
                             output = $"{output}\nThey've previously been approved by <@{loggedUser.ApprovalModId}> with the reason `{loggedUser.ApprovalReason}`";
                         }
+
+                        await after.RemoveRoleAsync(role);
 
                         await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
                             .SendMessageAsync(output);
