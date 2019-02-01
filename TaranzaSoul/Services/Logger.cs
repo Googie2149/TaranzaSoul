@@ -498,7 +498,7 @@ namespace TaranzaSoul
             {
                 try
                 {
-                    if (pMsg.Content.Count(x => x == '|') > 3 || pMsg.Attachments.Any(x => x.Filename.StartsWith("SPOILER_")))
+                    if (!pMsg.Channel.Name.ToLower().Contains("spoil") && ( pMsg.Content.Count(x => x == '|') > 3 || pMsg.Attachments.Any(x => x.Filename.StartsWith("SPOILER_"))))
                     {
                         await pMsg.DeleteAsync();
 
@@ -516,7 +516,7 @@ namespace TaranzaSoul
                                 .WithName($"{user.Nickname ?? user.Username} said...")
                                 )
                             .WithColor(role.Color)
-                            .WithDescription(pMsg.Content.Replace('|', ' '))
+                            .WithDescription((pMsg.Content.Replace('|', ' ') == "") ? "[No Text Content]" : "Some improper use of spoiler tags")
                             .WithFooter("Please do not use spoilers outside of spoiler channels.")
                             .WithTimestamp(pMsg.Timestamp)
                             .Build()
