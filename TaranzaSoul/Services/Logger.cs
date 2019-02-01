@@ -145,7 +145,6 @@ namespace TaranzaSoul
                 }
 
                 await client.GetGuild(config.HomeGuildId).GetUser(u).AddRoleAsync(role, new RequestOptions() { AuditLogReason = "Automatic approval" });
-                dbhelper.AutoApproveUser(u);
                 waitingUsers.Remove(u);
             }
             catch (OperationCanceledException ex)
@@ -458,8 +457,7 @@ namespace TaranzaSoul
                     {
                         loggedUser = await dbhelper.AddLoggedUser
                             (
-                                user.Id, 
-                                approvedAccess: user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1), 
+                                user.Id,
                                 newAccount: user.CreatedAt.Date > DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1)
                             );
                     }
@@ -511,6 +509,7 @@ namespace TaranzaSoul
                         waitingUsers.Add(user.Id, source);
 
                         Task.Run(async () => DelayAddRole(user.Id, source.Token), source.Token);
+                        dbhelper.AutoApproveUser(user.Id);
                     }
                     else
                     {
