@@ -156,10 +156,20 @@ namespace TaranzaSoul.Modules.Standard
                 return;
             }
 
-            if ((await dbhelper.GetLoggedUser(users.First())) == null)
+            var loggedUser = await dbhelper.GetLoggedUser(users.First());
+
+            if (loggedUser == null)
             {
                 await RespondAsync("That user hasn't been seen in this server.");
                 return;
+            }
+            else
+            {
+                if (loggedUser.ApprovedAccess)
+                {
+                    await RespondAsync("That user already is already approved!");
+                    return;
+                }
             }
 
             var role = Context.Guild.GetRole(config.AccessRoleId);
@@ -167,6 +177,7 @@ namespace TaranzaSoul.Modules.Standard
             await dbhelper.ModApproveUser(users.First(), Context.User.Id, note);
             await Task.Delay(500);
             await Context.Guild.GetUser(users.First()).AddRoleAsync(role);
+            await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server.");
         }
 
         [Command("revoke", RunMode = RunMode.Async)]

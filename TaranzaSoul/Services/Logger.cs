@@ -234,13 +234,18 @@ namespace TaranzaSoul
                                     {
                                         // they don't have the role when they should
                                         // send a post to admins so this can be dealt with manualy
-
+                                        
                                         string output = "";
 
                                         if (config.AlternateStaffMention)
-                                            output = $"<@&{config.AlternateStaffId}> {u.Mention} needs access. They've previously been approved by <@{loggedUsers[u.Id].ApprovalModId}> with the reason `{loggedUsers[u.Id].ApprovalReason}`";
+                                            output = $"<@&{config.AlternateStaffId}> {u.Mention} needs access.";
                                         else
-                                            output = $"<@&{config.StaffId}> {u.Mention} needs access. They've previously been approved by <@{loggedUsers[u.Id].ApprovalModId}> with the reason `{loggedUsers[u.Id].ApprovalReason}`";
+                                            output = $"<@&{config.StaffId}> {u.Mention} needs access.";
+
+                                        if (loggedUsers[u.Id].ApprovalModId != 0)
+                                        {
+                                            output = $"{output}\nThey've previously been approved by <@{loggedUsers[u.Id].ApprovalModId}> with the reason `{loggedUsers[u.Id].ApprovalReason}`";
+                                        }
 
                                         await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
                                             .SendMessageAsync(output);
@@ -253,11 +258,11 @@ namespace TaranzaSoul
 
                         Console.WriteLine("Alright, checked through the user lists");
 
-                        if (newUsers.Count() > 1)
-                        {
-                            Console.WriteLine($"aaaaaaaaaAAAAAAAAAAAAAAAAAAAAA {newUsers.Count()}");
-                            throw new Exception("EVERYTHING IS BROKEN");
-                        }
+                        //if (newUsers.Count() > 1)
+                        //{
+                        //    Console.WriteLine($"aaaaaaaaaAAAAAAAAAAAAAAAAAAAAA {newUsers.Count()}");
+                        //    throw new Exception("EVERYTHING IS BROKEN");
+                        //}
 
                         // Add all the new users to the database
                         await dbhelper.BulkAddLoggedUser(newUsers);
@@ -279,17 +284,17 @@ namespace TaranzaSoul
                             {
                                 try
                                 {
-                                    //await guild.GetUser(u.UserId).SendMessageAsync(OfflineJoinWelcome);
+                                    await guild.GetUser(u.UserId).SendMessageAsync(OfflineJoinWelcome);
                                 }
                                 catch (Exception ex)
                                 {
                                     Console.WriteLine($"Error sending offline user message to {u.UserId}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
                                 }
 
-                                //CancellationTokenSource source = new CancellationTokenSource();
-                                //waitingUsers.Add(u.UserId, source);
+                                CancellationTokenSource source = new CancellationTokenSource();
+                                waitingUsers.Add(u.UserId, source);
 
-                                //Task.Run(async () => DelayAddRole(u.UserId, source.Token, minutes: 0), source.Token);
+                                Task.Run(async () => DelayAddRole(u.UserId, source.Token, minutes: 0), source.Token);
 
                                 Console.WriteLine($"Apparently adding user {u.UserId}");
                             }
@@ -321,11 +326,70 @@ namespace TaranzaSoul
 
                     client.UserJoined += Client_UserJoined;
                     client.UserLeft += Client_UserLeft;
+                    client.GuildMemberUpdated += Client_GuildMemberUpdated;
                 });
             }
             else if (guild.Id != config.HomeGuildId)
             {
                 await guild.LeaveAsync(); // seriously this bot is only set up to work with a single server
+            }
+        }
+
+        private async Task Client_GuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
+        {
+            if (before.Guild.Id == config.HomeGuildId)
+            {
+                var role = before.Guild.GetRole(config.AccessRoleId);
+
+                if (!before.Roles.Contains(role) && after.Roles.Contains(role))
+                {
+                    // Role was added
+
+                    await Task.Delay(500); // add a delay to make sure it wasn't our own bot that did it
+
+                    var loggedUser = await dbhelper.GetLoggedUser(before.Id);
+
+                    if (!loggedUser.ApprovedAccess)
+                    {
+                        string output = "";
+
+                        if (config.AlternateStaffMention)
+                            output = $"<@&{config.AlternateStaffId}> {before.Mention} needs access.";
+                        else
+                            output = $"<@&{config.StaffId}> {before.Mention} needs access.";
+
+                        if (loggedUser.ApprovalModId != 0)
+                        {
+                            output = $"{output}\nThey've previously been approved by <@{loggedUser.ApprovalModId}> with the reason `{loggedUser.ApprovalReason}`";
+                        }
+
+                        await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
+                            .SendMessageAsync(output);
+                    }
+                }
+                else if (before.Roles.Contains(role) && !after.Roles.Contains(role))
+                {
+                    // Role was removed
+
+                    await Task.Delay(500);
+
+                    var loggedUser = await dbhelper.GetLoggedUser(before.Id);
+
+                    if (loggedUser.ApprovedAccess)
+                    {
+                        await dbhelper.RevokeApproval(before.Id);
+
+                        string output = "";
+
+                        if (config.AlternateStaffMention)
+                            output = $"<@&{config.AlternateStaffId}> {before.Mention} has had their access revoked manually.";
+                        else
+                            output = $"<@&{config.StaffId}> {before.Mention} has had their access revoked manually.";
+
+                        await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
+                            .SendMessageAsync("");
+                    }
+                }
             }
         }
 
@@ -390,7 +454,12 @@ namespace TaranzaSoul
 
                     if (loggedUser == null)
                     {
-                        loggedUser = await dbhelper.AddLoggedUser(user.Id, newAccount: user.CreatedAt.Date > DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1));
+                        loggedUser = await dbhelper.AddLoggedUser
+                            (
+                                user.Id, 
+                                approvedAccess: user.CreatedAt.Date < DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1), 
+                                newAccount: user.CreatedAt.Date > DateTimeOffset.Now.AddDays(config.MinimumAccountAge * -1)
+                            );
                     }
 
                     if (loggedUser.ApprovedAccess)
