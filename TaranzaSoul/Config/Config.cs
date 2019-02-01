@@ -49,6 +49,9 @@ namespace TaranzaSoul
         [JsonProperty("minimum_age")]
         public int MinimumAccountAge { get; set; } = 14; // Age in days
 
+        [JsonProperty("remove_spoilers")]
+        public bool RemoveSpoilers { get; set; } = true;
+
         [JsonProperty("database_connection")]
         public string DatabaseConnectionString { get; set; } = "";
 

@@ -247,6 +247,21 @@ namespace TaranzaSoul.Modules.Standard
             await RespondAsync($"{unrecognized.ToString()}\n{removed.ToString()}");
         }
 
+        [Command("togglespoilers")]
+        public async Task ToggleSpoilerRemoval()
+        {
+            if (Context.Guild.Id != config.HomeGuildId)
+                return;
+
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(config.StaffId))
+                return;
+
+            config.RemoveSpoilers = !config.RemoveSpoilers;
+            await config.Save();
+
+            await RespondAsync($"Set `remove_spoilers` to `{config.RemoveSpoilers}`");
+        }
+
         [Command("watch")]
         [Summary("idk go watch some tv")]
         [Priority(1000)]

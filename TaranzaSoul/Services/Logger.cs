@@ -566,6 +566,9 @@ namespace TaranzaSoul
             }
             else
             {
+                if (!config.RemoveSpoilers)
+                    return;
+
                 try
                 {
                     if (!pMsg.Channel.Name.ToLower().Contains("spoil") && ( pMsg.Content.Count(x => x == '|') > 3 || pMsg.Attachments.Any(x => x.Filename.StartsWith("SPOILER_"))))
