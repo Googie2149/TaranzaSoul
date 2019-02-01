@@ -237,7 +237,7 @@ namespace TaranzaSoul.Modules.Standard
                     if (removed.Length == 0)
                         removed.Append("Removed the following user Id(s): ");
 
-                    unrecognized.Append($"{u} ");
+                    removed.Append($"{u} ");
                     
                     await dbhelper.RevokeApproval(u);
                     await Context.Guild.GetUser(u).RemoveRoleAsync(role);
