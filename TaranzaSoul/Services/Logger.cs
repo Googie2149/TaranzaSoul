@@ -388,7 +388,7 @@ namespace TaranzaSoul
                             output = $"<@&{config.StaffId}> {before.Mention} has had their access revoked manually.";
 
                         await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
-                            .SendMessageAsync("");
+                            .SendMessageAsync(output);
                     }
                 }
             }
