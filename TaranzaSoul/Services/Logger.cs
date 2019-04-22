@@ -378,14 +378,19 @@ namespace TaranzaSoul
 
                     if (loggedUser.ApprovedAccess)
                     {
-                        await dbhelper.RevokeApproval(before.Id);
+                        // don't revoke access
+                        // await dbhelper.RevokeApproval(before.Id);
 
                         string output = "";
 
-                        if (config.AlternateStaffMention)
-                            output = $"<@&{config.AlternateStaffId}> {before.Mention} has had their access revoked manually.";
-                        else
-                            output = $"<@&{config.StaffId}> {before.Mention} has had their access revoked manually.";
+                        // if (config.AlternateStaffMention)
+                        //     output = $"<@&{config.AlternateStaffId}> {before.Mention} has had their access revoked manually.";
+                        // else
+                        //     output = $"<@&{config.StaffId}> {before.Mention} has had their access revoked manually.";
+
+                        // send notification without a ping
+                        output = $"{before.Mention} has had their access revoked manually.";
+
 
                         await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
                             .SendMessageAsync(output);
