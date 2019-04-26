@@ -181,73 +181,63 @@ namespace TaranzaSoul
                 await msg.Channel.SendMessageAsync("Done!");
                 return;
             }
-            
-            //if (msg.Author.Id == 267405866162978816) return;
 
-            ////if ((msg.Channel as IGuildChannel) == null)
-            ////    return;
+            if (msg.Author.Id == 267405866162978816) return;
 
-            //if ((((IGuildUser)msg.Author).RoleIds.Contains((ulong)132721372848848896) ||
-            //    (((IGuildUser)msg.Author).RoleIds.Contains((ulong)190657363798261769)))
-            //    && msg.Content.ToLower() == "<@267405866162978816> get filter")
-            //{
-            //    await msg.Channel.SendFileAsync("@./filter.json", "Here you go.");
-            //}
+            if ((msg.Channel as IGuildChannel) == null)
+                return;
 
             if ((msg.Author as IGuildUser).RoleIds.Contains(config.StaffId) &&
                 (msg.Content.ToLower() == "<@!267405866162978816> get filter" || msg.Content.ToLower() == "<@267405866162978816> get filter"))
             {
-                //await msg.Channel.SendFileAsync("@./filter.json", "Here you go");
-                //await msg.Channel.SendFileRetry()
                 await msg.Channel.SendMemoryFile("filter.json", JsonConvert.SerializeObject(SpoilerWords, Formatting.Indented));
             }
 
-            //if ((((IGuildUser)msg.Author).RoleIds.Contains((ulong)132721372848848896) ||
-            //    (((IGuildUser)msg.Author).RoleIds.Contains((ulong)190657363798261769)))
-            //    && msg.Content.ToLower() == "<@267405866162978816> update filter")
-            //{
-            //    string file = "";
+            if ((msg.Author as IGuildUser).RoleIds.Contains(config.StaffId) &&
+                (msg.Content.ToLower() == "<@!267405866162978816> update filter" || msg.Content.ToLower() == "<@267405866162978816> update filter"))
+            {
+                string file = "";
 
-            //    if (msg.Attachments.Count() > 0)
-            //    {
-            //        if (msg.Attachments.FirstOrDefault().Filename.ToLower().EndsWith(".json"))
-            //            file = msg.Attachments.FirstOrDefault().Url;
-            //        else
-            //        {
-            //            await msg.Channel.SendMessageAsync("That isn't a .json file!");
-            //            return;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        await msg.Channel.SendMessageAsync("I don't see any attachments!");
-            //        return;
-            //    }
+                if (msg.Attachments.Count() > 0)
+                {
+                    if (msg.Attachments.FirstOrDefault().Filename.ToLower().EndsWith(".json"))
+                        file = msg.Attachments.FirstOrDefault().Url;
+                    else
+                    {
+                        await msg.Channel.SendMessageAsync("That isn't a .json file!");
+                        return;
+                    }
+                }
+                else
+                {
+                    await msg.Channel.SendMessageAsync("I don't see any attachments!");
+                    return;
+                }
 
-            //    using (WebClient client = new WebClient())
-            //    {
-            //        await client.DownloadFileTaskAsync(new Uri(file), $"@./temp/{file}");
-            //    }
+                using (WebClient client = new WebClient())
+                {
+                    await client.DownloadFileTaskAsync(new Uri(file), $"@./temp/{file}");
+                }
 
-            //    var tempWords = new List<string>();
+                var tempWords = new List<string>();
 
-            //    try
-            //    {
-            //        tempWords = JsonStorage.DeserializeObjectFromFile<List<string>>($"@./temp/{file}");
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        await msg.Channel.SendMessageAsync($"There was an error loading that file:\n{ex.Message}");
-            //        return;
-            //    }
+                try
+                {
+                    tempWords = JsonStorage.DeserializeObjectFromFile<List<string>>($"@./temp/{file}");
+                }
+                catch (Exception ex)
+                {
+                    await msg.Channel.SendMessageAsync($"There was an error loading that file:\n{ex.Message}");
+                    return;
+                }
 
-            //    File.Delete("@./filter.json");
-            //    File.Move($"@./temp/{file}", "@./filter.json");
+                File.Delete("@./filter.json");
+                File.Move($"@./temp/{file}", "@./filter.json");
 
-            //    SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
-            //    await msg.Channel.SendMessageAsync("Done!");
-            //    return;
-            //}
+                SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
+                await msg.Channel.SendMessageAsync("Done!");
+                return;
+            }
 
             //if (msg.Channel.Id == 417458111553470474 || msg.Channel.Id == 423578054775013377 ||
             //    msg.Channel.Id == 361589776433938432 || msg.Channel.Id == 425752341833187328 ||
