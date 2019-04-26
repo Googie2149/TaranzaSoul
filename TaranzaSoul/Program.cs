@@ -304,60 +304,53 @@ namespace TaranzaSoul
                 Console.WriteLine("Filter replaced");
 
                 SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
-
-
-                Console.WriteLine("New filter loaded");
                 await msg.Channel.SendMessageAsync("Done!");
                 return;
             }
 
-            //if (msg.Channel.Id == 417458111553470474 || msg.Channel.Id == 423578054775013377 ||
-            //    msg.Channel.Id == 361589776433938432 || msg.Channel.Id == 425752341833187328 ||
-            //    msg.Channel.Id == 429821654068101120 || msg.Channel.Id == 186342269274554368 ||
-            //    msg.Channel.Id == 190674947381657600)
-            //    return;
+            if (msg.Channel.Id == 228973368471322626 || msg.Channel.Id == 361589776433938432 || msg.Channel.Id == 425752341833187328
+                || msg.Channel.Id == 465651513512165388 || msg.Channel.Id == 186342269274554368 || msg.Channel.Id == 529898152547844116
+                || msg.Channel.Id == 231887645888872448 || msg.Channel.Id == 447789034131947530 || msg.Channel.Id == 429821654068101120)
+                return;
 
-            //if (((IGuildChannel)msg.Channel).GuildId != 132720341058453504)
-            //    return;
+            var tmp = msg.Content.ToLower();
 
-            //var tmp = msg.Content.ToLower();
+            if (msg.Content.ToLower().Split(' ').Any(x => SpoilerWords.Contains(x)))
+            {
 
-            //if (msg.Content.ToLower().Split(' ').Any(x => SpoilerWords.Contains(x)))
-            //{
+            }
 
-            //}
+            foreach (var s in SpoilerWords)
+            {
+                //if (msg.Channel.Id == 268945818470449162 && s == "flamberge")
+                //    continue;
 
-            //foreach (var s in SpoilerWords)
-            //{
-            //    if (msg.Channel.Id == 268945818470449162 && s == "flamberge")
-            //        continue;
+                if (tmp.Contains(s))
+                {
 
-            //    if (tmp.Contains(s))
-            //    {
+                    if (!s.Contains(" "))
+                    {
+                        bool match = false;
 
-            //        if (!s.Contains(" "))
-            //        {
-            //            bool match = false;
+                        foreach (var word in tmp.Split(' '))
+                        {
+                            if (word == s)
+                            {
+                                match = true;
+                                break;
+                            }
+                        }
 
-            //            foreach (var word in tmp.Split(' '))
-            //            {
-            //                if (word == s)
-            //                {
-            //                    match = true;
-            //                    break;
-            //                }
-            //            }
+                        if (!match) continue;
+                    }
 
-            //            if (!match) continue;
-            //        }
+                    await Task.Delay(100);
+                    await msg.DeleteAsync();
+                    string send = $"{msg.Author.Mention} that's a potential endgame spoiler! That belongs in <#228973368471322626>!";
 
-            //        await Task.Delay(100);
-            //        await msg.DeleteAsync();
-            //        string send = $"{msg.Author.Mention} that's a late game spoiler! That belongs in <#417458111553470474>!";
-
-            //        await msg.Channel.SendMessageAsync(send);
-            //    }
-            //}
+                    await msg.Channel.SendMessageAsync(send);
+                }
+            }
         }
         
 
