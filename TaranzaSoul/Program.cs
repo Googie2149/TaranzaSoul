@@ -214,9 +214,35 @@ namespace TaranzaSoul
                     return;
                 }
 
-                using (WebClient client = new WebClient())
+                Console.WriteLine($"setting download url to: {file}");
+
+                try
                 {
-                    await client.DownloadFileTaskAsync(new Uri(file), $"@./temp/{file}");
+                    using (WebClient client = new WebClient())
+                    {
+                        Console.WriteLine("Downloading...");
+                        await client.DownloadFileTaskAsync(new Uri(file), $"@./temp/{file}");
+                        Console.WriteLine("Downloaded");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await msg.Channel.SendMessageAsync($"There was an error downloading that file:\n{ex.Message}");
+                    string exMessage;
+                    if (ex != null)
+                    {
+                        while (ex is AggregateException && ex.InnerException != null)
+                            ex = ex.InnerException;
+                        exMessage = $"{ex.Message}";
+                        if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
+                            exMessage += $"\n{ex.StackTrace}";
+                    }
+                    else
+                        exMessage = null;
+
+                    Console.WriteLine(exMessage);
+
+                    return;
                 }
 
                 var tempWords = new List<string>();
@@ -228,13 +254,54 @@ namespace TaranzaSoul
                 catch (Exception ex)
                 {
                     await msg.Channel.SendMessageAsync($"There was an error loading that file:\n{ex.Message}");
+                    string exMessage;
+                    if (ex != null)
+                    {
+                        while (ex is AggregateException && ex.InnerException != null)
+                            ex = ex.InnerException;
+                        exMessage = $"{ex.Message}";
+                        if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
+                            exMessage += $"\n{ex.StackTrace}";
+                    }
+                    else
+                        exMessage = null;
+
+                    Console.WriteLine(exMessage);
+
                     return;
                 }
 
-                File.Delete("@./filter.json");
-                File.Move($"@./temp/{file}", "@./filter.json");
+                try
+                {
+                    File.Delete("@./filter.json");
+                    File.Move($"@./temp/{file}", "@./filter.json");
+                }
+                catch (Exception ex)
+                {
+                    await msg.Channel.SendMessageAsync($"There was an error replacing the filter:\n{ex.Message}");
+                    string exMessage;
+                    if (ex != null)
+                    {
+                        while (ex is AggregateException && ex.InnerException != null)
+                            ex = ex.InnerException;
+                        exMessage = $"{ex.Message}";
+                        if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
+                            exMessage += $"\n{ex.StackTrace}";
+                    }
+                    else
+                        exMessage = null;
+
+                    Console.WriteLine(exMessage);
+
+                    return;
+                }
+
+                Console.WriteLine("Filter replaced");
 
                 SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
+
+
+                Console.WriteLine("New filter loaded");
                 await msg.Channel.SendMessageAsync("Done!");
                 return;
             }
