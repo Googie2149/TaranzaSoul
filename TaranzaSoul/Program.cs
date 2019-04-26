@@ -193,6 +193,12 @@ namespace TaranzaSoul
             //    await msg.Channel.SendFileAsync("@./filter.json", "Here you go.");
             //}
 
+            if ((msg.Author as IGuildUser).RoleIds.Contains(config.StaffId) &&
+                (msg.Content.ToLower() == "<@!267405866162978816> get filter" || msg.Content.ToLower() == "<@267405866162978816> get filter"))
+            {
+                await msg.Channel.SendFileAsync("@./filter.json", "Here you go");
+            }
+
             //if ((((IGuildUser)msg.Author).RoleIds.Contains((ulong)132721372848848896) ||
             //    (((IGuildUser)msg.Author).RoleIds.Contains((ulong)190657363798261769)))
             //    && msg.Content.ToLower() == "<@267405866162978816> update filter")
