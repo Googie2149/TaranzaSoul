@@ -10,6 +10,7 @@ using Discord.Commands;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace TaranzaSoul
 {
@@ -197,7 +198,8 @@ namespace TaranzaSoul
                 (msg.Content.ToLower() == "<@!267405866162978816> get filter" || msg.Content.ToLower() == "<@267405866162978816> get filter"))
             {
                 //await msg.Channel.SendFileAsync("@./filter.json", "Here you go");
-                await msg.Channel.SendMessageAsync("Test");
+                //await msg.Channel.SendFileRetry()
+                await msg.Channel.SendMemoryFile("filter.json", JsonConvert.SerializeObject(SpoilerWords, Formatting.Indented));
             }
 
             //if ((((IGuildUser)msg.Author).RoleIds.Contains((ulong)132721372848848896) ||
