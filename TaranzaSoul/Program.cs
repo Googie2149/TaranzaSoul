@@ -255,7 +255,7 @@ namespace TaranzaSoul
 
                 try
                 {
-                    tempWords = JsonConvert.DeserializeObject<List<string>>(downloadedWords));
+                    tempWords = JsonConvert.DeserializeObject<List<string>>(downloadedWords);
                 }
                 catch (Exception ex)
                 {
