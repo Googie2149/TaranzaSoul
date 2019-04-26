@@ -198,6 +198,8 @@ namespace TaranzaSoul
             {
                 string file = "";
 
+                string downloadedWords = "";
+
                 if (msg.Attachments.Count() > 0)
                 {
                     if (msg.Attachments.FirstOrDefault().Filename.ToLower().EndsWith(".json"))
@@ -214,42 +216,46 @@ namespace TaranzaSoul
                     return;
                 }
 
-                Console.WriteLine($"setting download url to: {file}");
-
-                try
+                await Task.Run(async () =>
                 {
-                    using (WebClient client = new WebClient())
-                    {
-                        Console.WriteLine("Downloading...");
-                        await client.DownloadFileTaskAsync(new Uri(file), $"@./temp/{file}");
-                        Console.WriteLine("Downloaded");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await msg.Channel.SendMessageAsync($"There was an error downloading that file:\n{ex.Message}");
-                    string exMessage;
-                    if (ex != null)
-                    {
-                        while (ex is AggregateException && ex.InnerException != null)
-                            ex = ex.InnerException;
-                        exMessage = $"{ex.Message}";
-                        if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
-                            exMessage += $"\n{ex.StackTrace}";
-                    }
-                    else
-                        exMessage = null;
+                    Console.WriteLine($"setting download url to: {file}");
 
-                    Console.WriteLine(exMessage);
+                    try
+                    {
+                        using (WebClient client = new WebClient())
+                        {
+                            Console.WriteLine("Downloading...");
 
-                    return;
-                }
+                            downloadedWords = client.DownloadString(new Uri(file));
+                            Console.WriteLine("Downloaded");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await msg.Channel.SendMessageAsync($"There was an error downloading that file:\n{ex.Message}");
+                        string exMessage;
+                        if (ex != null)
+                        {
+                            while (ex is AggregateException && ex.InnerException != null)
+                                ex = ex.InnerException;
+                            exMessage = $"{ex.Message}";
+                            if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
+                                exMessage += $"\n{ex.StackTrace}";
+                        }
+                        else
+                            exMessage = null;
+
+                        Console.WriteLine(exMessage);
+
+                        return;
+                    }
+                });
 
                 var tempWords = new List<string>();
 
                 try
                 {
-                    tempWords = JsonStorage.DeserializeObjectFromFile<List<string>>($"@./temp/{file}");
+                    tempWords = JsonConvert.DeserializeObject<List<string>>(downloadedWords));
                 }
                 catch (Exception ex)
                 {
@@ -273,8 +279,7 @@ namespace TaranzaSoul
 
                 try
                 {
-                    File.Delete("@./filter.json");
-                    File.Move($"@./temp/{file}", "@./filter.json");
+                    JsonStorage.SerializeObjectToFile(tempWords, "filter.json");
                 }
                 catch (Exception ex)
                 {
