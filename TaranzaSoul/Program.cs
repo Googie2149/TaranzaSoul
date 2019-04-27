@@ -308,7 +308,7 @@ namespace TaranzaSoul
                 return;
             }
 
-            if (msg.Channel.Id == 228973368471322626 || msg.Channel.Id == 361589776433938432 || msg.Channel.Id == 425752341833187328
+            if (msg.Channel.Id == 565065746867027987 || msg.Channel.Id == 361589776433938432 || msg.Channel.Id == 425752341833187328
                 || msg.Channel.Id == 465651513512165388 || msg.Channel.Id == 186342269274554368 || msg.Channel.Id == 529898152547844116
                 || msg.Channel.Id == 231887645888872448 || msg.Channel.Id == 447789034131947530 || msg.Channel.Id == 429821654068101120)
                 return;
@@ -346,7 +346,7 @@ namespace TaranzaSoul
 
                     await Task.Delay(100);
                     await msg.DeleteAsync();
-                    string send = $"{msg.Author.Mention} that's a potential endgame spoiler! That belongs in <#228973368471322626>!";
+                    string send = $"{msg.Author.Mention} that's a potential endgame spoiler! That belongs in <#565065746867027987>!";
 
                     await msg.Channel.SendMessageAsync(send);
                 }
