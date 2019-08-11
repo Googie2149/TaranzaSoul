@@ -101,6 +101,11 @@ namespace TaranzaSoul
             //var avatar = new Image(File.OpenRead(".\\TaranzaSOUL.png"));
             //await client.CurrentUser.ModifyAsync(x => x.Avatar = avatar);
 
+            foreach (var kv in RoleColors)
+            {
+
+            }
+
             await Task.Delay(-1);
         }
 

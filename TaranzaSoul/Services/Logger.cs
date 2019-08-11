@@ -328,7 +328,7 @@ namespace TaranzaSoul
                     client.GuildMemberUpdated += Client_GuildMemberUpdated;
                 });
             }
-            else if (guild.Id != config.HomeGuildId || guild.Id == 473760817809063936)
+            else if (guild.Id != config.HomeGuildId && guild.Id != 473760817809063936 && guild.Id != 212053857306542080)
             {
                 await guild.LeaveAsync(); // seriously this bot is only set up to work with a single server
                 // and my testing server because reasons
