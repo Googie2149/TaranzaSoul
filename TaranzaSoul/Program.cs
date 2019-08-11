@@ -28,7 +28,7 @@ namespace TaranzaSoul
         private List<string> SpoilerWords = new List<string>();
         private Dictionary<string, ulong> RoleColors = new Dictionary<string, ulong>();
         private ulong updateChannel = 0;
-        private int guilds = 0;
+        //private int guilds = 0;
 
         private async Task RunAsync()
         {
@@ -114,64 +114,64 @@ namespace TaranzaSoul
                 updateChannel = 0;
             }
 
-            guilds++;
+            //guilds++;
 
-            var emoteServer = socketClient.GetGuild(212053857306542080);
-            var homeServer = socketClient.GetGuild(config.HomeGuildId);
-            var testChannel = socketClient.GetChannel(610210574952955911) as SocketTextChannel;
-            var abilityPlanet = socketClient.GetChannel(431953417024307210) as SocketTextChannel;
+            //var emoteServer = socketClient.GetGuild(212053857306542080);
+            //var homeServer = socketClient.GetGuild(config.HomeGuildId);
+            //var testChannel = socketClient.GetChannel(610210574952955911) as SocketTextChannel;
+            //var abilityPlanet = socketClient.GetChannel(431953417024307210) as SocketTextChannel;
 
-            if (emoteServer == null || homeServer == null || testChannel == null || abilityPlanet == null)
-                return;
+            //if (emoteServer == null || homeServer == null || testChannel == null || abilityPlanet == null)
+            //    return;
 
-            var history = abilityPlanet.GetMessagesAsync();
+            //var history = abilityPlanet.GetMessagesAsync();
 
-            var test = await history.FlattenAsync();
+            //var test = await history.FlattenAsync();
 
-            foreach (var t in test)
-            {
-                await t.DeleteAsync();
-                await Task.Delay(1000);
-            }
+            //foreach (var t in test)
+            //{
+            //    await t.DeleteAsync();
+            //    await Task.Delay(1000);
+            //}
 
-            StringBuilder output = new StringBuilder();
-            var i = 0;
-            //List<IEmote> reactions = new List<IEmote>();
-            IEmote[] reactions = new IEmote[4];
+            //StringBuilder output = new StringBuilder();
+            //var i = 0;
+            ////List<IEmote> reactions = new List<IEmote>();
+            //IEmote[] reactions = new IEmote[4];
 
-            await abilityPlanet.SendMessageAsync("Click a button to get a color!");
-            await Task.Delay(1000);
+            //await abilityPlanet.SendMessageAsync("Click a button to get a color!");
+            //await Task.Delay(1000);
 
-            foreach (var kv in RoleColors)
-            {
-                var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
-                var role = homeServer.GetRole(kv.Value);
+            //foreach (var kv in RoleColors)
+            //{
+            //    var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
+            //    var role = homeServer.GetRole(kv.Value);
 
-                if (i > 0)
-                    output.Append(" ");
+            //    if (i > 0)
+            //        output.Append(" ");
 
-                output.Append($"{emote} {role.Mention}");
-                reactions[i] = emote;
+            //    output.Append($"{emote} {role.Mention}");
+            //    reactions[i] = emote;
 
-                i++;
+            //    i++;
 
-                if (i > 3)
-                {
-                    var msg = await abilityPlanet.SendMessageAsync(output.ToString());
-                    await Task.Delay(1000);
-                    await msg.AddReactionsAsync(reactions);
+            //    if (i > 3)
+            //    {
+            //        var msg = await abilityPlanet.SendMessageAsync(output.ToString());
+            //        await Task.Delay(1000);
+            //        await msg.AddReactionsAsync(reactions);
 
-                    i = 0;
-                    reactions = new IEmote[4];
-                    output.Clear();
-                    //output.AppendLine();
-                }
-            }
-            await Task.Delay(1000);
+            //        i = 0;
+            //        reactions = new IEmote[4];
+            //        output.Clear();
+            //        //output.AppendLine();
+            //    }
+            //}
+            //await Task.Delay(1000);
 
-            var msg2 = await abilityPlanet.SendMessageAsync("If you want to get notified when others want to play uno, press the reaction to get the UNO role!");
-            await Task.Delay(1000);
-            await msg2.AddReactionAsync(emoteServer.Emotes.FirstOrDefault(x => x.Name == "NoU"));
+            //var msg2 = await abilityPlanet.SendMessageAsync("If you want to get notified when others want to play uno, press the reaction to get the UNO role!");
+            //await Task.Delay(1000);
+            //await msg2.AddReactionAsync(emoteServer.Emotes.FirstOrDefault(x => x.Name == "NoU"));
 
             
             //var uno = await abilityPlanet.GetMessageAsync(498080747656183808) as SocketUserMessage;
