@@ -133,6 +133,14 @@ namespace TaranzaSoul
                 var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
                 var role = homeServer.GetRole(kv.Value);
 
+                if (i > 0)
+                    output.Append(" ");
+
+                output.Append($"{emote} {role.Mention}");
+                reactions[i] = emote;
+
+                i++;
+
                 if (i > 3)
                 {
                     var msg = await testChannel.SendMessageAsync(output.ToString());
@@ -143,15 +151,6 @@ namespace TaranzaSoul
                     output.Clear();
                     //output.AppendLine();
                 }
-
-
-                if (i > 0)
-                    output.Append(" ");
-
-                output.Append($"{emote} {role.Mention}");
-                reactions[i] = emote;
-
-                i++;
             }
 
             Console.WriteLine(output.ToString());
