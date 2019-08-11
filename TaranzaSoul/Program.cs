@@ -129,56 +129,44 @@ namespace TaranzaSoul
             //List<IEmote> reactions = new List<IEmote>();
             IEmote[] reactions = new IEmote[4];
 
-            //await testChannel.SendMessageAsync("Click a button to get a color!");
+            await testChannel.SendMessageAsync("Click a button to get a color!");
 
-            //foreach (var kv in RoleColors)
-            //{
-            //    var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
-            //    var role = homeServer.GetRole(kv.Value);
-
-            //    if (i > 0)
-            //        output.Append(" ");
-
-            //    output.Append($"{emote} {role.Mention}");
-            //    reactions[i] = emote;
-
-            //    i++;
-
-            //    if (i > 3)
-            //    {
-            //        var msg = await testChannel.SendMessageAsync(output.ToString());
-            //        await msg.AddReactionsAsync(reactions);
-
-            //        i = 0;
-            //        reactions = new IEmote[4];
-            //        output.Clear();
-            //        //output.AppendLine();
-            //    }
-            //}
-
-            //var msg2 = await testChannel.SendMessageAsync("If you want to get notified when others want to play uno, press the reaction to get the UNO role!");
-            //await msg2.AddReactionAsync(emoteServer.Emotes.FirstOrDefault(x => x.Name == "NoU"));
-
-            var history = abilityPlanet.GetMessagesAsync();
-            //foreach (var m in )
-            //{
-
-            //}
-
-            var test = await history.FlattenAsync();
-
-            foreach (var t in test)
+            foreach (var kv in RoleColors)
             {
-                Console.WriteLine(t.Content);
-            }
-            
-            //do
-            //{
-            //    var m = history.GetEnumerator().Current;
-            //    Console.WriteLine(m.First().Content);
-            //}
-            //while (await history.GetEnumerator().MoveNext());
+                var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
+                var role = homeServer.GetRole(kv.Value);
 
+                if (i > 0)
+                    output.Append(" ");
+
+                output.Append($"{emote} {role.Mention}");
+                reactions[i] = emote;
+
+                i++;
+
+                if (i > 3)
+                {
+                    var msg = await testChannel.SendMessageAsync(output.ToString());
+                    await msg.AddReactionsAsync(reactions);
+
+                    i = 0;
+                    reactions = new IEmote[4];
+                    output.Clear();
+                    //output.AppendLine();
+                }
+            }
+
+            var msg2 = await testChannel.SendMessageAsync("If you want to get notified when others want to play uno, press the reaction to get the UNO role!");
+            await msg2.AddReactionAsync(emoteServer.Emotes.FirstOrDefault(x => x.Name == "NoU"));
+
+            //var history = testChannel.GetMessagesAsync();
+
+            //var test = await history.FlattenAsync();
+
+            //foreach (var t in test)
+            //{
+            //    Console.WriteLine(t.Content);
+            //}
             //var uno = await abilityPlanet.GetMessageAsync(498080747656183808) as SocketUserMessage;
             //Console.WriteLine((uno.Reactions.FirstOrDefault().Key as GuildEmote).Url);
 
@@ -217,6 +205,13 @@ namespace TaranzaSoul
                 if (user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
                     await user.RemoveRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
             }
+            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "NoU")
+            {
+                var user = ((SocketGuildUser)reaction.User);
+
+                if (user.Roles.Contains(user.Guild.GetRole(498078860517048331)))
+                    await user.RemoveRoleAsync(user.Guild.GetRole(498078860517048331));
+            }
         }
 
         private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
@@ -233,14 +228,21 @@ namespace TaranzaSoul
                 if (!user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
                     await user.AddRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
             }
-            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "🚫")
+            //else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "🚫")
+            //{
+            //    var user = ((SocketGuildUser)reaction.User);
+
+            //    foreach (var r in user.Roles.Where(x => RoleColors.ContainsValue(x.Id)))
+            //    {
+            //        await user.RemoveRoleAsync(r);
+            //    }
+            //}
+            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "NoU")
             {
                 var user = ((SocketGuildUser)reaction.User);
 
-                foreach (var r in user.Roles.Where(x => RoleColors.ContainsValue(x.Id)))
-                {
-                    await user.RemoveRoleAsync(r);
-                }
+                if (!user.Roles.Contains(user.Guild.GetRole(498078860517048331)))
+                    await user.AddRoleAsync(user.Guild.GetRole(498078860517048331));
             }
         }
 
