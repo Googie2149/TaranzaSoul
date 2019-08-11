@@ -124,6 +124,15 @@ namespace TaranzaSoul
             if (emoteServer == null || homeServer == null || testChannel == null || abilityPlanet == null)
                 return;
 
+            var history = testChannel.GetMessagesAsync();
+
+            var test = await history.FlattenAsync();
+
+            foreach (var t in test)
+            {
+                await t.DeleteAsync();
+            }
+
             StringBuilder output = new StringBuilder();
             var i = 0;
             //List<IEmote> reactions = new List<IEmote>();
@@ -159,14 +168,7 @@ namespace TaranzaSoul
             var msg2 = await testChannel.SendMessageAsync("If you want to get notified when others want to play uno, press the reaction to get the UNO role!");
             await msg2.AddReactionAsync(emoteServer.Emotes.FirstOrDefault(x => x.Name == "NoU"));
 
-            //var history = testChannel.GetMessagesAsync();
-
-            //var test = await history.FlattenAsync();
-
-            //foreach (var t in test)
-            //{
-            //    Console.WriteLine(t.Content);
-            //}
+            
             //var uno = await abilityPlanet.GetMessageAsync(498080747656183808) as SocketUserMessage;
             //Console.WriteLine((uno.Reactions.FirstOrDefault().Key as GuildEmote).Url);
 
