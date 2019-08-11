@@ -165,11 +165,12 @@ namespace TaranzaSoul
 
             //}
 
-            while (await history.GetEnumerator().MoveNext())
+            do
             {
                 var m = history.GetEnumerator().Current;
                 Console.WriteLine(m.First().Content);
             }
+            while (await history.GetEnumerator().MoveNext());
 
             //var uno = await abilityPlanet.GetMessageAsync(498080747656183808) as SocketUserMessage;
             //Console.WriteLine((uno.Reactions.FirstOrDefault().Key as GuildEmote).Url);
