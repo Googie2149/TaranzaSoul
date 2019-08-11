@@ -28,7 +28,6 @@ namespace TaranzaSoul
         private List<string> SpoilerWords = new List<string>();
         private Dictionary<string, ulong> RoleColors = new Dictionary<string, ulong>();
         private ulong updateChannel = 0;
-        //private int guilds = 0;
 
         private async Task RunAsync()
         {
@@ -113,8 +112,6 @@ namespace TaranzaSoul
                 await guild.GetTextChannel(updateChannel).SendMessageAsync("Successfully reconnected.");
                 updateChannel = 0;
             }
-
-            //guilds++;
 
             //var emoteServer = socketClient.GetGuild(212053857306542080);
             //var homeServer = socketClient.GetGuild(config.HomeGuildId);
