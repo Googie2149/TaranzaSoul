@@ -118,12 +118,15 @@ namespace TaranzaSoul
 
             var emoteServer = socketClient.GetGuild(212053857306542080);
             var homeServer = socketClient.GetGuild(config.HomeGuildId);
+            var testChannel = socketClient.GetChannel(610210574952955911) as SocketTextChannel;
 
-            if (emoteServer == null || homeServer == null)
+            if (emoteServer == null || homeServer == null || testChannel == null)
                 return;
 
             StringBuilder output = new StringBuilder();
             var i = 0;
+            //List<IEmote> reactions = new List<IEmote>();
+            IEmote[] reactions = new IEmote[4];
 
             foreach (var kv in RoleColors)
             {
@@ -132,8 +135,12 @@ namespace TaranzaSoul
 
                 if (i > 3)
                 {
+                    var msg = await testChannel.SendMessageAsync(output.ToString());
+                    await msg.AddReactionsAsync(reactions);
+
                     i = 0;
-                    output.AppendLine();
+                    reactions = new IEmote[4];
+                    //output.AppendLine();
                 }
 
 
@@ -141,6 +148,7 @@ namespace TaranzaSoul
                     output.Append(" ");
 
                 output.Append($"<{emote.Name}:{emote.Id}> {role.Mention}");
+                reactions[i] = emote;
 
                 i++;
             }
