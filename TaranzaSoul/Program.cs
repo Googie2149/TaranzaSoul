@@ -130,7 +130,7 @@ namespace TaranzaSoul
                 var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
                 var role = homeServer.GetRole(kv.Value);
 
-                if (i == 3)
+                if (i > 3)
                 {
                     i = 0;
                     output.AppendLine();
