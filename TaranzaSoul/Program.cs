@@ -116,36 +116,36 @@ namespace TaranzaSoul
 
             guilds++;
 
-            if (guilds == 2)
+            var emoteServer = socketClient.GetGuild(212053857306542080);
+            var homeServer = socketClient.GetGuild(config.HomeGuildId);
+
+            if (emoteServer == null || homeServer == null)
+                return;
+
+            StringBuilder output = new StringBuilder();
+            var i = 0;
+
+            foreach (var kv in RoleColors)
             {
-                var emoteServer = socketClient.GetGuild(212053857306542080);
-                var homeServer = socketClient.GetGuild(config.HomeGuildId);
+                var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
+                var role = homeServer.GetRole(kv.Value);
 
-                StringBuilder output = new StringBuilder();
-                var i = 0;
-
-                foreach (var kv in RoleColors)
+                if (i == 3)
                 {
-                    var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
-                    var role = homeServer.GetRole(kv.Value);
-
-                    if (i == 3)
-                    {
-                        i = 0;
-                        output.AppendLine();
-                    }
-
-
-                    if (i > 0)
-                        output.Append(" ");
-
-                    output.Append($"<{emote.Name}:{emote.Id}> {role.Mention}");
-
-                    i++;
+                    i = 0;
+                    output.AppendLine();
                 }
 
-                Console.WriteLine(output.ToString());
+
+                if (i > 0)
+                    output.Append(" ");
+
+                output.Append($"<{emote.Name}:{emote.Id}> {role.Mention}");
+
+                i++;
             }
+
+            Console.WriteLine(output.ToString());
         }
 
         private async Task SocketClient_Disconnected(Exception ex)
