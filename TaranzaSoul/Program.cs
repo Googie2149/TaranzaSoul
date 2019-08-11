@@ -124,7 +124,7 @@ namespace TaranzaSoul
             if (emoteServer == null || homeServer == null || testChannel == null || abilityPlanet == null)
                 return;
 
-            var history = testChannel.GetMessagesAsync();
+            var history = abilityPlanet.GetMessagesAsync();
 
             var test = await history.FlattenAsync();
 
@@ -139,7 +139,8 @@ namespace TaranzaSoul
             //List<IEmote> reactions = new List<IEmote>();
             IEmote[] reactions = new IEmote[4];
 
-            await testChannel.SendMessageAsync("Click a button to get a color!");
+            await abilityPlanet.SendMessageAsync("Click a button to get a color!");
+            await Task.Delay(1000);
 
             foreach (var kv in RoleColors)
             {
@@ -156,7 +157,7 @@ namespace TaranzaSoul
 
                 if (i > 3)
                 {
-                    var msg = await testChannel.SendMessageAsync(output.ToString());
+                    var msg = await abilityPlanet.SendMessageAsync(output.ToString());
                     await Task.Delay(1000);
                     await msg.AddReactionsAsync(reactions);
 
@@ -168,7 +169,7 @@ namespace TaranzaSoul
             }
             await Task.Delay(1000);
 
-            var msg2 = await testChannel.SendMessageAsync("If you want to get notified when others want to play uno, press the reaction to get the UNO role!");
+            var msg2 = await abilityPlanet.SendMessageAsync("If you want to get notified when others want to play uno, press the reaction to get the UNO role!");
             await Task.Delay(1000);
             await msg2.AddReactionAsync(emoteServer.Emotes.FirstOrDefault(x => x.Name == "NoU"));
 
