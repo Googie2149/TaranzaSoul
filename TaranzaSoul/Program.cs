@@ -119,8 +119,9 @@ namespace TaranzaSoul
             var emoteServer = socketClient.GetGuild(212053857306542080);
             var homeServer = socketClient.GetGuild(config.HomeGuildId);
             var testChannel = socketClient.GetChannel(610210574952955911) as SocketTextChannel;
+            var abilityPlanet = socketClient.GetChannel(431953417024307210) as SocketTextChannel;
 
-            if (emoteServer == null || homeServer == null || testChannel == null)
+            if (emoteServer == null || homeServer == null || testChannel == null || abilityPlanet == null)
                 return;
 
             StringBuilder output = new StringBuilder();
@@ -128,32 +129,35 @@ namespace TaranzaSoul
             //List<IEmote> reactions = new List<IEmote>();
             IEmote[] reactions = new IEmote[4];
 
-            foreach (var kv in RoleColors)
-            {
-                var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
-                var role = homeServer.GetRole(kv.Value);
+            //foreach (var kv in RoleColors)
+            //{
+            //    var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
+            //    var role = homeServer.GetRole(kv.Value);
 
-                if (i > 0)
-                    output.Append(" ");
+            //    if (i > 0)
+            //        output.Append(" ");
 
-                output.Append($"{emote} {role.Mention}");
-                reactions[i] = emote;
+            //    output.Append($"{emote} {role.Mention}");
+            //    reactions[i] = emote;
 
-                i++;
+            //    i++;
 
-                if (i > 3)
-                {
-                    var msg = await testChannel.SendMessageAsync(output.ToString());
-                    await msg.AddReactionsAsync(reactions);
+            //    if (i > 3)
+            //    {
+            //        var msg = await testChannel.SendMessageAsync(output.ToString());
+            //        await msg.AddReactionsAsync(reactions);
 
-                    i = 0;
-                    reactions = new IEmote[4];
-                    output.Clear();
-                    //output.AppendLine();
-                }
-            }
+            //        i = 0;
+            //        reactions = new IEmote[4];
+            //        output.Clear();
+            //        //output.AppendLine();
+            //    }
+            //}
 
-            Console.WriteLine(output.ToString());
+            var uno = await abilityPlanet.GetMessageAsync(498080747656183808) as SocketUserMessage;
+            Console.WriteLine((uno.Reactions.FirstOrDefault().Key as GuildEmote).Url);
+
+            //Console.WriteLine(output.ToString());
         }
 
         private async Task SocketClient_Disconnected(Exception ex)
