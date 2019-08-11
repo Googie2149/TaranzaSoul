@@ -101,33 +101,33 @@ namespace TaranzaSoul
             //var avatar = new Image(File.OpenRead(".\\TaranzaSOUL.png"));
             //await client.CurrentUser.ModifyAsync(x => x.Avatar = avatar);
 
-            var emoteServer = socketClient.GetGuild(212053857306542080);
-            var homeServer = socketClient.GetGuild(config.HomeGuildId);
+            //var emoteServer = socketClient.GetGuild(212053857306542080);
+            //var homeServer = socketClient.GetGuild(config.HomeGuildId);
 
-            StringBuilder output = new StringBuilder();
-            var i = 0;
+            //StringBuilder output = new StringBuilder();
+            //var i = 0;
 
-            foreach (var kv in RoleColors)
-            {
-                var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
-                var role = homeServer.GetRole(kv.Value);
+            //foreach (var kv in RoleColors)
+            //{
+            //    var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
+            //    var role = homeServer.GetRole(kv.Value);
 
-                if (i == 3)
-                {
-                    i = 0;
-                    output.AppendLine();
-                }
+            //    if (i == 3)
+            //    {
+            //        i = 0;
+            //        output.AppendLine();
+            //    }
 
 
-                if (i > 0)
-                    output.Append(" ");
+            //    if (i > 0)
+            //        output.Append(" ");
 
-                output.Append($"<{emote.Name}:{emote.Id}> {role.Mention}");
+            //    output.Append($"<{emote.Name}:{emote.Id}> {role.Mention}");
 
-                i++;
-            }
+            //    i++;
+            //}
 
-            Console.WriteLine(output.ToString());
+            //Console.WriteLine(output.ToString());
 
             await Task.Delay(-1);
         }
