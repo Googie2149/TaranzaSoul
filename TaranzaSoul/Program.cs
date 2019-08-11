@@ -131,6 +131,7 @@ namespace TaranzaSoul
             foreach (var t in test)
             {
                 await t.DeleteAsync();
+                await Task.Delay(1000);
             }
 
             StringBuilder output = new StringBuilder();
@@ -156,6 +157,7 @@ namespace TaranzaSoul
                 if (i > 3)
                 {
                     var msg = await testChannel.SendMessageAsync(output.ToString());
+                    await Task.Delay(1000);
                     await msg.AddReactionsAsync(reactions);
 
                     i = 0;
@@ -164,8 +166,10 @@ namespace TaranzaSoul
                     //output.AppendLine();
                 }
             }
+            await Task.Delay(1000);
 
             var msg2 = await testChannel.SendMessageAsync("If you want to get notified when others want to play uno, press the reaction to get the UNO role!");
+            await Task.Delay(1000);
             await msg2.AddReactionAsync(emoteServer.Emotes.FirstOrDefault(x => x.Name == "NoU"));
 
             
