@@ -140,6 +140,7 @@ namespace TaranzaSoul
 
                     i = 0;
                     reactions = new IEmote[4];
+                    output.Clear();
                     //output.AppendLine();
                 }
 
@@ -147,7 +148,7 @@ namespace TaranzaSoul
                 if (i > 0)
                     output.Append(" ");
 
-                output.Append($"<{emote.Name}:{emote.Id}> {role.Mention}");
+                output.Append($"{emote} {role.Mention}");
                 reactions[i] = emote;
 
                 i++;
