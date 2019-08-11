@@ -129,7 +129,7 @@ namespace TaranzaSoul
             //List<IEmote> reactions = new List<IEmote>();
             IEmote[] reactions = new IEmote[4];
 
-            await testChannel.SendMessageAsync("Click a button to get a color!");
+            //await testChannel.SendMessageAsync("Click a button to get a color!");
 
             //foreach (var kv in RoleColors)
             //{
