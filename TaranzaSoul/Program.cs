@@ -60,7 +60,7 @@ namespace TaranzaSoul
             logger = new Logger();
 
             var map = new ServiceCollection().AddSingleton(socketClient).AddSingleton(config).AddSingleton(logger).AddSingleton(dbhelper).BuildServiceProvider();
-            
+
             await socketClient.LoginAsync(TokenType.Bot, config.Token);
             await socketClient.StartAsync();
 
@@ -129,6 +129,8 @@ namespace TaranzaSoul
             //List<IEmote> reactions = new List<IEmote>();
             IEmote[] reactions = new IEmote[4];
 
+            await testChannel.SendMessageAsync("Click a button to get a color!");
+
             //foreach (var kv in RoleColors)
             //{
             //    var emote = emoteServer.Emotes.FirstOrDefault(x => x.Name == kv.Key);
@@ -154,8 +156,23 @@ namespace TaranzaSoul
             //    }
             //}
 
-            var uno = await abilityPlanet.GetMessageAsync(498080747656183808) as SocketUserMessage;
-            Console.WriteLine((uno.Reactions.FirstOrDefault().Key as GuildEmote).Url);
+            //var msg2 = await testChannel.SendMessageAsync("If you want to get notified when others want to play uno, press the reaction to get the UNO role!");
+            //await msg2.AddReactionAsync(emoteServer.Emotes.FirstOrDefault(x => x.Name == "NoU"));
+
+            var history = abilityPlanet.GetMessagesAsync();
+            //foreach (var m in )
+            //{
+
+            //}
+
+            while (await history.GetEnumerator().MoveNext())
+            {
+                var m = history.GetEnumerator().Current;
+                Console.WriteLine(m.First().Content);
+            }
+
+            //var uno = await abilityPlanet.GetMessageAsync(498080747656183808) as SocketUserMessage;
+            //Console.WriteLine((uno.Reactions.FirstOrDefault().Key as GuildEmote).Url);
 
             //Console.WriteLine(output.ToString());
         }
@@ -218,7 +235,7 @@ namespace TaranzaSoul
                 }
             }
         }
-        
+
         private async Task Client_MessageReceived(SocketMessage msg)
         {
             if (msg.Author.Id == 102528327251656704 && msg.Content.ToLower() == "<@267405866162978816> update colors")
@@ -398,7 +415,7 @@ namespace TaranzaSoul
                 }
             }
         }
-        
+
 
         private Task Log(LogMessage msg)
         {
