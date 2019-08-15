@@ -295,7 +295,7 @@ namespace TaranzaSoul
                     {
                         Console.WriteLine($"blackinglisting {idiot}...");
                         await RemoveAllColors(idiot.Id);
-                        config.BlacklistedUsers.Add(idiot.Id, DateTimeOffset.Now.AddDays(7));
+                        config.BlacklistedUsers[idiot.Id] = DateTimeOffset.Now.AddDays(7);
                         Console.WriteLine($"[Login check] Blacklisted {idiot} [{idiot.Id}] from colors.");
                     }
                 }
