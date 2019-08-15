@@ -240,34 +240,13 @@ namespace TaranzaSoul
             {
                 try
                 {
-
-                    //if (homeServer == null)
-                    //    return;
-
-                    //if (runningRemoval == true)
-                    //    return;
-
-                    //runningRemoval = true;
-
                     if (guild.Id != config.HomeGuildId)
                         return;
-                    Console.WriteLine("Our guild is available");
-                    
 
                     var homeServer = socketClient.GetGuild(config.HomeGuildId);
-                    Console.WriteLine("grabbed our guild");
-
-                    //Task.Run(async () =>
-                    //{
-                    //    await homeServer.DownloadUsersAsync();
-                    //});
-
-                    //await Task.Delay(3000); // ffs
 
                     List<SocketGuildUser> multiroledrifters = new List<SocketGuildUser>();
                     var staffRole = homeServer.GetRole(config.StaffId);
-
-                    Console.WriteLine("prepared");
 
                     foreach (var u in homeServer.Users)
                     {
@@ -280,20 +259,21 @@ namespace TaranzaSoul
                             if (RoleColors.Values.Contains(r.Id))
                                 i++;
 
-                            if (i > 1 || config.BlacklistedUsers.ContainsKey(u.Id))
+                            if (i > 1)
                             {
-                                Console.WriteLine($"checked in {u}");
+                                multiroledrifters.Add(u);
+                                break;
+                            }
+                            else if (config.BlacklistedUsers.ContainsKey(u.Id) && i == 1)
+                            {
                                 multiroledrifters.Add(u);
                                 break;
                             }
                         }
                     }
 
-                    Console.WriteLine("done checking users");
-
                     foreach (var idiot in multiroledrifters)
                     {
-                        Console.WriteLine($"blackinglisting {idiot}...");
                         await RemoveAllColors(idiot.Id);
                         config.BlacklistedUsers[idiot.Id] = DateTimeOffset.Now.AddDays(7);
                         Console.WriteLine($"[Login check] Blacklisted {idiot} [{idiot.Id}] from colors.");
