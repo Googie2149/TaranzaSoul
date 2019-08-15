@@ -250,12 +250,12 @@ namespace TaranzaSoul
 
                     runningRemoval = true;
 
-                    Task.Run(async () =>
-                    {
-                        await homeServer.DownloadUsersAsync();
-                    });
+                    //Task.Run(async () =>
+                    //{
+                    //    await homeServer.DownloadUsersAsync();
+                    //});
 
-                    await Task.Delay(3000); // ffs
+                    //await Task.Delay(3000); // ffs
 
                     List<SocketGuildUser> multiroledrifters = new List<SocketGuildUser>();
                     var staffRole = homeServer.GetRole(config.StaffId);
