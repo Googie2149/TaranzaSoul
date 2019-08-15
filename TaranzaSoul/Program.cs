@@ -262,14 +262,10 @@ namespace TaranzaSoul
                         if (RoleColors.Values.Contains(r.Id))
                             i++;
 
-                        if (i > 1)
+                        if (i > 1 || config.BlacklistedUsers.ContainsKey(u.Id))
                         {
                             multiroledrifters.Add(u);
                             break;
-                        }
-                        else if (i == 1 && config.BlacklistedUsers.ContainsKey(u.Id))
-                        {
-                            await RemoveAllColors(u.Id);
                         }
                     }
                 }
