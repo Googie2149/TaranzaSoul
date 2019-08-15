@@ -200,17 +200,20 @@ namespace TaranzaSoul
 
         private async Task RemoveAllColors(ulong user)
         {
-            List<IRole> roles = new List<IRole>();
+            //List<IRole> roles = new List<IRole>();
 
             var guildUser = socketClient.GetGuild(config.HomeGuildId).GetUser(user);
 
             foreach (var u in guildUser.Roles)
             {
                 if (RoleColors.Values.Contains(u.Id))
-                    roles.Add(u);
+                {
+                    guildUser.RemoveRoleAsync(u);
+                    await Task.Delay(1100);
+                }
             }
 
-            socketClient.GetGuild(config.HomeGuildId).GetUser(user).RemoveRolesAsync(roles);
+            //socketClient.GetGuild(config.HomeGuildId).GetUser(user).RemoveRolesAsync(roles);
         }
 
         private async Task Client_GuildAvailable(SocketGuild guild)
@@ -375,11 +378,6 @@ namespace TaranzaSoul
             if (reaction.Channel.Id == 431953417024307210 && RoleColors.ContainsKey(reaction.Emote.Name))
             {
                 var user = ((SocketGuildUser)reaction.User);
-
-                //foreach (var r in user.Roles.Where(x => RoleColors.ContainsValue(x.Id) && x.Id != RoleColors[reaction.Emote.Name]))
-                //{
-                //    await user.RemoveRoleAsync(r);
-                //}
 
                 //await RemoveAllColors(user.Id);
 
