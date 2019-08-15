@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using Newtonsoft.Json;
+using System.Collections.Concurrent;
 
 namespace TaranzaSoul
 {
@@ -28,6 +29,16 @@ namespace TaranzaSoul
         private List<string> SpoilerWords = new List<string>();
         private Dictionary<string, ulong> RoleColors = new Dictionary<string, ulong>();
         private ulong updateChannel = 0;
+        private ConcurrentQueue<RoleAddition> RoleAdditions = new ConcurrentQueue<RoleAddition>();
+        private DateTimeOffset lastRole = DateTimeOffset.Now;
+
+        private class RoleAddition
+        {
+            public ulong userId;
+            public ulong roleId;
+            public bool remove = false;
+        }
+        
 
         private async Task RunAsync()
         {
@@ -98,10 +109,86 @@ namespace TaranzaSoul
                 Console.WriteLine($"{ex.Source}\n{ex.Message}\n{ex.StackTrace}");
             }
 
+            //Task.Run(async () =>
+            //{
+
+            //});
+
+            //Task.Run(async () =>
+            //{
+            //    while (true)
+            //    {
+            //        await Task.Delay(500);
+
+            //        try
+            //        {
+            //            if (lastRole < DateTimeOffset.Now.AddSeconds(-3))
+            //                continue;
+
+            //            List<RoleAddition> temp = new List<RoleAddition>();
+            //            RoleAddition tempAction = null;
+
+            //            while (RoleAdditions.TryDequeue(out tempAction))
+            //            {
+            //                temp.Add(tempAction);
+            //            }
+
+            //            if (temp.Count() != temp.Select(x => x.userId).Distinct().Count())
+            //            {
+            //                // SOMEONE clicked on more than one role at a time!
+            //                Dictionary<ulong, int> counter = new Dictionary<ulong, int>();
+
+            //                foreach (var u in temp.Select(x => x.userId))
+            //                {
+            //                    if (!counter.ContainsKey(u))
+            //                        counter[u] = 0;
+
+            //                    counter[u]++;
+            //                }
+
+            //                foreach (var u in counter)
+            //                {
+            //                    if (u.Value == 2)
+            //                    {
+            //                        try
+            //                        {
+            //                            await socketClient.GetUser(u.Key).SendMessageAsync("Hey, slow down! You don't need every color on that list!");
+            //                        }
+            //                        catch (Exception ex)
+            //                        {
+            //                            // User has their DMs disabled
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            await Task.Delay(1000);
+            //            // idk something errored
+            //        }
+            //    }
+            //});
+
             //var avatar = new Image(File.OpenRead(".\\TaranzaSOUL.png"));
             //await client.CurrentUser.ModifyAsync(x => x.Avatar = avatar);
 
             await Task.Delay(-1);
+        }
+
+        private async Task RemoveAllColors(ulong user)
+        {
+            List<IRole> roles = new List<IRole>();
+
+            var guildUser = socketClient.GetGuild(config.HomeGuildId).GetUser(user);
+
+            foreach (var u in guildUser.Roles)
+            {
+                if (RoleColors.Values.Contains(u.Id))
+                    roles.Add(u);
+            }
+
+            socketClient.GetGuild(config.HomeGuildId).GetUser(user).RemoveRolesAsync(roles);
         }
 
         private async Task Client_GuildAvailable(SocketGuild guild)
@@ -207,7 +294,11 @@ namespace TaranzaSoul
                 var user = ((SocketGuildUser)reaction.User);
 
                 if (user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
+                {
+                    //RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, remove = true });
+                    //lastRole = DateTimeOffset.Now;
                     await user.RemoveRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
+                }
             }
             else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "NoU")
             {
@@ -224,13 +315,19 @@ namespace TaranzaSoul
             {
                 var user = ((SocketGuildUser)reaction.User);
 
-                foreach (var r in user.Roles.Where(x => RoleColors.ContainsValue(x.Id) && x.Id != RoleColors[reaction.Emote.Name]))
-                {
-                    await user.RemoveRoleAsync(r);
-                }
+                //foreach (var r in user.Roles.Where(x => RoleColors.ContainsValue(x.Id) && x.Id != RoleColors[reaction.Emote.Name]))
+                //{
+                //    await user.RemoveRoleAsync(r);
+                //}
+
+                await RemoveAllColors(user.Id);
 
                 if (!user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
+                {
+                    //RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, roleId = RoleColors[reaction.Emote.Name] });
+                    //lastRole = DateTimeOffset.Now;
                     await user.AddRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
+                }
             }
             //else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "🚫")
             //{

@@ -61,6 +61,9 @@ namespace TaranzaSoul
         [JsonProperty("watched_ids")]
         public Dictionary<ulong, string> WatchedIds { get; set; } = new Dictionary<ulong, string>();
 
+        [JsonProperty("color_abusers")]
+        public Dictionary<ulong, DateTimeOffset> BlacklistedUsers { get; set; } = new Dictionary<ulong, DateTimeOffset>();
+
         public async static Task<Config> Load()
         {
             if (File.Exists("config.json"))
