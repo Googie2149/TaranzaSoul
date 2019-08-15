@@ -233,12 +233,20 @@ namespace TaranzaSoul
             {
                 var homeServer = socketClient.GetGuild(config.HomeGuildId);
 
-                if (homeServer == null || runningRemoval)
+                if (homeServer == null)
+                    return;
+
+                if (runningRemoval == true)
                     return;
 
                 runningRemoval = true;
 
-                await homeServer.DownloadUsersAsync();
+                Task.Run(async () =>
+                {
+                    await homeServer.DownloadUsersAsync();
+                });
+
+                await Task.Delay(3000); // ffs
 
                 List<SocketGuildUser> multiroledrifters = new List<SocketGuildUser>();
                 var staffRole = homeServer.GetRole(config.StaffId);
