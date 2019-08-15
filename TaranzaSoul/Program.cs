@@ -203,15 +203,22 @@ namespace TaranzaSoul
         {
             //List<IRole> roles = new List<IRole>();
 
-            var guildUser = socketClient.GetGuild(config.HomeGuildId).GetUser(user);
-
-            foreach (var u in guildUser.Roles)
+            try
             {
-                if (RoleColors.Values.Contains(u.Id))
+                var guildUser = socketClient.GetGuild(config.HomeGuildId).GetUser(user);
+
+                foreach (var u in guildUser.Roles)
                 {
-                    await guildUser.RemoveRoleAsync(u);
-                    await Task.Delay(2000);
+                    if (RoleColors.Values.Contains(u.Id))
+                    {
+                        await guildUser.RemoveRoleAsync(u);
+                        //await Task.Delay(2000);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Source}\n{ex.Message}\n{ex.StackTrace}");
             }
 
             return;
