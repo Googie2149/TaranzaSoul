@@ -210,7 +210,7 @@ namespace TaranzaSoul
                 if (RoleColors.Values.Contains(u.Id))
                 {
                     guildUser.RemoveRoleAsync(u);
-                    await Task.Delay(1500);
+                    await Task.Delay(2000);
                 }
             }
 
