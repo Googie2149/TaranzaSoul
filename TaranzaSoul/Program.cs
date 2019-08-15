@@ -209,7 +209,7 @@ namespace TaranzaSoul
             {
                 if (RoleColors.Values.Contains(u.Id))
                 {
-                    guildUser.RemoveRoleAsync(u);
+                    await guildUser.RemoveRoleAsync(u);
                     await Task.Delay(2000);
                 }
             }
@@ -266,6 +266,10 @@ namespace TaranzaSoul
                         {
                             multiroledrifters.Add(u);
                             break;
+                        }
+                        else if (i == 1 && config.BlacklistedUsers.ContainsKey(u.Id))
+                        {
+                            await RemoveAllColors(u.Id);
                         }
                     }
                 }
