@@ -109,66 +109,88 @@ namespace TaranzaSoul
                 Console.WriteLine($"{ex.Source}\n{ex.Message}\n{ex.StackTrace}");
             }
 
-            //Task.Run(async () =>
-            //{
+            // perpetual queue to add/remove color roles
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Delay(500);
 
-            //});
+                    try
+                    {
+                        if (lastRole < DateTimeOffset.Now.AddSeconds(-3))
+                            continue;
 
-            //Task.Run(async () =>
-            //{
-            //    while (true)
-            //    {
-            //        await Task.Delay(500);
+                        List<RoleAddition> temp = new List<RoleAddition>();
+                        RoleAddition tempAction = null;
 
-            //        try
-            //        {
-            //            if (lastRole < DateTimeOffset.Now.AddSeconds(-3))
-            //                continue;
+                        while (RoleAdditions.TryDequeue(out tempAction))
+                        {
+                            if (config.BlacklistedUsers.ContainsKey(tempAction.userId) && 
+                                config.BlacklistedUsers[tempAction.userId] > DateTimeOffset.Now)
+                                continue;
+                            else
+                                temp.Add(tempAction);
+                        }
 
-            //            List<RoleAddition> temp = new List<RoleAddition>();
-            //            RoleAddition tempAction = null;
+                        if (temp.Count() != temp.Select(x => x.userId).Distinct().Count())
+                        {
+                            // SOMEONE clicked on more than one role at a time!
+                            Dictionary<ulong, int> counter = new Dictionary<ulong, int>();
 
-            //            while (RoleAdditions.TryDequeue(out tempAction))
-            //            {
-            //                temp.Add(tempAction);
-            //            }
+                            foreach (var u in temp.Select(x => x.userId))
+                            {
+                                if (!counter.ContainsKey(u))
+                                    counter[u] = 0;
 
-            //            if (temp.Count() != temp.Select(x => x.userId).Distinct().Count())
-            //            {
-            //                // SOMEONE clicked on more than one role at a time!
-            //                Dictionary<ulong, int> counter = new Dictionary<ulong, int>();
+                                counter[u]++;
+                            }
 
-            //                foreach (var u in temp.Select(x => x.userId))
-            //                {
-            //                    if (!counter.ContainsKey(u))
-            //                        counter[u] = 0;
+                            foreach (var u in counter)
+                            {
+                                if (u.Value > 2)
+                                {
+                                    try
+                                    {
+                                        await socketClient.GetUser(u.Key).SendMessageAsync("Hey, slow down! You don't need every color on that list! No more colors for a week!");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        // User has their DMs disabled
+                                    }
 
-            //                    counter[u]++;
-            //                }
+                                    await RemoveAllColors(u.Key);
+                                    config.BlacklistedUsers.Add(u.Key, DateTimeOffset.Now.AddDays(7));
+                                    Console.WriteLine($"Blacklisted [{u.Key}] from colors.");
 
-            //                foreach (var u in counter)
-            //                {
-            //                    if (u.Value == 2)
-            //                    {
-            //                        try
-            //                        {
-            //                            await socketClient.GetUser(u.Key).SendMessageAsync("Hey, slow down! You don't need every color on that list!");
-            //                        }
-            //                        catch (Exception ex)
-            //                        {
-            //                            // User has their DMs disabled
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            await Task.Delay(1000);
-            //            // idk something errored
-            //        }
-            //    }
-            //});
+                                    while (temp.Select(x => x.userId).Contains(u.Key))
+                                    {
+                                        temp.Remove(temp.FirstOrDefault(x => x.userId == u.Key));
+                                    }
+                                }
+                            }
+                        }
+
+                        foreach (var ra in temp)
+                        {
+                            if (ra.remove)
+                            {
+                                await RemoveAllColors(ra.userId);
+                            }
+                            else
+                            {
+                                var user = socketClient.GetGuild(config.HomeGuildId).GetUser(ra.userId) as SocketGuildUser;
+                                user.AddRoleAsync(user.Guild.GetRole(ra.roleId));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await Task.Delay(1000);
+                        // idk something errored
+                    }
+                }
+            });
 
             //var avatar = new Image(File.OpenRead(".\\TaranzaSOUL.png"));
             //await client.CurrentUser.ModifyAsync(x => x.Avatar = avatar);
@@ -200,8 +222,47 @@ namespace TaranzaSoul
                 updateChannel = 0;
             }
 
+            // scan for people with multiple color roles that aren't mods
+            Task.Run(async () =>
+            {
+                var homeServer = socketClient.GetGuild(config.HomeGuildId);
+
+                if (homeServer == null)
+                    return;
+
+                await homeServer.DownloadUsersAsync();
+
+                List<SocketGuildUser> multiroledrifters = new List<SocketGuildUser>();
+                var staffRole = homeServer.GetRole(config.StaffId);
+
+                foreach (var u in homeServer.Users)
+                {
+                    if (u.Roles.Contains(staffRole))
+                        continue;
+
+                    int i = 0;
+                    foreach (var r in u.Roles)
+                    {
+                        if (RoleColors.Values.Contains(r.Id))
+                            i++;
+
+                        if (i > 1)
+                        {
+                            multiroledrifters.Add(u);
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var idiot in multiroledrifters)
+                {
+                    await RemoveAllColors(idiot.Id);
+                    config.BlacklistedUsers.Add(idiot.Id, DateTimeOffset.Now.AddDays(7));
+                    Console.WriteLine($"[Login check] Blacklisted {idiot} [{idiot.Id}] from colors.");
+                }
+            });
+
             //var emoteServer = socketClient.GetGuild(212053857306542080);
-            //var homeServer = socketClient.GetGuild(config.HomeGuildId);
             //var testChannel = socketClient.GetChannel(610210574952955911) as SocketTextChannel;
             //var abilityPlanet = socketClient.GetChannel(431953417024307210) as SocketTextChannel;
 
@@ -257,7 +318,7 @@ namespace TaranzaSoul
             //await Task.Delay(1000);
             //await msg2.AddReactionAsync(emoteServer.Emotes.FirstOrDefault(x => x.Name == "NoU"));
 
-            
+
             //var uno = await abilityPlanet.GetMessageAsync(498080747656183808) as SocketUserMessage;
             //Console.WriteLine((uno.Reactions.FirstOrDefault().Key as GuildEmote).Url);
 
@@ -295,9 +356,9 @@ namespace TaranzaSoul
 
                 if (user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
                 {
-                    //RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, remove = true });
-                    //lastRole = DateTimeOffset.Now;
-                    await user.RemoveRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
+                    RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, remove = true });
+                    lastRole = DateTimeOffset.Now;
+                    //await user.RemoveRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
                 }
             }
             else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "NoU")
@@ -320,13 +381,13 @@ namespace TaranzaSoul
                 //    await user.RemoveRoleAsync(r);
                 //}
 
-                await RemoveAllColors(user.Id);
+                //await RemoveAllColors(user.Id);
 
                 if (!user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
                 {
-                    //RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, roleId = RoleColors[reaction.Emote.Name] });
-                    //lastRole = DateTimeOffset.Now;
-                    await user.AddRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
+                    RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, roleId = RoleColors[reaction.Emote.Name] });
+                    lastRole = DateTimeOffset.Now;
+                    //await user.AddRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
                 }
             }
             //else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "🚫")
