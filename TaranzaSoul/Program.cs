@@ -238,50 +238,57 @@ namespace TaranzaSoul
             // scan for people with multiple color roles that aren't mods
             Task.Run(async () =>
             {
-                var homeServer = socketClient.GetGuild(config.HomeGuildId);
-
-                if (homeServer == null)
-                    return;
-
-                if (runningRemoval == true)
-                    return;
-
-                runningRemoval = true;
-
-                Task.Run(async () =>
+                try
                 {
-                    await homeServer.DownloadUsersAsync();
-                });
+                    var homeServer = socketClient.GetGuild(config.HomeGuildId);
 
-                await Task.Delay(3000); // ffs
+                    if (homeServer == null)
+                        return;
 
-                List<SocketGuildUser> multiroledrifters = new List<SocketGuildUser>();
-                var staffRole = homeServer.GetRole(config.StaffId);
+                    if (runningRemoval == true)
+                        return;
 
-                foreach (var u in homeServer.Users)
-                {
-                    if (u.Roles.Contains(staffRole))
-                        continue;
+                    runningRemoval = true;
 
-                    int i = 0;
-                    foreach (var r in u.Roles)
+                    Task.Run(async () =>
                     {
-                        if (RoleColors.Values.Contains(r.Id))
-                            i++;
+                        await homeServer.DownloadUsersAsync();
+                    });
 
-                        if (i > 1 || config.BlacklistedUsers.ContainsKey(u.Id))
+                    await Task.Delay(3000); // ffs
+
+                    List<SocketGuildUser> multiroledrifters = new List<SocketGuildUser>();
+                    var staffRole = homeServer.GetRole(config.StaffId);
+
+                    foreach (var u in homeServer.Users)
+                    {
+                        if (u.Roles.Contains(staffRole))
+                            continue;
+
+                        int i = 0;
+                        foreach (var r in u.Roles)
                         {
-                            multiroledrifters.Add(u);
-                            break;
+                            if (RoleColors.Values.Contains(r.Id))
+                                i++;
+
+                            if (i > 1 || config.BlacklistedUsers.ContainsKey(u.Id))
+                            {
+                                multiroledrifters.Add(u);
+                                break;
+                            }
                         }
                     }
-                }
 
-                foreach (var idiot in multiroledrifters)
+                    foreach (var idiot in multiroledrifters)
+                    {
+                        await RemoveAllColors(idiot.Id);
+                        config.BlacklistedUsers.Add(idiot.Id, DateTimeOffset.Now.AddDays(7));
+                        Console.WriteLine($"[Login check] Blacklisted {idiot} [{idiot.Id}] from colors.");
+                    }
+                }
+                catch (Exception ex)
                 {
-                    await RemoveAllColors(idiot.Id);
-                    config.BlacklistedUsers.Add(idiot.Id, DateTimeOffset.Now.AddDays(7));
-                    Console.WriteLine($"[Login check] Blacklisted {idiot} [{idiot.Id}] from colors.");
+                    Console.WriteLine($"{ex.Source}\n{ex.Message}\n{ex.StackTrace}");
                 }
             });
 
