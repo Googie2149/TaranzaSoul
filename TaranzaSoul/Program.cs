@@ -31,6 +31,7 @@ namespace TaranzaSoul
         private ulong updateChannel = 0;
         private ConcurrentQueue<RoleAddition> RoleAdditions = new ConcurrentQueue<RoleAddition>();
         private DateTimeOffset lastRole = DateTimeOffset.Now;
+        private bool runningRemoval = false;
 
         private class RoleAddition
         {
@@ -209,9 +210,11 @@ namespace TaranzaSoul
                 if (RoleColors.Values.Contains(u.Id))
                 {
                     guildUser.RemoveRoleAsync(u);
-                    await Task.Delay(1100);
+                    await Task.Delay(1500);
                 }
             }
+
+            return;
 
             //socketClient.GetGuild(config.HomeGuildId).GetUser(user).RemoveRolesAsync(roles);
         }
@@ -230,8 +233,10 @@ namespace TaranzaSoul
             {
                 var homeServer = socketClient.GetGuild(config.HomeGuildId);
 
-                if (homeServer == null)
+                if (homeServer == null || runningRemoval)
                     return;
+
+                runningRemoval = true;
 
                 await homeServer.DownloadUsersAsync();
 
