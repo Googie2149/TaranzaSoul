@@ -55,6 +55,12 @@ namespace TaranzaSoul
         [JsonProperty("database_connection")]
         public string DatabaseConnectionString { get; set; } = "";
 
+        [JsonProperty("fc_database")]
+        public string FriendCodeDatabaseConnectionString { get; set; } = "";
+
+        [JsonProperty("pinnedmessage")]
+        public ulong FCPinnedMessageId { get; set; } = 0;
+
         [JsonProperty("owner_ids")]
         public List<ulong> OwnerIds { get; set; } = new List<ulong>();
 

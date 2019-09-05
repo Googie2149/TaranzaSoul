@@ -472,6 +472,64 @@ namespace TaranzaSoul.Modules.Standard
             await Task.Delay(1000);
             Environment.Exit((int)ExitCodes.ExitCode.DeadlockEscape);
         }
+
+        [Command("register")]
+        [Priority(1000)]
+        public async Task AddFriendCode(string FriendCode = "", string SwitchName = "")
+        {
+            if (FriendCode == "")
+            {
+                RespondAsync($"{Context.User.Mention} Your friend code can't be left blank!");
+                return;
+            }
+
+            int parsedFriendCode = 0;
+
+            if (Int32.TryParse(FriendCode.ToLower().Replace("-", "").Replace(".", "").Replace("sw", ""), out parsedFriendCode))
+            {
+                if (SwitchName.Length > 10)
+                {
+                    RespondAsync($"{Context.User.Mention} that's too long for a Switch Nickname!");
+                    return;
+                }
+
+                var user = await dbhelper.GetSwitchFC(Context.User.Id);
+                
+                IUserMessage message;
+
+                if (config.FCPinnedMessageId == 0)
+                {
+                    message = await ReplyAsync("Googie was here :^)");
+                    config.FCPinnedMessageId = message.Id;
+                }
+                else
+                {
+                    var channel = Context.Client.GetChannel(555711937543929866) as SocketTextChannel;
+                    message = await channel.GetMessageAsync(config.FCPinnedMessageId) as SocketUserMessage;
+                }
+
+                if (user == null)
+                    await dbhelper.AddFriendCode(Context.User.Id, parsedFriendCode, message.Id, SwitchName);
+                else
+                    await dbhelper.EditFriendCode(Context.User.Id, parsedFriendCode, message.Id, SwitchName);
+
+                var AllFCs = await dbhelper.GetAllFriendCodes();
+
+                StringBuilder output = new StringBuilder();
+
+                foreach (var kv in AllFCs)
+                {
+                    output.AppendLine($"<@{kv.Key}>: `{kv.Value.FriendCode}` {kv.Value.SwitchNickname}");
+                }
+
+                await message.ModifyAsync(x => x.Content = output.ToString());
+            }
+            else
+            {
+                RespondAsync($"{Context.User.Mention} I can't read that as a friend code!");
+                return;
+            }
+        }
     }
 
     public class JsonUser

@@ -10,12 +10,184 @@ namespace TaranzaSoul
     public class DatabaseHelper
     {
         private string ConnectionString;
+        private string FCConnectionString;
+        private bool FCDBInitialized = false;
 
         public async Task Install(IServiceProvider _services)
         {
             ConnectionString = _services.GetService<Config>().DatabaseConnectionString;
+            FCConnectionString = _services.GetService<Config>().FriendCodeDatabaseConnectionString;
         }
 
+        #region FriendCodes
+
+        public async Task InitializedFCDB()
+        {
+            if (FCDBInitialized)
+                return;
+
+            using (SQLiteConnection db = new SQLiteConnection(FCConnectionString))
+            {
+                await db.OpenAsync();
+
+                using (var cmd = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type='table' AND name='switchfcs';", db))
+                {
+                    if ((await cmd.ExecuteScalarAsync()) != null)
+                        FCDBInitialized = true;
+                }
+
+                if (!FCDBInitialized)
+                {
+                    using (var cmd = new SQLiteCommand("CREATE TABLE IF NOT EXISTS switchfcs " +
+                        "(UserId TEXT NOT NULL PRIMARY KEY, FriendCode INTEGER NOT NULL, SwitchNickname TEXT, MessageId TEXT);", db))
+                    {
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+
+                db.Close();
+            }
+        }
+
+        public async Task<SwitchUser> GetSwitchFC(ulong userId)
+        {
+            SwitchUser temp = null;
+
+            using (SQLiteConnection db = new SQLiteConnection(FCConnectionString))
+            {
+                await db.OpenAsync();
+
+                using (var cmd = new SQLiteCommand("select * from switchfcs where UserId = @1;", db))
+                {
+                    cmd.Parameters.AddWithValue("@1", userId);
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            temp = new SwitchUser()
+                            {
+                                UserId = Convert.ToUInt64((string)reader["UserId"]),
+                                FriendCode = (int)reader["FriendCode"],
+                                SwitchNickname = reader["SwitchNickname"] == DBNull.Value ? null : (string)reader["SwitchNickname"],
+                                MessageId = (reader["MessageId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["MessageId"])
+                            };
+                        }
+                    }
+                }
+
+                db.Close();
+            }
+
+            return temp;
+        }
+
+        public async Task<Dictionary<ulong, SwitchUser>> GetAllFriendCodes()
+        {
+            Dictionary<ulong, SwitchUser> temp = new Dictionary<ulong, SwitchUser>();
+
+            try
+            {
+                using (SQLiteConnection db = new SQLiteConnection(FCConnectionString))
+                {
+                    await db.OpenAsync();
+
+                    using (var cmd = new SQLiteCommand("select * from switchfcs;", db))
+                    {
+                        using (var reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                temp.Add(Convert.ToUInt64((string)reader["UserId"]),
+                                    new SwitchUser()
+                                    {
+                                        UserId = Convert.ToUInt64((string)reader["UserId"]),
+                                        FriendCode = (int)reader["FriendCode"],
+                                        SwitchNickname = reader["SwitchNickname"] == DBNull.Value ? null : (string)reader["SwitchNickname"],
+                                        MessageId = (reader["MessageId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["MessageId"])
+                                    });
+                            }
+                        }
+                    }
+
+                    db.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"EError getting all FCs!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                //System.Environment.Exit(0);
+            }
+
+            return temp;
+        }
+
+        public async Task<SwitchUser> AddFriendCode(ulong userId, int friendCode, ulong messageId, string switchNickname = null)
+        {
+            SwitchUser temp = new SwitchUser() { UserId = userId, FriendCode = friendCode, SwitchNickname = switchNickname, MessageId = messageId };
+
+            await BulkAddFriendCodes(new List<SwitchUser> { temp });
+
+            return temp;
+        }
+
+        public async Task BulkAddFriendCodes(IEnumerable<SwitchUser> users)
+        {
+            try
+            {
+                using (SQLiteConnection db = new SQLiteConnection(FCConnectionString))
+                {
+                    await db.OpenAsync();
+                    using (var tr = db.BeginTransaction())
+                    {
+                        foreach (var u in users)
+                        {
+                            using (var cmd = new SQLiteCommand("insert into switchfcs (UserId, FriendCode, SwitchNickname, MessageId) values (@1, @2, @3, @4);", db))
+                            {
+                                cmd.Parameters.AddWithValue("@1", u.UserId.ToString());
+                                cmd.Parameters.AddWithValue("@2", u.FriendCode.ToString() ?? null);
+                                cmd.Parameters.AddWithValue("@3", u.SwitchNickname ?? null);
+                                cmd.Parameters.AddWithValue("@4", u.MessageId.ToString() ?? null);
+
+                                await cmd.ExecuteNonQueryAsync();
+                            }
+                        }
+
+                        tr.Commit();
+                    }
+
+                    db.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error bulk adding FCs!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+            }
+        }
+
+        public async Task EditFriendCode(ulong userId, int friendCode, ulong messageId, string switchNickname = null)
+        {
+            using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
+            {
+                await db.OpenAsync();
+
+                using (var cmd = new SQLiteCommand("update switchfcs set (UserId, FriendCode, SwitchNickname, MessageId) values (@1, @2, @3, @4) where UserId = @4;", db))
+                {
+                    cmd.Parameters.AddWithValue("@1", userId.ToString());
+                    cmd.Parameters.AddWithValue("@2", friendCode.ToString() ?? null);
+                    cmd.Parameters.AddWithValue("@3", switchNickname ?? null);
+                    cmd.Parameters.AddWithValue("@4", messageId.ToString() ?? null);
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                db.Close();
+            }
+        }
+
+        #endregion
+
+        #region UserLogging
         public async Task<bool> InitializeDB()
         {
             bool tableExists = false;
@@ -219,6 +391,7 @@ namespace TaranzaSoul
                 db.Close();
             }
         }
+        #endregion
     }
 
     public class LoggedUser
@@ -229,4 +402,18 @@ namespace TaranzaSoul
         public ulong ApprovalModId { get; set; }
         public string ApprovalReason { get; set; }
     }
+
+    public class SwitchUser
+    {
+        public ulong UserId { get; set; }
+        public int FriendCode { get; set; }
+        public string SwitchNickname { get; set; }
+        public ulong MessageId { get; set; }
+    }
+
+    //public class ChannelPins
+    //{
+    //    public ulong ChannelId { get; set; }
+    //    public List<ulong> MessageIds { get; set; }
+    //}
 }
