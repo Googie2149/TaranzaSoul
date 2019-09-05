@@ -499,15 +499,13 @@ namespace TaranzaSoul.Modules.Standard
                 
                 IUserMessage message;
 
-                if (config.FCPinnedMessageId == 0)
+                var channel = Context.Client.GetChannel(555711937543929866) as SocketTextChannel;
+                message = await channel.GetMessageAsync(config.FCPinnedMessageId) as SocketUserMessage;
+
+                if (message == null)
                 {
                     message = await ReplyAsync("Googie was here :^)");
                     config.FCPinnedMessageId = message.Id;
-                }
-                else
-                {
-                    var channel = Context.Client.GetChannel(555711937543929866) as SocketTextChannel;
-                    message = await channel.GetMessageAsync(config.FCPinnedMessageId) as SocketUserMessage;
                 }
 
                 if (user == null)
