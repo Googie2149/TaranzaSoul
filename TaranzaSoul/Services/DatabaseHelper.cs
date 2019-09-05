@@ -39,7 +39,7 @@ namespace TaranzaSoul
                 if (!FCDBInitialized)
                 {
                     using (var cmd = new SQLiteCommand("CREATE TABLE IF NOT EXISTS switchfcs " +
-                        "(UserId TEXT NOT NULL PRIMARY KEY, FriendCode INTEGER NOT NULL, SwitchNickname TEXT, MessageId TEXT);", db))
+                        "(UserId TEXT NOT NULL PRIMARY KEY, FriendCode TEXT, SwitchNickname TEXT, MessageId TEXT);", db))
                     {
                         await cmd.ExecuteNonQueryAsync();
                     }
@@ -68,7 +68,7 @@ namespace TaranzaSoul
                             temp = new SwitchUser()
                             {
                                 UserId = Convert.ToUInt64((string)reader["UserId"]),
-                                FriendCode = (int)reader["FriendCode"],
+                                FriendCode = (reader["FriendCode"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["FriendCode"]),
                                 SwitchNickname = reader["SwitchNickname"] == DBNull.Value ? null : (string)reader["SwitchNickname"],
                                 MessageId = (reader["MessageId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["MessageId"])
                             };
@@ -102,7 +102,7 @@ namespace TaranzaSoul
                                     new SwitchUser()
                                     {
                                         UserId = Convert.ToUInt64((string)reader["UserId"]),
-                                        FriendCode = (int)reader["FriendCode"],
+                                        FriendCode = (reader["FriendCode"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["FriendCode"]),
                                         SwitchNickname = reader["SwitchNickname"] == DBNull.Value ? null : (string)reader["SwitchNickname"],
                                         MessageId = (reader["MessageId"] == DBNull.Value) ? 0 : Convert.ToUInt64((string)reader["MessageId"])
                                     });
@@ -122,7 +122,7 @@ namespace TaranzaSoul
             return temp;
         }
 
-        public async Task<SwitchUser> AddFriendCode(ulong userId, int friendCode, ulong messageId, string switchNickname = null)
+        public async Task<SwitchUser> AddFriendCode(ulong userId, ulong friendCode, ulong messageId, string switchNickname = null)
         {
             SwitchUser temp = new SwitchUser() { UserId = userId, FriendCode = friendCode, SwitchNickname = switchNickname, MessageId = messageId };
 
@@ -165,7 +165,7 @@ namespace TaranzaSoul
             }
         }
 
-        public async Task EditFriendCode(ulong userId, int friendCode, ulong messageId, string switchNickname = null)
+        public async Task EditFriendCode(ulong userId, ulong friendCode, ulong messageId, string switchNickname = null)
         {
             using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
             {
@@ -406,7 +406,7 @@ namespace TaranzaSoul
     public class SwitchUser
     {
         public ulong UserId { get; set; }
-        public int FriendCode { get; set; }
+        public ulong FriendCode { get; set; }
         public string SwitchNickname { get; set; }
         public ulong MessageId { get; set; }
     }

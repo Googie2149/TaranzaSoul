@@ -483,9 +483,9 @@ namespace TaranzaSoul.Modules.Standard
                 return;
             }
 
-            int parsedFriendCode = 0;
+            ulong parsedFriendCode = 0;
 
-            if (Int32.TryParse(FriendCode.ToLower().Replace("-", "").Replace(".", "").Replace("sw", ""), out parsedFriendCode))
+            if (ulong.TryParse(FriendCode.ToLower().Replace("-", "").Replace(".", "").Replace("sw", ""), out parsedFriendCode))
             {
                 if (SwitchName.Length > 10)
                 {
