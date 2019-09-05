@@ -477,6 +477,12 @@ namespace TaranzaSoul.Modules.Standard
         [Priority(1000)]
         public async Task AddFriendCode(string FriendCode = "", string SwitchName = "")
         {
+            if (Context.Channel.Id != 417458111553470474)
+            {
+                RespondAsync("This only works in <#417458111553470474> fow now, sorry!");
+                return;
+            }
+
             try
             {
                 if (FriendCode == "")
@@ -505,7 +511,7 @@ namespace TaranzaSoul.Modules.Standard
 
                     IUserMessage message;
 
-                    var channel = Context.Client.GetChannel(555711937543929866) as SocketTextChannel;
+                    var channel = Context.Client.GetChannel(417458111553470474) as SocketTextChannel;
                     message = await channel.GetMessageAsync(config.FCPinnedMessageId) as SocketUserMessage;
 
                     if (message == null)
