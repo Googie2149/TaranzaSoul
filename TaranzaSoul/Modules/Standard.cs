@@ -521,12 +521,12 @@ namespace TaranzaSoul.Modules.Standard
                         var channel = Context.Client.GetChannel(417458111553470474) as SocketTextChannel;
                         message = await channel.GetMessageAsync(config.FCPinnedMessageId) as SocketUserMessage;
 
-                        if (message == null)
-                        {
-                            message = await ReplyAsync("Googie was here :^)");
-                        }
+                        //if (message == null)
+                        //{
+                        //    message = await ReplyAsync("Googie was here :^)");
+                        //}
 
-                        config.FCPinnedMessageId = message.Id;
+                        //config.FCPinnedMessageId = message.Id;
                     }
 
                     if (user == null)
@@ -537,6 +537,7 @@ namespace TaranzaSoul.Modules.Standard
                     var AllFCs = await dbhelper.GetAllFriendCodes();
 
                     StringBuilder output = new StringBuilder();
+                    output.AppendLine("Please only friend people with their permission.\nTo add yourself, use `@Secretary Susie register 0000-0000-0000 SwitchName`");
 
                     foreach (var kv in AllFCs)
                     {
