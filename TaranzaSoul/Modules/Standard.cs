@@ -559,6 +559,8 @@ namespace TaranzaSoul.Modules.Standard
                     await message.ModifyAsync(x => x.Content = output.ToString());
 
                     await message.PinAsync();
+
+                    await RespondAsync($"{Context.User.Mention} you've been added! Check the pins!");
                 }
                 else
                 {
