@@ -521,7 +521,17 @@ namespace TaranzaSoul.Modules.Standard
                     else
                     {
                         var channel = Context.Client.GetChannel(417458111553470474) as SocketTextChannel;
-                        message = await channel.GetMessageAsync(config.FCPinnedMessageId) as SocketUserMessage;
+                        message = await channel.GetMessageAsync(config.FCPinnedMessageId) as IUserMessage;
+
+                        if (message == null)
+                        {
+                            await Task.Delay(1000);
+                            if (message == null)
+                            {
+                                await RespondAsync("Well this is embarassing, I can't seem to fetch the pinned message. Hold tight.");
+                                return;
+                            }
+                        }
 
                         //if (message == null)
                         //{
