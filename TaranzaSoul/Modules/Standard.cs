@@ -525,6 +525,8 @@ namespace TaranzaSoul.Modules.Standard
                     }
 
                     await message.ModifyAsync(x => x.Content = output.ToString());
+
+                    await message.PinAsync();
                 }
                 else
                 {
