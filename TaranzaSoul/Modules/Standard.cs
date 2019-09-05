@@ -537,7 +537,7 @@ namespace TaranzaSoul.Modules.Standard
 
                                 message = await channel.SendMessageAsync("Googie was here :^)");
 
-                                if (message.Id < 5)
+                                if (message?.Id == null || message.Id < 5)
                                     await Task.Delay(1000);
 
                                 config.FCPinnedMessageId = message.Id;
