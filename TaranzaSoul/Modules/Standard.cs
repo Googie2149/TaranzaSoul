@@ -617,6 +617,16 @@ namespace TaranzaSoul.Modules.Standard
 
             SwitchUser FriendCode = await dbhelper.GetSwitchFC(user.Id);
 
+            if (FriendCode == null)
+            {
+                if (user.Id == Context.User.Id)
+                    await RespondAsync($"You haven't registered yourself! Use `@Secretary Susie register 0000-0000-0000 SwitchName` to set it up.");
+                else
+                    await ReplyAsync("They haven't registered their friend code yet!");
+
+                return;
+            }
+
             if (user.Id == Context.User.Id)
                 await RespondAsync($"{Context.User.Mention}: `{FriendCode.FriendCode.ToString("####-####-####")}` {FriendCode.SwitchNickname}");
             else
