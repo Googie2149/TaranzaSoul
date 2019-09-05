@@ -515,7 +515,7 @@ namespace TaranzaSoul.Modules.Standard
 
                     if (config.FCPinnedMessageId == 0)
                     {
-                        message = await channel.SendMessageAsync("Googie was here :^)");
+                        message = await channel.SendMessageAsync("Please wait...");
 
                         config.FCPinnedMessageId = message.Id;
                         if (message.Id < 5)
@@ -535,7 +535,7 @@ namespace TaranzaSoul.Modules.Standard
                                 //await RespondAsync("Well this is embarassing, I can't seem to fetch the pinned message. Hold tight.");
                                 //return;
 
-                                message = await channel.SendMessageAsync("Googie was here :^)");
+                                message = await channel.SendMessageAsync("Please wait...");
 
                                 if (message?.Id == null || message.Id < 5)
                                     await Task.Delay(1000);
