@@ -511,12 +511,21 @@ namespace TaranzaSoul.Modules.Standard
 
                     IUserMessage message;
 
-                    var channel = Context.Client.GetChannel(417458111553470474) as SocketTextChannel;
-                    message = await channel.GetMessageAsync(config.FCPinnedMessageId) as SocketUserMessage;
-
-                    if (message == null)
+                    if (config.FCPinnedMessageId == 0)
                     {
                         message = await ReplyAsync("Googie was here :^)");
+                        config.FCPinnedMessageId = message.Id;
+                    }
+                    else
+                    {
+                        var channel = Context.Client.GetChannel(417458111553470474) as SocketTextChannel;
+                        message = await channel.GetMessageAsync(config.FCPinnedMessageId) as SocketUserMessage;
+
+                        if (message == null)
+                        {
+                            message = await ReplyAsync("Googie was here :^)");
+                        }
+
                         config.FCPinnedMessageId = message.Id;
                     }
 
