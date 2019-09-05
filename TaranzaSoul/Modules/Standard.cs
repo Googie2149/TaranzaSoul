@@ -566,7 +566,7 @@ namespace TaranzaSoul.Modules.Standard
 
                     foreach (var kv in AllFCs)
                     {
-                        output.AppendLine($"<@{kv.Key}>: `{kv.Value.FriendCode.ToString("####-####-####")}` {kv.Value.SwitchNickname}");
+                        output.AppendLine($"<@{kv.Key}>: `{kv.Value.FriendCode.ToString("0000-0000-0000")}` {kv.Value.SwitchNickname}");
                     }
 
                     await message.ModifyAsync(x => x.Content = output.ToString());
@@ -628,9 +628,9 @@ namespace TaranzaSoul.Modules.Standard
             }
 
             if (user.Id == Context.User.Id)
-                await RespondAsync($"{Context.User.Mention}: `{FriendCode.FriendCode.ToString("####-####-####")}` {FriendCode.SwitchNickname}");
+                await RespondAsync($"{Context.User.Mention}: `{FriendCode.FriendCode.ToString("0000-0000-0000")}` {FriendCode.SwitchNickname}");
             else
-                await RespondAsync($"{Context.User.Mention}: {user.Nickname ?? user.Username}'s Friend Code is `{FriendCode.FriendCode.ToString("####-####-####")}` {FriendCode.SwitchNickname}");
+                await RespondAsync($"{Context.User.Mention}: {user.Nickname ?? user.Username}'s Friend Code is `{FriendCode.FriendCode.ToString("0000-0000-0000")}` {FriendCode.SwitchNickname}");
         }
     }
 
