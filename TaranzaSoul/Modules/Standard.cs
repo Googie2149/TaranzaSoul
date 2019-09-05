@@ -596,16 +596,16 @@ namespace TaranzaSoul.Modules.Standard
         {
             SocketGuildUser user;
 
-            if (Context.Message.MentionedUserIds.Count() > 1)
+            if (Context.Message.MentionedUserIds.Where(x => x != Context.Client.CurrentUser.Id).Count() > 1)
             {
                 await RespondAsync("I can currently under development and can only return a single friend code at a time. Try mentioning only one person, or checking the pins in <#619088469339144202>.");
                 return;
             }
-            else if (Context.Message.MentionedUserIds.Count() == 1)
+            else if (Context.Message.MentionedUserIds.Where(x => x != Context.Client.CurrentUser.Id).Count() == 1)
             {
-                user = Context.Guild.GetUser(Context.Message.MentionedUserIds.First());
+                user = Context.Guild.GetUser(Context.Message.MentionedUserIds.Where(x => x != Context.Client.CurrentUser.Id).First());
             }
-            else if (Context.Message.MentionedUserIds.Count() == 0)
+            else if (Context.Message.MentionedUserIds.Where(x => x != Context.Client.CurrentUser.Id).Count() == 0)
             {
                 user = Context.User as SocketGuildUser;
             }
