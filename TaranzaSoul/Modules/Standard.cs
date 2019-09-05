@@ -515,6 +515,8 @@ namespace TaranzaSoul.Modules.Standard
                     {
                         message = await ReplyAsync("Googie was here :^)");
                         config.FCPinnedMessageId = message.Id;
+
+                        await Config.Save();
                     }
                     else
                     {
@@ -556,7 +558,7 @@ namespace TaranzaSoul.Modules.Standard
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Blah!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                Console.WriteLine($"Blah!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}\n{ex.StackTrace}\n{ex.TargetSite}");
             }
         }
     }
