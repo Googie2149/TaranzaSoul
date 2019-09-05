@@ -475,7 +475,7 @@ namespace TaranzaSoul.Modules.Standard
 
         [Command("register")]
         [Priority(1000)]
-        public async Task AddFriendCode(string FriendCode = "", string SwitchName = "")
+        public async Task AddFriendCode(string FriendCode = "", [Remainder]string SwitchName = "")
         {
             //if (Context.Channel.Id != 417458111553470474)
             //{
