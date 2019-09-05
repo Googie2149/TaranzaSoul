@@ -167,7 +167,7 @@ namespace TaranzaSoul
 
         public async Task EditFriendCode(ulong userId, ulong friendCode, ulong messageId, string switchNickname = null)
         {
-            using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
+            using (SQLiteConnection db = new SQLiteConnection(FCConnectionString))
             {
                 await db.OpenAsync();
 
