@@ -481,14 +481,18 @@ namespace TaranzaSoul.Modules.Standard
             {
                 if (FriendCode == "")
                 {
-                    RespondAsync($"{Context.User.Mention} Your friend code can't be left blank!");
+                    RespondAsync($"{Context.User.Mention} your friend code can't be left blank!");
                     return;
                 }
 
+                string temp = FriendCode.ToLower().Replace("-", "").Replace(".", "").Replace("sw", "");
+
                 ulong parsedFriendCode = 0;
 
-                if (ulong.TryParse(FriendCode.ToLower().Replace("-", "").Replace(".", "").Replace("sw", ""), out parsedFriendCode))
+                if (temp.Length == 12 && ulong.TryParse(temp, out parsedFriendCode))
                 {
+                    
+
                     if (SwitchName.Length > 10)
                     {
                         RespondAsync($"{Context.User.Mention} that's too long for a Switch Nickname!");
