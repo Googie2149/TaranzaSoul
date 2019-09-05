@@ -477,57 +477,64 @@ namespace TaranzaSoul.Modules.Standard
         [Priority(1000)]
         public async Task AddFriendCode(string FriendCode = "", string SwitchName = "")
         {
-            if (FriendCode == "")
+            try
             {
-                RespondAsync($"{Context.User.Mention} Your friend code can't be left blank!");
-                return;
-            }
-
-            ulong parsedFriendCode = 0;
-
-            if (ulong.TryParse(FriendCode.ToLower().Replace("-", "").Replace(".", "").Replace("sw", ""), out parsedFriendCode))
-            {
-                if (SwitchName.Length > 10)
+                if (FriendCode == "")
                 {
-                    RespondAsync($"{Context.User.Mention} that's too long for a Switch Nickname!");
+                    RespondAsync($"{Context.User.Mention} Your friend code can't be left blank!");
                     return;
                 }
 
-                await dbhelper.InitializedFCDB();
+                ulong parsedFriendCode = 0;
 
-                var user = await dbhelper.GetSwitchFC(Context.User.Id);
-                
-                IUserMessage message;
-
-                var channel = Context.Client.GetChannel(555711937543929866) as SocketTextChannel;
-                message = await channel.GetMessageAsync(config.FCPinnedMessageId) as SocketUserMessage;
-
-                if (message == null)
+                if (ulong.TryParse(FriendCode.ToLower().Replace("-", "").Replace(".", "").Replace("sw", ""), out parsedFriendCode))
                 {
-                    message = await ReplyAsync("Googie was here :^)");
-                    config.FCPinnedMessageId = message.Id;
-                }
+                    if (SwitchName.Length > 10)
+                    {
+                        RespondAsync($"{Context.User.Mention} that's too long for a Switch Nickname!");
+                        return;
+                    }
 
-                if (user == null)
-                    await dbhelper.AddFriendCode(Context.User.Id, parsedFriendCode, message.Id, SwitchName);
+                    await dbhelper.InitializedFCDB();
+
+                    var user = await dbhelper.GetSwitchFC(Context.User.Id);
+
+                    IUserMessage message;
+
+                    var channel = Context.Client.GetChannel(555711937543929866) as SocketTextChannel;
+                    message = await channel.GetMessageAsync(config.FCPinnedMessageId) as SocketUserMessage;
+
+                    if (message == null)
+                    {
+                        message = await ReplyAsync("Googie was here :^)");
+                        config.FCPinnedMessageId = message.Id;
+                    }
+
+                    if (user == null)
+                        await dbhelper.AddFriendCode(Context.User.Id, parsedFriendCode, message.Id, SwitchName);
+                    else
+                        await dbhelper.EditFriendCode(Context.User.Id, parsedFriendCode, message.Id, SwitchName);
+
+                    var AllFCs = await dbhelper.GetAllFriendCodes();
+
+                    StringBuilder output = new StringBuilder();
+
+                    foreach (var kv in AllFCs)
+                    {
+                        output.AppendLine($"<@{kv.Key}>: `{kv.Value.FriendCode}` {kv.Value.SwitchNickname}");
+                    }
+
+                    await message.ModifyAsync(x => x.Content = output.ToString());
+                }
                 else
-                    await dbhelper.EditFriendCode(Context.User.Id, parsedFriendCode, message.Id, SwitchName);
-
-                var AllFCs = await dbhelper.GetAllFriendCodes();
-
-                StringBuilder output = new StringBuilder();
-
-                foreach (var kv in AllFCs)
                 {
-                    output.AppendLine($"<@{kv.Key}>: `{kv.Value.FriendCode}` {kv.Value.SwitchNickname}");
+                    RespondAsync($"{Context.User.Mention} I can't read that as a friend code!");
+                    return;
                 }
-
-                await message.ModifyAsync(x => x.Content = output.ToString());
             }
-            else
+            catch (Exception ex)
             {
-                RespondAsync($"{Context.User.Mention} I can't read that as a friend code!");
-                return;
+                Console.WriteLine($"Blah!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
             }
         }
     }
