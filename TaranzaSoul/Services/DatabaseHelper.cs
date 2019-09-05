@@ -171,7 +171,7 @@ namespace TaranzaSoul
             {
                 await db.OpenAsync();
 
-                using (var cmd = new SQLiteCommand("update switchfcs set (FriendCode, SwitchNickname, MessageId) values (@2, @3, @4) where UserId = @1;", db))
+                using (var cmd = new SQLiteCommand("update switchfcs set (FriendCode, SwitchNickname, MessageId) = (@2, @3, @4) where UserId = @1;", db))
                 {
                     cmd.Parameters.AddWithValue("@1", userId.ToString());
                     cmd.Parameters.AddWithValue("@2", friendCode.ToString() ?? null);
