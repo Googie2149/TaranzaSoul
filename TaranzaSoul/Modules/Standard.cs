@@ -477,11 +477,11 @@ namespace TaranzaSoul.Modules.Standard
         [Priority(1000)]
         public async Task AddFriendCode(string FriendCode = "", string SwitchName = "")
         {
-            if (Context.Channel.Id != 417458111553470474)
-            {
-                RespondAsync("This only works in <#417458111553470474> fow now, sorry!");
-                return;
-            }
+            //if (Context.Channel.Id != 417458111553470474)
+            //{
+            //    RespondAsync("This only works in <#417458111553470474> fow now, sorry!");
+            //    return;
+            //}
 
             try
             {
@@ -511,16 +511,20 @@ namespace TaranzaSoul.Modules.Standard
 
                     IUserMessage message;
 
+                    var channel = Context.Client.GetChannel(619088469339144202) as SocketTextChannel;
+
                     if (config.FCPinnedMessageId == 0)
                     {
-                        message = await ReplyAsync("Googie was here :^)");
+                        message = await channel.SendMessageAsync("Googie was here :^)");
+
                         config.FCPinnedMessageId = message.Id;
+                        if (message.Id < 5)
+                            await Task.Delay(1000);
 
                         await Config.Save();
                     }
                     else
                     {
-                        var channel = Context.Client.GetChannel(417458111553470474) as SocketTextChannel;
                         message = await channel.GetMessageAsync(config.FCPinnedMessageId) as IUserMessage;
 
                         if (message == null)
@@ -528,8 +532,17 @@ namespace TaranzaSoul.Modules.Standard
                             await Task.Delay(1000);
                             if (message == null)
                             {
-                                await RespondAsync("Well this is embarassing, I can't seem to fetch the pinned message. Hold tight.");
-                                return;
+                                //await RespondAsync("Well this is embarassing, I can't seem to fetch the pinned message. Hold tight.");
+                                //return;
+
+                                message = await channel.SendMessageAsync("Googie was here :^)");
+
+                                if (message.Id < 5)
+                                    await Task.Delay(1000);
+
+                                config.FCPinnedMessageId = message.Id;
+
+                                await Config.Save();
                             }
                         }
 
@@ -560,7 +573,10 @@ namespace TaranzaSoul.Modules.Standard
 
                     await message.PinAsync();
 
-                    await RespondAsync($"{Context.User.Mention} you've been added! Check the pins!");
+                    if (Context.Channel.Id != 619088469339144202)
+                        await RespondAsync($"{Context.User.Mention} you've been added! Check the pins in <#619088469339144202>!");
+                    else
+                        await RespondAsync($"{Context.User.Mention} you've been added! Check the pins!");
                 }
                 else
                 {
@@ -572,6 +588,39 @@ namespace TaranzaSoul.Modules.Standard
             {
                 Console.WriteLine($"Blah!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}\n{ex.StackTrace}\n{ex.TargetSite}");
             }
+        }
+
+        [Command("fc")]
+        [Priority(1000)]
+        public async Task GetFC(string remainder = "")
+        {
+            SocketGuildUser user;
+
+            if (Context.Message.MentionedUserIds.Count() > 1)
+            {
+                await RespondAsync("I can currently under development and can only return a single friend code at a time. Try mentioning only one person, or checking the pins in <#619088469339144202>.");
+                return;
+            }
+            else if (Context.Message.MentionedUserIds.Count() == 1)
+            {
+                user = Context.Guild.GetUser(Context.Message.MentionedUserIds.First());
+            }
+            else if (Context.Message.MentionedUserIds.Count() == 0)
+            {
+                user = Context.User as SocketGuildUser;
+            }
+            else
+            {
+                await RespondAsync("Yeah uh, this code is never supposed to be reached. If you see it, just ping some mods and they'll yell at me.");
+                return;
+            }
+
+            SwitchUser FriendCode = await dbhelper.GetSwitchFC(user.Id);
+
+            if (user.Id == Context.User.Id)
+                await RespondAsync($"{Context.User.Mention}: `{FriendCode.FriendCode.ToString("####-####-####")}` {FriendCode.SwitchNickname}");
+            else
+                await RespondAsync($"{Context.User.Mention}: {user.Nickname ?? user.Username}'s Friend Code is `{FriendCode.FriendCode.ToString("####-####-####")}` {FriendCode.SwitchNickname}");
         }
     }
 
