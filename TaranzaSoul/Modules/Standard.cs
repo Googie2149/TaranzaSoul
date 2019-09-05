@@ -493,6 +493,8 @@ namespace TaranzaSoul.Modules.Standard
                     return;
                 }
 
+                await dbhelper.InitializedFCDB();
+
                 var user = await dbhelper.GetSwitchFC(Context.User.Id);
                 
                 IUserMessage message;
