@@ -25,13 +25,15 @@ namespace TaranzaSoul.Modules.Standard
         private IServiceProvider services;
         private Config config;
         private DatabaseHelper dbhelper;
+        private Logger logger;
 
-        public Standard(CommandService _commands, IServiceProvider _services, Config _config, DatabaseHelper _dbhelper)
+        public Standard(CommandService _commands, IServiceProvider _services, Config _config, DatabaseHelper _dbhelper, Logger _logger)
         {
             commands = _commands;
             services = _services;
             config = _config;
             dbhelper = _dbhelper;
+            logger = _logger;
         }
         
         [Command("help")]
@@ -178,6 +180,8 @@ namespace TaranzaSoul.Modules.Standard
             await Task.Delay(500);
             await Context.Guild.GetUser(users.First()).AddRoleAsync(role);
             await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server.");
+
+            logger.RegisterNewUser(users.First());
         }
 
         [Command("revoke", RunMode = RunMode.Async)]

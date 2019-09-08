@@ -21,7 +21,7 @@ using System.Threading;
 
 namespace TaranzaSoul
 {
-    class Logger
+    public class Logger
     {
         private DiscordSocketClient client;
         private IServiceProvider services;
@@ -34,7 +34,8 @@ namespace TaranzaSoul
         private List<ulong> messagedUsers = new List<ulong>();
         private bool initialized = false;
         private bool existingTable = false;
-        private Dictionary<ulong, CancellationTokenSource> waitingUsers = new Dictionary<ulong, CancellationTokenSource>();
+        //private Dictionary<ulong, CancellationTokenSource> waitingUsers = new Dictionary<ulong, CancellationTokenSource>();
+        private Dictionary<ulong, bool> newUsers = new Dictionary<ulong, bool>();
 
         private const string WelcomeMessage = 
                                 "Welcome to the Partnered /r/Kirby Discord Server!\n" +
@@ -114,50 +115,70 @@ namespace TaranzaSoul
 
             client.MessageReceived += DMResponse;
             client.GuildAvailable += Client_GuildAvailable;
+            client.UserIsTyping += Client_UserIsTyping;
 
             existingTable = await dbhelper.InitializeDB();
 
             Console.WriteLine($"Table initialized (New: {existingTable})");
         }
 
-        private async Task DelayAddRole(ulong u, CancellationToken cancellationToken, double minutes = 10)
+        public void RegisterNewUser(ulong userId)
         {
-            try
+            newUsers[userId] = false;
+        }
+
+        private async Task Client_UserIsTyping(SocketUser user, ISocketMessageChannel channel)
+        {
+            if (newUsers.Keys.Contains(user.Id) && newUsers[user.Id] == false)
             {
-                var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
-                //await Task.Delay(1000 * 60 * 10); 
-
-                if (minutes > 0)
-                {
-                    TimeSpan wait = TimeSpan.FromMinutes(minutes);
-
-                    for (int i = 0; i < 20; i++)
-                    {
-                        await Task.Delay(TimeSpan.FromMinutes(wait.TotalMinutes / 20));
-                        cancellationToken.ThrowIfCancellationRequested();
-                    }
-
-                    if (client.GetGuild(config.HomeGuildId).GetUser(u) == null)
-                    {
-                        Console.WriteLine($"{u} isn't in the server anymore!");
-                        return;
-                    }
-                }
-
-                await client.GetGuild(config.HomeGuildId).GetUser(u).AddRoleAsync(role, new RequestOptions() { AuditLogReason = "Automatic approval" });
-                waitingUsers.Remove(u);
-            }
-            catch (OperationCanceledException ex)
-            {
-                Console.WriteLine($"{u} left the server, ending early.");
-                waitingUsers.Remove(u);
-                return;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error adding role to {u}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                newUsers[user.Id] = true;
+                await channel.SendMessageAsync($"**Welcome to the /r/Kirby Discord server,** {user.Mention}!\n" +
+                    "You're getting this message because you just started typing in the server!\n\n" +
+                    "**First time here?** Don't forget to read <#132720402727174144>!\n" +
+                    "**Not sure what a channel is for?** Look in <#361565642027171841>!" +
+                    "**Here for Super Kirby Clash?** Head to <#417458111553470474>!\n" +
+                    "**Looking for someone to play with?** Ask in #<#619088469339144202>!");
             }
         }
+
+        //private async Task DelayAddRole(ulong u, CancellationToken cancellationToken, double minutes = 10)
+        //{
+        //    try
+        //    {
+        //        var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
+        //        //await Task.Delay(1000 * 60 * 10); 
+
+        //        if (minutes > 0)
+        //        {
+        //            TimeSpan wait = TimeSpan.FromMinutes(minutes);
+
+        //            for (int i = 0; i < 20; i++)
+        //            {
+        //                await Task.Delay(TimeSpan.FromMinutes(wait.TotalMinutes / 20));
+        //                cancellationToken.ThrowIfCancellationRequested();
+        //            }
+
+        //            if (client.GetGuild(config.HomeGuildId).GetUser(u) == null)
+        //            {
+        //                Console.WriteLine($"{u} isn't in the server anymore!");
+        //                return;
+        //            }
+        //        }
+
+        //        await client.GetGuild(config.HomeGuildId).GetUser(u).AddRoleAsync(role, new RequestOptions() { AuditLogReason = "Automatic approval" });
+        //        waitingUsers.Remove(u);
+        //    }
+        //    catch (OperationCanceledException ex)
+        //    {
+        //        Console.WriteLine($"{u} left the server, ending early.");
+        //        waitingUsers.Remove(u);
+        //        return;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error adding role to {u}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+        //    }
+        //}
 
         private async Task Client_GuildAvailable(SocketGuild guild)
         {
@@ -290,10 +311,29 @@ namespace TaranzaSoul
                                     Console.WriteLine($"Error sending offline user message to {u.UserId}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
                                 }
 
-                                CancellationTokenSource source = new CancellationTokenSource();
-                                waitingUsers.Add(u.UserId, source);
+                                //CancellationTokenSource source = new CancellationTokenSource();
+                                //waitingUsers.Add(u.UserId, source);
 
-                                Task.Run(async () => DelayAddRole(u.UserId, source.Token, minutes: 0), source.Token);
+                                //Task.Run(async () => DelayAddRole(u.UserId, source.Token, minutes: 0), source.Token);
+
+                                try
+                                {
+                                    //var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
+
+                                    var user = client.GetGuild(config.HomeGuildId).GetUser(u.UserId);
+
+                                    if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
+                                    {
+                                        Console.WriteLine($"{user.Id} isn't in the server anymore!");
+                                        return;
+                                    }
+
+                                    await user.AddRoleAsync(role);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Error adding role to {u.UserId}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                                }
 
                                 Console.WriteLine($"Apparently adding user {u.UserId}");
                             }
@@ -411,8 +451,8 @@ namespace TaranzaSoul
                         $"{user.Username}#{user.Discriminator} ({user.Id})" +
                         ((user.JoinedAt.HasValue) ? $"\nOriginal Join Date `{user.JoinedAt.Value.ToLocalTime().ToString("d")} {user.JoinedAt.Value.ToLocalTime().ToString("T")}`" : "");
 
-                    if (waitingUsers.ContainsKey(user.Id))
-                        waitingUsers[user.Id].Cancel();
+                    //if (waitingUsers.ContainsKey(user.Id))
+                    //    waitingUsers[user.Id].Cancel();
 
                     if (config.WatchedIds.ContainsKey(user.Id))
                     {
@@ -470,16 +510,18 @@ namespace TaranzaSoul
 
                     if (loggedUser.ApprovedAccess)
                     {
+                        // User that has already been in the server and gained approval
+
                         Console.WriteLine($"Found approved user {loggedUser.UserId}");
 
-                        try
-                        {
-                            await user.SendMessageAsync(WelcomeBackMessage);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
-                        }
+                        //try
+                        //{
+                        //    await user.SendMessageAsync(WelcomeBackMessage);
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                        //}
 
                         try
                         {
@@ -500,25 +542,47 @@ namespace TaranzaSoul
                     }
                     else if (!loggedUser.NewAccount)
                     {
+                        // User that has never been in the server, but gets automatic approval
+                        
                         Console.WriteLine("Found old account but new join");
+
+                        //try
+                        //{
+                        //    await user.SendMessageAsync(WelcomeMessage);
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                        //}
+
+                        //CancellationTokenSource source = new CancellationTokenSource();
+                        //waitingUsers.Add(user.Id, source);
+
+                        //Task.Run(async () => DelayAddRole(user.Id, source.Token), source.Token);
 
                         try
                         {
-                            await user.SendMessageAsync(WelcomeMessage);
+                            var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
+
+                            if (client.GetGuild(config.HomeGuildId).GetUser(user.Id) == null)
+                            {
+                                Console.WriteLine($"{user.Id} isn't in the server anymore!");
+                                return;
+                            }
+
+                            await user.AddRoleAsync(role);
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Error sending welcome message to {user.Id}!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+                            Console.WriteLine($"Error adding role to {user.Id}\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
                         }
 
-                        CancellationTokenSource source = new CancellationTokenSource();
-                        waitingUsers.Add(user.Id, source);
-
-                        Task.Run(async () => DelayAddRole(user.Id, source.Token), source.Token);
                         dbhelper.AutoApproveUser(user.Id);
                     }
                     else
                     {
+                        // User that has been denied approval for whatever reason
+
                         Console.WriteLine("Found new account");
 
                         await Task.Delay(1000);

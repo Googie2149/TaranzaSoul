@@ -31,7 +31,6 @@ namespace TaranzaSoul
         private ulong updateChannel = 0;
         private ConcurrentQueue<RoleAddition> RoleAdditions = new ConcurrentQueue<RoleAddition>();
         private DateTimeOffset lastRole = DateTimeOffset.Now;
-        private bool runningRemoval = false;
 
         private class RoleAddition
         {
