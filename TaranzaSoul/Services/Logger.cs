@@ -534,6 +534,7 @@ namespace TaranzaSoul
                             }
 
                             await user.AddRoleAsync(role);
+                            RegisterNewUser(user.Id);
                         }
                         catch (Exception ex)
                         {
@@ -571,6 +572,7 @@ namespace TaranzaSoul
                             }
 
                             await user.AddRoleAsync(role);
+                            RegisterNewUser(user.Id);
                         }
                         catch (Exception ex)
                         {
