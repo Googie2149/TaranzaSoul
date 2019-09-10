@@ -135,7 +135,7 @@ namespace TaranzaSoul
                 await channel.SendMessageAsync($"**Welcome to the /r/Kirby Discord server,** {user.Mention}!\n" +
                     "You're getting this message because you just started typing in the server!\n\n" +
                     "**First time here?** Don't forget to read <#132720402727174144>!\n" +
-                    "**Not sure what a channel is for?** Look in <#361565642027171841>!" +
+                    "**Not sure what a channel is for?** Look in <#361565642027171841>!\n" +
                     "**Here for Super Kirby Clash?** Head to <#417458111553470474>!\n" +
                     "**Looking for someone to play with?** Ask in #<#619088469339144202>!");
             }
