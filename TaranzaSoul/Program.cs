@@ -378,8 +378,8 @@ namespace TaranzaSoul
 
                 if (user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
                 {
-                    RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, remove = true });
                     lastRole = DateTimeOffset.Now;
+                    RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, remove = true });
                     //await user.RemoveRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
                 }
             }
@@ -402,8 +402,8 @@ namespace TaranzaSoul
 
                 if (!user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
                 {
-                    RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, roleId = RoleColors[reaction.Emote.Name] });
                     lastRole = DateTimeOffset.Now;
+                    RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, roleId = RoleColors[reaction.Emote.Name] });
                     //await user.AddRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
                 }
             }
