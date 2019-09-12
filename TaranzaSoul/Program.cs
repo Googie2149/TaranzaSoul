@@ -114,7 +114,7 @@ namespace TaranzaSoul
             {
                 while (true)
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(3000);
 
                     try
                     {
@@ -148,11 +148,11 @@ namespace TaranzaSoul
 
                             foreach (var u in counter)
                             {
-                                if (u.Value > 2)
+                                if (u.Value > 4)
                                 {
                                     try
                                     {
-                                        await socketClient.GetUser(u.Key).SendMessageAsync("Hey, slow down! You don't need every color on that list! No more colors for a week!");
+                                        await socketClient.GetUser(u.Key).SendMessageAsync("Hey, slow down! You don't need every color on that list! No more colors for an hour!");
                                     }
                                     catch (Exception ex)
                                     {
@@ -160,7 +160,7 @@ namespace TaranzaSoul
                                     }
 
                                     await RemoveAllColors(u.Key);
-                                    config.BlacklistedUsers.Add(u.Key, DateTimeOffset.Now.AddDays(7));
+                                    config.BlacklistedUsers.Add(u.Key, DateTimeOffset.Now.AddHours(1));
                                     Console.WriteLine($"Blacklisted [{u.Key}] from colors.");
 
                                     while (temp.Select(x => x.userId).Contains(u.Key))
