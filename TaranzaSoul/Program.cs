@@ -118,7 +118,7 @@ namespace TaranzaSoul
 
                     try
                     {
-                        if (lastRole < DateTimeOffset.Now.AddSeconds(-3))
+                        if (lastRole < DateTimeOffset.Now.AddSeconds(-15))
                             continue;
 
                         List<RoleAddition> temp = new List<RoleAddition>();
