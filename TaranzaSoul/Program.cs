@@ -567,11 +567,6 @@ namespace TaranzaSoul
 
             var tmp = msg.Content.ToLower();
 
-            if (msg.Content.ToLower().Split(' ').Any(x => SpoilerWords.Contains(x)))
-            {
-
-            }
-
             foreach (var s in SpoilerWords)
             {
                 //if (msg.Channel.Id == 268945818470449162 && s == "flamberge")
