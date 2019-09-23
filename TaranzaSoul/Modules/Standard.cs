@@ -704,11 +704,7 @@ namespace TaranzaSoul.Modules.Standard
                     return;
                 }
 
-                Console.WriteLine("over 10 chars");
-
                 SocketTextChannel channel = Context.Client.GetGuild(config.HomeGuildId).GetChannel(config.ReportChannelId) as SocketTextChannel;
-
-                Console.WriteLine("channel fetched");
 
                 EmbedBuilder builder = new EmbedBuilder();
 
@@ -719,8 +715,6 @@ namespace TaranzaSoul.Modules.Standard
 
                 if (Context.Message.Attachments.Count() > 0)
                 {
-                    Console.WriteLine("attachments");
-
                     StringBuilder output = new StringBuilder();
 
                     output.AppendLine("Attachments:");
@@ -730,14 +724,11 @@ namespace TaranzaSoul.Modules.Standard
                     }
 
                     builder.AddField("Attachments:", output.ToString());
-                    
-                    Console.WriteLine("attachments added");
                 }
 
                 var user = Context.Client.GetGuild(config.HomeGuildId).GetUser(Context.User.Id);
 
                 builder.WithFooter($"Sent by {user.Nickname ?? Context.User.Username}#{Context.User.Discriminator}", Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl());
-                Console.WriteLine("footer added");
                 builder.Timestamp = DateTimeOffset.Now;
 
                 Discord.Color color;
