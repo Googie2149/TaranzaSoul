@@ -36,6 +36,58 @@ namespace TaranzaSoul.Modules.Standard
             logger = _logger;
         }
 
+        private void Log(Exception ex)
+        {
+            string exMessage;
+
+            if (ex != null)
+            {
+                while (ex is AggregateException && ex.InnerException != null)
+                    ex = ex.InnerException;
+                exMessage = $"{ex.Message}";
+                if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
+                    exMessage += $"\n{ex.StackTrace}";
+            }
+            else
+                exMessage = null;
+
+            string sourceName = ex.Source?.ToString();
+
+            string text;
+            if (ex.Message == null)
+            {
+                text = exMessage ?? "";
+                exMessage = null;
+            }
+            else
+                text = ex.Message;
+
+            StringBuilder builder = new StringBuilder(text.Length + (sourceName?.Length ?? 0) + (exMessage?.Length ?? 0) + 5);
+            if (sourceName != null)
+            {
+                builder.Append('[');
+                builder.Append(sourceName);
+                builder.Append("] ");
+            }
+            builder.Append($"[{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}] ");
+            for (int i = 0; i < text.Length; i++)
+            {
+                //Strip control chars
+                char c = text[i];
+                if (c == '\n' || !char.IsControl(c) || c != (char)8226)
+                    builder.Append(c);
+            }
+            if (exMessage != null)
+            {
+                builder.Append(": ");
+                builder.Append(exMessage);
+            }
+
+            text = builder.ToString();
+
+            Console.WriteLine(text);
+        }
+
         [Command("help")]
         public async Task HelpCommand()
         {
@@ -693,7 +745,7 @@ namespace TaranzaSoul.Modules.Standard
             }
             catch (Exception ex)
             {
-                logger.Log(ex);
+                Log(ex);
                 await RespondAsync("I had an issue sending that report, try again later.\nIf this is an emergency, please ping the @Mods role instead.");
                 return;
             }

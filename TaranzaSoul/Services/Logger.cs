@@ -54,7 +54,7 @@ namespace TaranzaSoul
                                 "Hi, welcome to the /r/Kirby Discord server! If you're seeing this, it means **your account is new**, and as such needs to be verified before you can participate in this server. " +
                                 "Toss us a mod mail on /r/Kirby with your Discord username and we'll get you set up as soon as we can https://www.reddit.com/message/compose?to=%2Fr%2FKirby";
 
-        public void Log(Exception ex)
+        private void Log(Exception ex)
         {
             string exMessage;
 
