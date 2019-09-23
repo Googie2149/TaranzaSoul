@@ -629,9 +629,13 @@ namespace TaranzaSoul
             {
                 if (!messagedUsers.Contains(message.Author.Id))
                 {
-                    await message.Channel.SendMessageAsync($"I am a utility bot for {name}. I have few public commands, and am otherwise useless in DMs.\n" +
-                        $"To report something to the moderators, please use the `!report` command here, " +
-                        $"and please include any relevant details such as who is involved, what channel the event is taking place in, etc.");
+                    if (!message.Content.ToLower().StartsWith("!report") || !message.Content.ToLower().StartsWith($"{client.CurrentUser.Mention} report"))
+                    {
+                        await message.Channel.SendMessageAsync($"I am a utility bot for {name}. I have few public commands, and am otherwise useless in DMs.\n" +
+                            $"To report something to the moderators, please use the `!report` command here, " +
+                            $"and please include any relevant details such as who is involved, what channel the event is taking place in, etc.");
+                    }
+
                     messagedUsers.Add(message.Author.Id);
                 }
 
