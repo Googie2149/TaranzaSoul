@@ -912,7 +912,7 @@ namespace TaranzaSoul.Modules.Standard
                             units = "minutes";
                             time = asdf.Next(1, 7) * 10;
                         }
-                        else if (qwerty >= 50)
+                        else if (qwerty > 50)
                         {
                             units = "hours";
                             time = asdf.Next(2, 25);
