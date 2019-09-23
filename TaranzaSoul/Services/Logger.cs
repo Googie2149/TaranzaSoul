@@ -633,7 +633,7 @@ namespace TaranzaSoul
 
             if ((message.Channel as IGuildChannel) == null)
             {
-                await Task.Delay(500);
+                await Task.Delay(1000);
 
                 if (!messagedUsers.Contains(message.Author.Id))
                 {
