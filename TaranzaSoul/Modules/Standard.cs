@@ -706,7 +706,7 @@ namespace TaranzaSoul.Modules.Standard
 
                 Console.WriteLine("over 10 chars");
 
-                SocketTextChannel channel = Context.Guild.GetChannel(config.ReportChannelId) as SocketTextChannel;
+                SocketTextChannel channel = Context.Client.GetGuild(config.HomeGuildId).GetChannel(config.ReportChannelId) as SocketTextChannel;
 
                 Console.WriteLine("channel fetched");
 
