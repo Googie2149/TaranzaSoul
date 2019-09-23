@@ -642,58 +642,61 @@ namespace TaranzaSoul.Modules.Standard
         [RequireContext(ContextType.DM)]
         public async Task Report(string remainder = "")
         {
-            logger.ReportSent(Context.User.Id);
-
-            if (remainder.Length < 10)
-            {
-                await RespondAsync("To prevent abuse, reports must be a minimum of 10 characters.");
-                return;
-            }
-
-            SocketTextChannel channel = Context.Guild.GetChannel(config.ReportChannelId) as SocketTextChannel;
-
-            EmbedBuilder builder = new EmbedBuilder();
-
-            builder.Title = "DM Report!";
-            builder.AddField("Content:", $"New report from {Context.User.Mention}:\n{remainder}");
-
-            if (Context.Message.Attachments.Count() > 0)
-            {
-                StringBuilder output = new StringBuilder();
-
-                output.AppendLine("Attachments:");
-                foreach (var a in Context.Message.Attachments)
-                {
-                    output.AppendLine(a.Url);
-                }
-
-                builder.AddField("Attachments:", output.ToString());
-            }
-
-            builder.WithFooter($"Sent by {(Context.User as IGuildUser).Nickname ?? Context.User.Username}#{Context.User.Discriminator}", Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl());
-            builder.Timestamp = DateTimeOffset.Now;
-
-            Discord.Color color;
-
-            var allRoles = Context.Client.GetGuild(config.HomeGuildId).GetUser(Context.User.Id).GetRoles().Where(x => x.Color != Color.Default);
-            if (allRoles.Count() == 0)
-                color = Color.Default;
-            else
-                color = allRoles.OrderBy(x => x.Position).Last().Color;
-
-            builder.Color = color;
-
             try
             {
+                logger.ReportSent(Context.User.Id);
+
+                if (remainder.Length < 10)
+                {
+                    await RespondAsync("To prevent abuse, reports must be a minimum of 10 characters.");
+                    return;
+                }
+
+                SocketTextChannel channel = Context.Guild.GetChannel(config.ReportChannelId) as SocketTextChannel;
+
+                EmbedBuilder builder = new EmbedBuilder();
+
+                builder.Title = "DM Report!";
+                builder.AddField("Content:", $"New report from {Context.User.Mention}:\n{remainder}");
+
+                if (Context.Message.Attachments.Count() > 0)
+                {
+                    StringBuilder output = new StringBuilder();
+
+                    output.AppendLine("Attachments:");
+                    foreach (var a in Context.Message.Attachments)
+                    {
+                        output.AppendLine(a.Url);
+                    }
+
+                    builder.AddField("Attachments:", output.ToString());
+                }
+
+                builder.WithFooter($"Sent by {(Context.User as IGuildUser).Nickname ?? Context.User.Username}#{Context.User.Discriminator}", Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl());
+                builder.Timestamp = DateTimeOffset.Now;
+
+                Discord.Color color;
+
+                var allRoles = Context.Client.GetGuild(config.HomeGuildId).GetUser(Context.User.Id).GetRoles().Where(x => x.Color != Color.Default);
+                if (allRoles.Count() == 0)
+                    color = Color.Default;
+                else
+                    color = allRoles.OrderBy(x => x.Position).Last().Color;
+
+                builder.Color = color;
+
                 await channel.SendMessageAsync(embed: builder.Build());
+
+                await RespondAsync("Report sent!");
+
+                return;
             }
             catch (Exception ex)
             {
+                logger.Log(ex);
                 await RespondAsync("I had an issue sending that report, try again later.\nIf this is an emergency, please ping the @Mods role instead.");
                 return;
             }
-
-            await RespondAsync("Report sent!");
         }
 
     }
