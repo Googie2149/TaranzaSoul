@@ -648,7 +648,7 @@ namespace TaranzaSoul.Modules.Standard
 
         [Command("fc")]
         [Priority(1000)]
-        public async Task GetFC(string remainder = "")
+        public async Task GetFC([Remainder]string remainder = "")
         {
             SocketGuildUser user;
 
@@ -692,7 +692,7 @@ namespace TaranzaSoul.Modules.Standard
         [Command("report")]
         [Priority(1000)]
         [RequireContext(ContextType.DM)]
-        public async Task Report(string remainder = "")
+        public async Task Report([Remainder]string remainder = "")
         {
             try
             {
