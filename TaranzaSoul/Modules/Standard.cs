@@ -715,7 +715,6 @@ namespace TaranzaSoul.Modules.Standard
                 {
                     StringBuilder output = new StringBuilder();
 
-                    output.AppendLine("Attachments:");
                     foreach (var a in Context.Message.Attachments)
                     {
                         output.AppendLine(a.Url);
