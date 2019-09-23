@@ -859,7 +859,10 @@ namespace TaranzaSoul.Modules.Standard
 
             if (strikedUsers.Count() == 0)
             {
-                await RespondAsync(output.ToString());
+                if (!zap)
+                    await RespondAsync(output.ToString());
+                else
+                    await RespondAsync(output.ToString().ToLower().Replace("strike", "zap"));
                 return;
             }
             else if (zap && strikedUsers.Count() > 1)
@@ -951,7 +954,10 @@ namespace TaranzaSoul.Modules.Standard
                 builder.AddField($"{u.ToString()}", punishmentGenerator.ToString());
             }
 
-            await ReplyAsync(message: output.ToString(), embed: builder.Build());
+            if (!zap)
+                await ReplyAsync(message: output.ToString(), embed: builder.Build());
+            else
+                await ReplyAsync(message: output.ToString().ToLower().Replace("strike", "zap"), embed: builder.Build());
         }
     }
 
