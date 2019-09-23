@@ -40,6 +40,9 @@ namespace TaranzaSoul
         [JsonProperty("staff_role")]
         public ulong StaffId { get; set; }
 
+        [JsonProperty("helper_role")]
+        public ulong HelperId { get; set; }
+
         [JsonProperty("staff_role_secondary_mention")]
         public bool AlternateStaffMention { get; set; } = false;
 

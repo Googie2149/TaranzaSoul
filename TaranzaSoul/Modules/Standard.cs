@@ -27,6 +27,15 @@ namespace TaranzaSoul.Modules.Standard
         private DatabaseHelper dbhelper;
         private Logger logger;
 
+        enum FakePunishments
+        {
+            None = 0,
+            tempmuted = 30,
+            kicked = 55,
+            tempbanned = 75,
+            banned = 90
+        }
+
         public Standard(CommandService _commands, IServiceProvider _services, Config _config, DatabaseHelper _dbhelper, Logger _logger)
         {
             commands = _commands;
@@ -750,8 +759,178 @@ namespace TaranzaSoul.Modules.Standard
                 await RespondAsync("I had an issue sending that report, try again later.\nIf this is an emergency, please ping the @Mods role instead.");
                 return;
             }
+
+
         }
 
+        [Command("strike")]
+        [Priority(1000)]
+        public async Task FakeStrike([Remainder]string remainder = "")
+        {
+            if (remainder == "")
+            {
+                await RespondAsync("<:vError:625705714324865024> Please provide at least one user!");
+                return;
+            }
+
+            int strikes = 1;
+            List<ulong> users;
+            string note;
+
+            if (Int32.TryParse(remainder.Split(' ').First(), out int temp))
+            {
+                if (temp < 0 || temp > 100)
+                {
+                    await RespondAsync("<:vError:625705714324865024> Number of strikes must be between 1 and 100!");
+                    return;
+                }
+                else
+                {
+                    strikes = temp;
+                    remainder = remainder.Substring(remainder.Split(' ').First().Length).Trim();
+                }
+            }
+
+            WatchListHelper(remainder, out users, out note);
+
+            if (users.Count() == 0)
+            {
+                await RespondAsync("<:vError:625705714324865024> Please provide at least one user!");
+                return;
+            }
+
+            if (note == null || note == "")
+            {
+                await RespondAsync("<:vError:625705714324865024> Please provide a reason for the strike(s)!");
+                return;
+            }
+
+            int callingPosition = (Context.User as SocketGuildUser).GetRoles().OrderByDescending(x => x.Position).FirstOrDefault().Position;
+
+            List<IUser> strikedUsers = new List<IUser>();
+
+            StringBuilder output = new StringBuilder();
+
+            foreach (var u in users.Distinct())
+            {
+                IUser user = Context.Guild.GetUser(u);
+
+                if (user != null)
+                {
+                    if (callingPosition < (user as SocketGuildUser).GetRoles().Where(x => x.Permissions.RawValue != 0).OrderByDescending(x => x.Position).FirstOrDefault().Position)
+                    {
+                        output.AppendLine($"<:vError:625705714324865024> You do not have permission to interact with **{user.Username}**#{user.Discriminator}");
+                    }
+                    else
+                    {
+                        if (user.IsBot)
+                            output.AppendLine($"<:vError:625705714324865024> Strikes cannot be given to bots (**{user.Username}**#{user.Discriminator} (ID:{user.Id}))");
+                        else
+                        {
+                            output.AppendLine($"<:vSuccess:625705714429722624> Successfully gave `{strikes}` strikes to **{user.Username}**#{user.Discriminator}");
+                            strikedUsers.Add(user);
+                        }
+                    }
+                }
+                else
+                {
+                    user = Context.Client.GetUser(u);
+
+                    if (user == null)
+                        continue;
+
+                    if (user.IsBot)
+                        output.AppendLine($"<:vError:625705714324865024> Strikes cannot be given to bots (**{user.Username}**#{user.Discriminator} (ID:{user.Id}))");
+                    else
+                    {
+                        output.AppendLine($"<:vSuccess:625705714429722624> Successfully gave `{strikes}` strikes to **{user.Username}**#{user.Discriminator}");
+                        strikedUsers.Add(user);
+                    }
+                }
+            }
+
+            if (strikedUsers.Count() == 0)
+            {
+                await RespondAsync(output.ToString());
+                return;
+            }
+
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.Title = "Strike DM Preview";
+            string guildName = Context.Guild.Name;
+            Random asdf = new Random();
+
+            foreach (var u in strikedUsers)
+            {
+                FakePunishments blah;
+                var punishment = asdf.Next(0, 100);
+
+                if (punishment < 30)
+                    blah = FakePunishments.None;
+                else if (punishment >= 30 && punishment < 55)
+                    blah = FakePunishments.tempmuted;
+                else if (punishment >= 55 && punishment < 75)
+                    blah = FakePunishments.kicked;
+                else if (punishment >= 75 && punishment < 90)
+                    blah = FakePunishments.tempbanned;
+                else if (punishment >= 90)
+                    blah = FakePunishments.banned;
+                else
+                    blah = FakePunishments.None;
+
+                StringBuilder punishmentGenerator = new StringBuilder();
+
+                punishmentGenerator.AppendLine($"<:vWarning:625705714274271254> You have received `{strikes}` in **{guildName}** for: `{note}`");
+
+                switch (blah)
+                {
+                    case FakePunishments.tempmuted:
+                        punishmentGenerator.Append("🤐 ");
+                        break;
+                    case FakePunishments.kicked:
+                        punishmentGenerator.Append("👢 ");
+                        break;
+                    case (FakePunishments.tempbanned):
+                        punishmentGenerator.Append("⏲ ");
+                        break;
+                    case (FakePunishments.banned):
+                        punishmentGenerator.Append("🔨 ");
+                        break;
+                }
+
+                switch (blah)
+                {
+                    case FakePunishments.tempmuted:
+                    case FakePunishments.tempbanned:
+                        int qwerty = asdf.Next(0, 100);
+                        string units = "years";
+                        int time = 1000;
+
+                        if (qwerty < 50)
+                        {
+                            units = "minutes";
+                            time = asdf.Next(1, 7) * 10;
+                        }
+                        else if (qwerty >= 50)
+                        {
+                            units = "hours";
+                            time = asdf.Next(2, 25);
+                        }
+
+                        punishmentGenerator.Append($"You have been **{blah.ToString()}** for **{time}** {units} from **{guildName}**");
+                        break;
+                    case FakePunishments.kicked:
+                    case FakePunishments.banned:
+                        punishmentGenerator.Append($"You have been **{blah.ToString()}** from **{guildName}**");
+                        break;
+                }
+
+                builder.AddField($"{u.ToString()}", punishmentGenerator.ToString());
+            }
+
+            await ReplyAsync(message: output.ToString(), embed: builder.Build());
+        }
     }
 
     public class JsonUser
