@@ -881,7 +881,7 @@ namespace TaranzaSoul.Modules.Standard
 
                 StringBuilder punishmentGenerator = new StringBuilder();
 
-                punishmentGenerator.AppendLine($"<:vWarning:625705714274271254> You have received `{strikes}` in **{guildName}** for: `{note}`");
+                punishmentGenerator.AppendLine($"<:vWarning:625705714274271254> You have received `{strikes}` strikes in **{guildName}** for: `{note}`");
 
                 switch (blah)
                 {
