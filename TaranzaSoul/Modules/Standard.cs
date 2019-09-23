@@ -962,6 +962,12 @@ namespace TaranzaSoul.Modules.Standard
                 await ReplyAsync(message: output.ToString().ToLower().Replace("strike", "zap"), embed: builder.Build());
             }
         }
+
+        [Command("hey")]
+        public async Task WHY()
+        {
+            await RespondAsync("listen!");
+        }
     }
 
     public class JsonUser
