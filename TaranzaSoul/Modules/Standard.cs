@@ -35,7 +35,7 @@ namespace TaranzaSoul.Modules.Standard
             dbhelper = _dbhelper;
             logger = _logger;
         }
-        
+
         [Command("help")]
         public async Task HelpCommand()
         {
@@ -94,7 +94,7 @@ namespace TaranzaSoul.Modules.Standard
             var args = remainder.Split(' ').Where(x => x.Length > 0).ToList();
             note = "";
             users = new List<ulong>();
-            
+
             foreach (var s in new List<string>(args))
             {
                 var id = s.TrimStart('<').TrimStart('@').TrimStart('!').TrimEnd('>');
@@ -242,7 +242,7 @@ namespace TaranzaSoul.Modules.Standard
                         removed.Append("Removed the following user Id(s): ");
 
                     removed.Append($"{u} ");
-                    
+
                     await dbhelper.RevokeApproval(u);
                     await Context.Guild.GetUser(u).RemoveRoleAsync(role);
                 }
@@ -501,7 +501,7 @@ namespace TaranzaSoul.Modules.Standard
 
                 if (temp.Length == 12 && ulong.TryParse(temp, out parsedFriendCode))
                 {
-                    
+
 
                     if (SwitchName.Length > 10)
                     {
@@ -636,6 +636,66 @@ namespace TaranzaSoul.Modules.Standard
             else
                 await RespondAsync($"{Context.User.Mention}: {user.Nickname ?? user.Username}'s Friend Code is `{FriendCode.FriendCode.ToString("0000-0000-0000")}` {FriendCode.SwitchNickname}");
         }
+
+        [Command("report")]
+        [Priority(1000)]
+        [RequireContext(ContextType.DM)]
+        public async Task Report(string remainder = "")
+        {
+            logger.ReportSent(Context.User.Id);
+
+            if (remainder.Length < 10)
+            {
+                await RespondAsync("To prevent abuse, reports must be a minimum of 10 characters.");
+                return;
+            }
+
+            SocketTextChannel channel = Context.Guild.GetChannel(config.ReportChannelId) as SocketTextChannel;
+
+            EmbedBuilder builder = new EmbedBuilder();
+
+            builder.Title = "DM Report!";
+            builder.AddField("Content:", $"New report from {Context.User.Mention}:\n{remainder}");
+
+            if (Context.Message.Attachments.Count() > 0)
+            {
+                StringBuilder output = new StringBuilder();
+
+                output.AppendLine("Attachments:");
+                foreach (var a in Context.Message.Attachments)
+                {
+                    output.AppendLine(a.Url);
+                }
+
+                builder.AddField("Attachments:", output.ToString());
+            }
+
+            builder.WithFooter($"Sent by {(Context.User as IGuildUser).Nickname ?? Context.User.Username}#{Context.User.Discriminator}", Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl());
+            builder.Timestamp = DateTimeOffset.Now;
+
+            Discord.Color color;
+
+            var allRoles = Context.Client.GetGuild(config.HomeGuildId).GetUser(Context.User.Id).GetRoles().Where(x => x.Color != Color.Default);
+            if (allRoles.Count() == 0)
+                color = Color.Default;
+            else
+                color = allRoles.OrderBy(x => x.Position).Last().Color;
+
+            builder.Color = color;
+
+            try
+            {
+                await channel.SendMessageAsync(embed: builder.Build());
+            }
+            catch (Exception ex)
+            {
+                await RespondAsync("I had an issue sending that report, try again later.\nIf this is an emergency, please ping the @Mods role instead.");
+                return;
+            }
+
+            await RespondAsync("Report sent!");
+        }
+
     }
 
     public class JsonUser

@@ -127,6 +127,12 @@ namespace TaranzaSoul
             newUsers[userId] = false;
         }
 
+        public void ReportSent(ulong userId)
+        {
+            if(!messagedUsers.Contains(userId))
+                messagedUsers.Add(userId);
+        }
+
         private async Task Client_UserIsTyping(SocketUser user, ISocketMessageChannel channel)
         {
             if (newUsers.Keys.Contains(user.Id) && newUsers[user.Id] == false)
@@ -627,10 +633,13 @@ namespace TaranzaSoul
 
             if ((message.Channel as IGuildChannel) == null)
             {
+                await Task.Delay(500);
+
                 if (!messagedUsers.Contains(message.Author.Id))
                 {
-                    await message.Channel.SendMessageAsync($"I am a utility bot for {name}. I have no commands, and am otherwise useless in DMs.\n" +
-                        $"If you have any questions, please message an online moderator.");
+                    await message.Channel.SendMessageAsync($"I am a utility bot for {name}. I have few public commands, and am otherwise useless in DMs.\n" +
+                        $"To report something to the moderators, please use the `!report` command here, " +
+                        $"and please include any relevant details such as who is involved, what channel the event is taking place in, etc.");
                     messagedUsers.Add(message.Author.Id);
                 }
 

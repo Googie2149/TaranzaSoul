@@ -46,6 +46,9 @@ namespace TaranzaSoul
         [JsonProperty("staff_mention_role")]
         public ulong AlternateStaffId { get; set; } = 0;
 
+        [JsonProperty("report_channel")]
+        public ulong ReportChannelId { get; set; } = 0;
+
         [JsonProperty("minimum_age")]
         public int MinimumAccountAge { get; set; } = 14; // Age in days
 
