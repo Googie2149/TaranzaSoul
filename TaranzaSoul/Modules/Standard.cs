@@ -878,9 +878,9 @@ namespace TaranzaSoul.Modules.Standard
             {
                 if (zap)
                 {
-                    builder.AddField("The Legend", $"Once upon a time, a poor **{guildName}** user violated a rule in desperation, only to be struck by the mods.\n" +
-                        $"As they breathed their last, a mysterious traveler appeared and unlocked their natural talent for `{note}`\n" +
-                        $"**ZAP!** *{u.Username}* was born.");
+                    builder.AddField("The Legend", $"<:zap1:625749181142794250><:zap2:625749181109108756>Once upon a time, a poor **{guildName}** user violated a rule in desperation, only to be struck by the mods.\n" +
+                        $"<:zap1:625749181142794250><:zap2:625749181109108756>As they breathed their last, a mysterious traveler appeared and unlocked their natural talent for `{note}`\n" +
+                        $"<:zap1:625749181142794250><:zap2:625749181109108756>**ZAP!** *{u.Username}* was born.");
 
                     continue;
                 }
