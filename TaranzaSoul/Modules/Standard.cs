@@ -957,7 +957,10 @@ namespace TaranzaSoul.Modules.Standard
             if (!zap)
                 await ReplyAsync(message: output.ToString(), embed: builder.Build());
             else
+            {
+                builder.Title = "Zap DM Preview";
                 await ReplyAsync(message: output.ToString().ToLower().Replace("strike", "zap"), embed: builder.Build());
+            }
         }
     }
 
