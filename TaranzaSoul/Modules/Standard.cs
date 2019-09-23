@@ -704,15 +704,23 @@ namespace TaranzaSoul.Modules.Standard
                     return;
                 }
 
+                Console.WriteLine("over 10 chars");
+
                 SocketTextChannel channel = Context.Guild.GetChannel(config.ReportChannelId) as SocketTextChannel;
+
+                Console.WriteLine("channel fetched");
 
                 EmbedBuilder builder = new EmbedBuilder();
 
                 builder.Title = "DM Report!";
                 builder.AddField("Content:", $"New report from {Context.User.Mention}:\n{remainder}");
 
+                Console.WriteLine("content added");
+
                 if (Context.Message.Attachments.Count() > 0)
                 {
+                    Console.WriteLine("attachments");
+
                     StringBuilder output = new StringBuilder();
 
                     output.AppendLine("Attachments:");
@@ -722,14 +730,19 @@ namespace TaranzaSoul.Modules.Standard
                     }
 
                     builder.AddField("Attachments:", output.ToString());
+                    
+                    Console.WriteLine("attachments added");
                 }
 
-                builder.WithFooter($"Sent by {(Context.User as IGuildUser).Nickname ?? Context.User.Username}#{Context.User.Discriminator}", Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl());
+                var user = Context.Client.GetGuild(config.HomeGuildId).GetUser(Context.User.Id);
+
+                builder.WithFooter($"Sent by {user.Nickname ?? Context.User.Username}#{Context.User.Discriminator}", Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl());
+                Console.WriteLine("footer added");
                 builder.Timestamp = DateTimeOffset.Now;
 
                 Discord.Color color;
 
-                var allRoles = Context.Client.GetGuild(config.HomeGuildId).GetUser(Context.User.Id).GetRoles().Where(x => x.Color != Color.Default);
+                var allRoles = user.GetRoles().Where(x => x.Color != Color.Default);
                 if (allRoles.Count() == 0)
                     color = Color.Default;
                 else
