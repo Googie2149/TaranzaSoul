@@ -158,7 +158,7 @@ namespace TaranzaSoul.Modules.Standard
 
             foreach (var s in new List<string>(args))
             {
-                var id = s.TrimStart('<').TrimStart('@').TrimStart('!').TrimEnd('>');
+                var id = s.TrimStart('\\').TrimStart('<').TrimStart('@').TrimStart('!').TrimEnd('>');
                 ulong temp;
                 if (ulong.TryParse(id, out temp))
                 {
