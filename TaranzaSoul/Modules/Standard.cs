@@ -696,8 +696,6 @@ namespace TaranzaSoul.Modules.Standard
         {
             try
             {
-                logger.ReportSent(Context.User.Id);
-
                 if (remainder.Length < 10)
                 {
                     await RespondAsync("To prevent abuse, reports must be a minimum of 10 characters.");

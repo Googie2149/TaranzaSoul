@@ -127,12 +127,6 @@ namespace TaranzaSoul
             newUsers[userId] = false;
         }
 
-        public void ReportSent(ulong userId)
-        {
-            if(!messagedUsers.Contains(userId))
-                messagedUsers.Add(userId);
-        }
-
         private async Task Client_UserIsTyping(SocketUser user, ISocketMessageChannel channel)
         {
             if (newUsers.Keys.Contains(user.Id) && newUsers[user.Id] == false)
@@ -633,8 +627,6 @@ namespace TaranzaSoul
 
             if ((message.Channel as IGuildChannel) == null)
             {
-                await Task.Delay(1000);
-
                 if (!messagedUsers.Contains(message.Author.Id))
                 {
                     await message.Channel.SendMessageAsync($"I am a utility bot for {name}. I have few public commands, and am otherwise useless in DMs.\n" +
