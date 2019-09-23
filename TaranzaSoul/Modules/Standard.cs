@@ -764,6 +764,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("strike")]
+        [Alias("strikey", "zap")]
         [Priority(1000)]
         public async Task FakeStrike([Remainder]string remainder = "")
         {
@@ -771,6 +772,13 @@ namespace TaranzaSoul.Modules.Standard
             {
                 await RespondAsync("<:vError:625705714324865024> Please provide at least one user!");
                 return;
+            }
+
+            bool zap = false;
+
+            if (Context.Message.Content.Remove(remainder).ToLower().Contains("zap") || Context.Message.Content.Remove(remainder).ToLower().Contains("strikey"))
+            {
+                zap = true;
             }
 
             int strikes = 1;
@@ -854,6 +862,11 @@ namespace TaranzaSoul.Modules.Standard
                 await RespondAsync(output.ToString());
                 return;
             }
+            else if (zap && strikedUsers.Count() > 1)
+            {
+                await RespondAsync($"{Context.User.Mention} my dude you are trying to wield way too much power take a chill pill or somethin");
+                return;
+            }
 
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -863,6 +876,15 @@ namespace TaranzaSoul.Modules.Standard
 
             foreach (var u in strikedUsers)
             {
+                if (zap)
+                {
+                    builder.AddField($"{u.ToString()}", $"Once upon a time, a poor **{guildName}** user violated a rule in desperation, only to be struck by the mods.\n" +
+                        $"As they breathed their last, a mysterious traveler appeared and unlocked their natural talent for `{note}`\n" +
+                        $"**ZAP!** *{u.Username}* was born.");
+
+                    continue;
+                }
+
                 FakePunishments blah;
                 var punishment = asdf.Next(0, 100);
 
