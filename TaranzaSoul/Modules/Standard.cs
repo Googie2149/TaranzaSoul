@@ -631,7 +631,10 @@ namespace TaranzaSoul.Modules.Standard
 
                     foreach (var kv in AllFCs)
                     {
-                        output.AppendLine($"<@{kv.Key}>: `{kv.Value.FriendCode.ToString("0000-0000-0000")}` {kv.Value.SwitchNickname}");
+                        string addition = $"<@{kv.Key}>: `{kv.Value.FriendCode.ToString("0000-0000-0000")}` {kv.Value.SwitchNickname}";
+                        if (output.Length + addition.Length > 2000)
+                            break;
+                        output.AppendLine(addition);
                     }
 
                     await message.ModifyAsync(x => x.Content = output.ToString());
