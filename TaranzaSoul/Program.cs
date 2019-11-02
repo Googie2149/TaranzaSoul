@@ -390,6 +390,13 @@ namespace TaranzaSoul
                 if (user.Roles.Contains(user.Guild.GetRole(498078860517048331)))
                     await user.RemoveRoleAsync(user.Guild.GetRole(498078860517048331));
             }
+            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "pitchpls")
+            {
+                var user = ((SocketGuildUser)reaction.User);
+
+                if (user.Roles.Contains(user.Guild.GetRole(639924839091535920)))
+                    await user.RemoveRoleAsync(user.Guild.GetRole(639924839091535920));
+            }
         }
 
         private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
@@ -422,6 +429,13 @@ namespace TaranzaSoul
 
                 if (!user.Roles.Contains(user.Guild.GetRole(498078860517048331)))
                     await user.AddRoleAsync(user.Guild.GetRole(498078860517048331));
+            }
+            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "pitchpls")
+            {
+                var user = ((SocketGuildUser)reaction.User);
+
+                if (!user.Roles.Contains(user.Guild.GetRole(639924839091535920)))
+                    await user.AddRoleAsync(user.Guild.GetRole(639924839091535920));
             }
         }
 
