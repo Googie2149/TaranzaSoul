@@ -427,6 +427,15 @@ namespace TaranzaSoul
 
         private async Task Client_MessageReceived(SocketMessage msg)
         {
+            //if (msg.Source == MessageSource.System)
+            //{
+            //    var systemMsg = msg as SocketSystemMessage;
+            //    if (systemMsg.Type != MessageType.ChannelPinnedMessage)
+            //        return;
+
+                
+            //}
+
             if (msg.Author.Id == 102528327251656704 && msg.Content.ToLower() == "<@267405866162978816> update colors")
             {
                 RoleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");

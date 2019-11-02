@@ -67,6 +67,9 @@ namespace TaranzaSoul
         [JsonProperty("pinnedmessage")]
         public ulong FCPinnedMessageId { get; set; } = 0;
 
+        [JsonProperty("pinned_message_list")]
+        public List<ulong> FCPinnedMessages { get; set; } = new List<ulong>();
+
         [JsonProperty("owner_ids")]
         public List<ulong> OwnerIds { get; set; } = new List<ulong>();
 
