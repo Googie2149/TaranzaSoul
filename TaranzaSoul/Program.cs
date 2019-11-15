@@ -160,7 +160,7 @@ namespace TaranzaSoul
                                     }
 
                                     await RemoveAllColors(u.Key);
-                                    config.BlacklistedUsers.Add(u.Key, DateTimeOffset.Now.AddHours(1));
+                                    //config.BlacklistedUsers.Add(u.Key, DateTimeOffset.Now.AddHours(1));
                                     Console.WriteLine($"Blacklisted [{u.Key}] from colors.");
 
                                     while (temp.Select(x => x.userId).Contains(u.Key))
