@@ -273,9 +273,9 @@ namespace TaranzaSoul
 
                     foreach (var idiot in multiroledrifters)
                     {
-                        await RemoveAllColors(idiot.Id);
-                        config.BlacklistedUsers[idiot.Id] = DateTimeOffset.Now.AddDays(7);
-                        Console.WriteLine($"[Login check] Blacklisted {idiot} [{idiot.Id}] from colors.");
+                        // await RemoveAllColors(idiot.Id);
+                        // config.BlacklistedUsers[idiot.Id] = DateTimeOffset.Now.AddDays(7);
+                        // Console.WriteLine($"[Login check] Blacklisted {idiot} [{idiot.Id}] from colors.");
                     }
                 }
                 catch (Exception ex)
