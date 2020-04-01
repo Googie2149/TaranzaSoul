@@ -209,6 +209,11 @@ namespace TaranzaSoul
                     await (before.Guild.GetChannel(694425958928875560) as SocketTextChannel)
                         .SendMessageAsync($"Hi there, {before.Mention}! Welcome to Kirby's stomach!\nNow don't panic, you're not dead, and there *are* plans to build an amusement park in here, but for now just try to enjoy your time here as best you can. You're in good company.");
                 }
+                else if (before.Roles.Contains(role) && !after.Roles.Contains(role))
+                {
+                    await (before.Guild.GetChannel(694425958928875560) as SocketTextChannel)
+                        .SendMessageAsync($"{before.Mention} was spat out. We wish them well outside the safety of Kirby's stomach.");
+                }
             }
         }
 
