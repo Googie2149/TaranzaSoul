@@ -103,6 +103,7 @@ namespace TaranzaSoul
                 socketClient.MessageReceived += Client_MessageReceived;
                 socketClient.ReactionAdded += Client_ReactionAdded;
                 socketClient.ReactionRemoved += Client_ReactionRemoved;
+                socketClient.GuildMemberUpdated += SocketClient_GuildMemberUpdated;
             }
             catch (Exception ex)
             {
@@ -196,6 +197,19 @@ namespace TaranzaSoul
             //await client.CurrentUser.ModifyAsync(x => x.Avatar = avatar);
 
             await Task.Delay(-1);
+        }
+
+        private async Task SocketClient_GuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
+        {
+            if (before.Guild.Id == config.HomeGuildId)
+            {
+                var role = before.Guild.GetRole(694426304510033970);
+                if (!before.Roles.Contains(role) && after.Roles.Contains(role))
+                {
+                    await (before.Guild.GetChannel(694425958928875560) as SocketTextChannel)
+                        .SendMessageAsync($"Hi there, {before.Mention}! Welcome to Kirby's stomach!\nNow don't panic, you're not dead, and there *are* plans to build an amusement park in here, but for now just try to enjoy your time here as best you can. You're in good company.");
+                }
+            }
         }
 
         private async Task RemoveAllColors(ulong user)
