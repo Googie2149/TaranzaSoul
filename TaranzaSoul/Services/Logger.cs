@@ -35,7 +35,7 @@ namespace TaranzaSoul
         private bool initialized = false;
         private bool existingTable = false;
         //private Dictionary<ulong, CancellationTokenSource> waitingUsers = new Dictionary<ulong, CancellationTokenSource>();
-        private Dictionary<ulong, bool> newUsers = new Dictionary<ulong, bool>();
+        //private Dictionary<ulong, bool> newUsers = new Dictionary<ulong, bool>();
 
         private const string WelcomeMessage = 
                                 "Welcome to the Partnered /r/Kirby Discord Server!\n" +
@@ -115,31 +115,31 @@ namespace TaranzaSoul
 
             client.MessageReceived += DMResponse;
             client.GuildAvailable += Client_GuildAvailable;
-            client.UserIsTyping += Client_UserIsTyping;
+            //client.UserIsTyping += Client_UserIsTyping;
 
             existingTable = await dbhelper.InitializeDB();
 
             Console.WriteLine($"Table initialized (New: {existingTable})");
         }
 
-        public void RegisterNewUser(ulong userId)
-        {
-            newUsers[userId] = false;
-        }
+        //public void RegisterNewUser(ulong userId)
+        //{
+        //    newUsers[userId] = false;
+        //}
 
-        private async Task Client_UserIsTyping(SocketUser user, ISocketMessageChannel channel)
-        {
-            if (newUsers.Keys.Contains(user.Id) && newUsers[user.Id] == false)
-            {
-                newUsers[user.Id] = true;
-                await channel.SendMessageAsync($"**Welcome to the /r/Kirby Discord server,** {user.Mention}!\n" +
-                    "You're getting this message because you just started typing in the server!\n\n" +
-                    "**First time here?** Don't forget to read <#132720402727174144>!\n" +
-                    "**Not sure what a channel is for?** Look in <#361565642027171841>!\n" +
-                    "**Here for Super Kirby Clash?** Head to <#417458111553470474>!\n" +
-                    "**Looking for someone to play with?** Ask in #<#619088469339144202>!");
-            }
-        }
+        //private async Task Client_UserIsTyping(SocketUser user, ISocketMessageChannel channel)
+        //{
+        //    if (newUsers.Keys.Contains(user.Id) && newUsers[user.Id] == false)
+        //    {
+        //        newUsers[user.Id] = true;
+        //        await channel.SendMessageAsync($"**Welcome to the /r/Kirby Discord server,** {user.Mention}!\n" +
+        //            "You're getting this message because you just started typing in the server!\n\n" +
+        //            "**First time here?** Don't forget to read <#132720402727174144>!\n" +
+        //            "**Not sure what a channel is for?** Look in <#361565642027171841>!\n" +
+        //            "**Here for Super Kirby Clash?** Head to <#417458111553470474>!\n" +
+        //            "**Looking for someone to play with?** Ask in #<#619088469339144202>!");
+        //    }
+        //}
 
         //private async Task DelayAddRole(ulong u, CancellationToken cancellationToken, double minutes = 10)
         //{
@@ -533,7 +533,7 @@ namespace TaranzaSoul
                                 return;
                             }
 
-                            RegisterNewUser(user.Id);
+                            //RegisterNewUser(user.Id);
                             await user.AddRoleAsync(role);
                         }
                         catch (Exception ex)
@@ -571,7 +571,7 @@ namespace TaranzaSoul
                                 return;
                             }
 
-                            RegisterNewUser(user.Id);
+                            //RegisterNewUser(user.Id);
                             await user.AddRoleAsync(role);
                         }
                         catch (Exception ex)
@@ -629,7 +629,7 @@ namespace TaranzaSoul
             {
                 if (!messagedUsers.Contains(message.Author.Id))
                 {
-                    if (!message.Content.ToLower().StartsWith("!report") || !message.Content.ToLower().StartsWith($"{client.CurrentUser.Mention} report"))
+                    if (!message.Content.ToLower().Contains("report"))
                     {
                         await message.Channel.SendMessageAsync($"I am a utility bot for {name}. I have few public commands, and am otherwise useless in DMs.\n" +
                             $"To report something to the moderators, please use the `!report` command here, " +
