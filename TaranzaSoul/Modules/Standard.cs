@@ -242,7 +242,7 @@ namespace TaranzaSoul.Modules.Standard
             await Context.Guild.GetUser(users.First()).AddRoleAsync(role);
             await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server.");
 
-            logger.RegisterNewUser(users.First());
+            //logger.RegisterNewUser(users.First());
         }
 
         [Command("revoke", RunMode = RunMode.Async)]
