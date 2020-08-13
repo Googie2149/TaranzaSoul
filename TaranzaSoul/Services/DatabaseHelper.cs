@@ -12,6 +12,7 @@ namespace TaranzaSoul
         private string ConnectionString;
         private string FCConnectionString;
         private bool FCDBInitialized = false;
+        private bool MessageListInitialized = false;
 
         public async Task Install(IServiceProvider _services)
         {
@@ -29,6 +30,12 @@ namespace TaranzaSoul
             using (SQLiteConnection db = new SQLiteConnection(FCConnectionString))
             {
                 await db.OpenAsync();
+
+                using (var cmd = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type='table' AND name='switchfcs';", db))
+                {
+                    if ((await cmd.ExecuteScalarAsync()) != null)
+                        FCDBInitialized = true;
+                }
 
                 using (var cmd = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type='table' AND name='switchfcs';", db))
                 {

@@ -103,6 +103,7 @@ namespace TaranzaSoul
                 socketClient.MessageReceived += Client_MessageReceived;
                 socketClient.ReactionAdded += Client_ReactionAdded;
                 socketClient.ReactionRemoved += Client_ReactionRemoved;
+                socketClient.GuildMemberUpdated += SocketClient_GuildMemberUpdated;
             }
             catch (Exception ex)
             {
@@ -160,7 +161,7 @@ namespace TaranzaSoul
                                     }
 
                                     await RemoveAllColors(u.Key);
-                                    config.BlacklistedUsers.Add(u.Key, DateTimeOffset.Now.AddHours(1));
+                                    //config.BlacklistedUsers.Add(u.Key, DateTimeOffset.Now.AddHours(1));
                                     Console.WriteLine($"Blacklisted [{u.Key}] from colors.");
 
                                     while (temp.Select(x => x.userId).Contains(u.Key))
@@ -196,6 +197,24 @@ namespace TaranzaSoul
             //await client.CurrentUser.ModifyAsync(x => x.Avatar = avatar);
 
             await Task.Delay(-1);
+        }
+
+        private async Task SocketClient_GuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
+        {
+            if (before.Guild.Id == config.HomeGuildId)
+            {
+                var role = before.Guild.GetRole(694426304510033970);
+                if (!before.Roles.Contains(role) && after.Roles.Contains(role))
+                {
+                    await (before.Guild.GetChannel(694425958928875560) as SocketTextChannel)
+                        .SendMessageAsync($"Hi there, {before.Mention}! Welcome to Kirby's stomach!\nNow don't panic, you're not dead, and there *are* plans to build an amusement park in here, but for now just try to enjoy your time here as best you can. You're in good company.");
+                }
+                else if (before.Roles.Contains(role) && !after.Roles.Contains(role))
+                {
+                    await (before.Guild.GetChannel(694425958928875560) as SocketTextChannel)
+                        .SendMessageAsync($"{before.Mention} was spat out. We wish them well outside the safety of Kirby's stomach.");
+                }
+            }
         }
 
         private async Task RemoveAllColors(ulong user)
@@ -273,9 +292,9 @@ namespace TaranzaSoul
 
                     foreach (var idiot in multiroledrifters)
                     {
-                        await RemoveAllColors(idiot.Id);
-                        config.BlacklistedUsers[idiot.Id] = DateTimeOffset.Now.AddDays(7);
-                        Console.WriteLine($"[Login check] Blacklisted {idiot} [{idiot.Id}] from colors.");
+                        // await RemoveAllColors(idiot.Id);
+                        // config.BlacklistedUsers[idiot.Id] = DateTimeOffset.Now.AddDays(7);
+                        // Console.WriteLine($"[Login check] Blacklisted {idiot} [{idiot.Id}] from colors.");
                     }
                 }
                 catch (Exception ex)
@@ -390,6 +409,13 @@ namespace TaranzaSoul
                 if (user.Roles.Contains(user.Guild.GetRole(498078860517048331)))
                     await user.RemoveRoleAsync(user.Guild.GetRole(498078860517048331));
             }
+            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "pitchpls")
+            {
+                var user = ((SocketGuildUser)reaction.User);
+
+                if (user.Roles.Contains(user.Guild.GetRole(639924839091535920)))
+                    await user.RemoveRoleAsync(user.Guild.GetRole(639924839091535920));
+            }
         }
 
         private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
@@ -423,10 +449,26 @@ namespace TaranzaSoul
                 if (!user.Roles.Contains(user.Guild.GetRole(498078860517048331)))
                     await user.AddRoleAsync(user.Guild.GetRole(498078860517048331));
             }
+            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "pitchpls")
+            {
+                var user = ((SocketGuildUser)reaction.User);
+
+                if (!user.Roles.Contains(user.Guild.GetRole(639924839091535920)))
+                    await user.AddRoleAsync(user.Guild.GetRole(639924839091535920));
+            }
         }
 
         private async Task Client_MessageReceived(SocketMessage msg)
         {
+            //if (msg.Source == MessageSource.System)
+            //{
+            //    var systemMsg = msg as SocketSystemMessage;
+            //    if (systemMsg.Type != MessageType.ChannelPinnedMessage)
+            //        return;
+
+                
+            //}
+
             if (msg.Author.Id == 102528327251656704 && msg.Content.ToLower() == "<@267405866162978816> update colors")
             {
                 RoleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");
