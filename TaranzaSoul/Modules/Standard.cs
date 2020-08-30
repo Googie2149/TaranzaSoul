@@ -16,6 +16,7 @@ using System.Reflection;
 using System.IO;
 using RestSharp;
 using Newtonsoft.Json;
+using TaranzaSoul.Preconditions;
 
 namespace TaranzaSoul.Modules.Standard
 {
@@ -243,6 +244,21 @@ namespace TaranzaSoul.Modules.Standard
             await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server.");
 
             //logger.RegisterNewUser(users.First());
+        }
+
+        [Command("addnewline")]
+        [Hide]
+        public async Task AddNewAbilityLine()
+        {
+            if (Context.User.Id != 102528327251656704)
+                return;
+
+            var msg = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).SendMessageAsync("Got a pronoun? Click on one (or more) of the <:friendheartjamba:749338964887863387>s below for a special pronoun-indicating role!");
+
+            await Task.Delay(1000);
+
+            await msg.AddReactionsAsync(new GuildEmote[] { await Context.Guild.GetEmoteAsync(749337968166305853), await Context.Guild.GetEmoteAsync(749337968371695616), await Context.Guild.GetEmoteAsync(749337967826567229), await Context.Guild.GetEmoteAsync(749351231167791144) });
+
         }
 
         [Command("revoke", RunMode = RunMode.Async)]
