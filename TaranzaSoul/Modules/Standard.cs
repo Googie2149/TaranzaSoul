@@ -253,7 +253,12 @@ namespace TaranzaSoul.Modules.Standard
             if (Context.User.Id != 102528327251656704)
                 return;
 
-            var msg = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).SendMessageAsync("Got a pronoun? Click on one (or more) of the <:friendheartjamba:749338964887863387>s below for a special pronoun-indicating role!");
+            var msg = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).SendMessageAsync(
+                "Got a pronoun? Click on one (or more) of the <:friendheartjamba:749338964887863387>s below for a special pronoun-indicating role!" +
+                "\n<:friendheartred:749337968166305853> - she/her" +
+                "\n<:friendheartteal:749337968371695616> - he/him" +
+                "\n<:friendheartorange:749337967826567229> - they/them" +
+                "\n<:friendheartgrey:749351231167791144> - other/no preference");
 
             await Task.Delay(1000);
 

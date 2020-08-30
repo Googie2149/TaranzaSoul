@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace TaranzaSoul
 {
@@ -402,20 +403,53 @@ namespace TaranzaSoul
                     //await user.RemoveRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
                 }
             }
-            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "NoU")
+            else if (reaction.Channel.Id == 431953417024307210)
             {
+                SocketRole role = null;
                 var user = ((SocketGuildUser)reaction.User);
 
-                if (user.Roles.Contains(user.Guild.GetRole(498078860517048331)))
-                    await user.RemoveRoleAsync(user.Guild.GetRole(498078860517048331));
-            }
-            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "pitchpls")
-            {
-                var user = ((SocketGuildUser)reaction.User);
+                switch (reaction.Emote.Name)
+                {
+                    case "NoU":
+                        role = user.Guild.GetRole(498078860517048331);
+                        break;
+                    case "pitchpls":
+                        role = user.Guild.GetRole(639924839091535920);
+                        break;
+                    case "friendheartred":
+                        role = user.Guild.GetRole(749344457345728593);
+                        break;
+                    case "friendheartteal":
+                        role = user.Guild.GetRole(749344359467581476);
+                        break;
+                    case "friendheartorange":
+                        role = user.Guild.GetRole(749345361855905902);
+                        break;
+                    case "friendheartgrey":
+                        role = user.Guild.GetRole(749344514963144714);
+                        break;
+                }
 
-                if (user.Roles.Contains(user.Guild.GetRole(639924839091535920)))
-                    await user.RemoveRoleAsync(user.Guild.GetRole(639924839091535920));
+                if (role == null)
+                    return;
+
+                if (user.Roles.Contains(role))
+                    await user.RemoveRoleAsync(role);
             }
+            //else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "NoU")
+            //{
+            //    var user = ((SocketGuildUser)reaction.User);
+
+            //    if (user.Roles.Contains(user.Guild.GetRole(498078860517048331)))
+            //        await user.RemoveRoleAsync(user.Guild.GetRole(498078860517048331));
+            //}
+            //else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "pitchpls")
+            //{
+            //    var user = ((SocketGuildUser)reaction.User);
+
+            //    if (user.Roles.Contains(user.Guild.GetRole(639924839091535920)))
+            //        await user.RemoveRoleAsync(user.Guild.GetRole(639924839091535920));
+            //}
         }
 
         private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
@@ -442,20 +476,53 @@ namespace TaranzaSoul
             //        await user.RemoveRoleAsync(r);
             //    }
             //}
-            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "NoU")
+            else if (reaction.Channel.Id == 431953417024307210)
             {
+                SocketRole role = null;
                 var user = ((SocketGuildUser)reaction.User);
 
-                if (!user.Roles.Contains(user.Guild.GetRole(498078860517048331)))
-                    await user.AddRoleAsync(user.Guild.GetRole(498078860517048331));
-            }
-            else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "pitchpls")
-            {
-                var user = ((SocketGuildUser)reaction.User);
+                switch (reaction.Emote.Name)
+                {
+                    case "NoU":
+                        role = user.Guild.GetRole(498078860517048331);
+                        break;
+                    case "pitchpls":
+                        role = user.Guild.GetRole(639924839091535920);
+                        break;
+                    case "friendheartred":
+                        role = user.Guild.GetRole(749344457345728593);
+                        break;
+                    case "friendheartteal":
+                        role = user.Guild.GetRole(749344359467581476);
+                        break;
+                    case "friendheartorange":
+                        role = user.Guild.GetRole(749345361855905902);
+                        break;
+                    case "friendheartgrey":
+                        role = user.Guild.GetRole(749344514963144714);
+                        break;
+                }
 
-                if (!user.Roles.Contains(user.Guild.GetRole(639924839091535920)))
-                    await user.AddRoleAsync(user.Guild.GetRole(639924839091535920));
+                if (role == null)
+                    return;
+
+                if (!user.Roles.Contains(role))
+                    await user.AddRoleAsync(role);
             }
+            //else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "NoU")
+            //{
+            //    var user = ((SocketGuildUser)reaction.User);
+
+            //    if (!user.Roles.Contains(user.Guild.GetRole(498078860517048331)))
+            //        await user.AddRoleAsync(user.Guild.GetRole(498078860517048331));
+            //}
+            //else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "pitchpls")
+            //{
+            //    var user = ((SocketGuildUser)reaction.User);
+
+            //    if (!user.Roles.Contains(user.Guild.GetRole(639924839091535920)))
+            //        await user.AddRoleAsync(user.Guild.GetRole(639924839091535920));
+            //}
         }
 
         private async Task Client_MessageReceived(SocketMessage msg)
