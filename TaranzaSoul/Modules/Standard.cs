@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Discord.Rest;
 using System.Diagnostics;
 using NodaTime;
 using Microsoft.CodeAnalysis.Scripting;
@@ -27,6 +28,7 @@ namespace TaranzaSoul.Modules.Standard
         private Config config;
         private DatabaseHelper dbhelper;
         private Logger logger;
+        private DiscordRestClient restClient;
 
         enum FakePunishments
         {
@@ -37,13 +39,14 @@ namespace TaranzaSoul.Modules.Standard
             banned = 90
         }
 
-        public Standard(CommandService _commands, IServiceProvider _services, Config _config, DatabaseHelper _dbhelper, Logger _logger)
+        public Standard(CommandService _commands, IServiceProvider _services, Config _config, DatabaseHelper _dbhelper, Logger _logger, DiscordRestClient _restClient)
         {
             commands = _commands;
             services = _services;
             config = _config;
             dbhelper = _dbhelper;
             logger = _logger;
+            restClient = _restClient;
         }
 
         private void Log(Exception ex)
@@ -181,6 +184,130 @@ namespace TaranzaSoul.Modules.Standard
             else
                 note = string.Join(" ", args).Trim();
         }
+
+        private async Task<string> GetUserInfo(ulong userId)
+        {
+            if (userId == 0)
+            {
+                //await RespondAsync("You need to give a user ID!");
+                return "You need to give a user ID!";
+            }
+
+            bool inServer = true;
+
+            IGuildUser user = Context.Guild.GetUser(userId);
+            RestUser backupUser = null;
+
+            if (user == null)
+            {
+                user = await restClient.GetGuildUserAsync(Context.Guild.Id, userId);
+
+                if (user == null)
+                {
+                    inServer = false;
+
+                    backupUser = await restClient.GetUserAsync(userId);
+
+                    if (backupUser == null)
+                    {
+                        //await RespondAsync("That user does not exist!");
+                        return "That user does not exist!";
+                    }
+                }
+            }
+
+            var loggedUser = await dbhelper.GetLoggedUser(userId);
+
+            StringBuilder output = new StringBuilder();
+
+            //output.AppendLine($"Information for {user.Username}{user.Discriminator}:");
+
+            if (inServer)
+            {
+                output.AppendLine($"Information for {user.Username}{user.Discriminator}:```");
+            }
+            else
+            {
+                output.AppendLine($"Information for {backupUser.Username}{backupUser.Discriminator}:```");
+                output.AppendLine("This user is not currently in the server.");
+            }
+
+
+
+            if (loggedUser == null)
+            {
+                output.AppendLine("This user has not been seen in the server before.```");
+                //await RespondAsync(output.ToString());
+                return output.ToString();
+            }
+            else
+            {
+                if (loggedUser.ApprovedAccess)
+                    output.AppendLine("This user has access to the server.");
+                else
+                    output.AppendLine("This user does not have access to the server.");
+
+                if (loggedUser.NewAccount)
+                    output.AppendLine("This user is flagged as a new user.");
+                else
+                    output.AppendLine("This user is not flagged as a new user");
+
+                if (loggedUser.ApprovalReason != null)
+                    output.AppendLine($"This user has notes: {loggedUser.ApprovalReason}");
+
+                if (loggedUser.ApprovalModId == 0)
+                    output.AppendLine("This user was auto-approved.");
+                else
+                {
+                    IGuildUser modUser = Context.Guild.GetUser(loggedUser.ApprovalModId);
+                    RestUser backupMod = null;
+
+                    if (modUser == null)
+                    {
+                        modUser = await restClient.GetGuildUserAsync(Context.Guild.Id, loggedUser.ApprovalModId);
+
+                        if (modUser == null)
+                        {
+                            backupMod = await restClient.GetUserAsync(loggedUser.ApprovalModId);
+                        }
+                    }
+
+                    if (modUser != null)
+                        output.AppendLine($"This user was approved by {modUser.Username}{modUser.Discriminator}.");
+                    else
+                    {
+                        if (backupMod != null)
+                            output.AppendLine($"This user was approved by former mod {modUser.Username}{modUser.Discriminator}. [{modUser.Id}]");
+                        else
+                            output.AppendLine($"This user was approved by a moderator with a deleted account. [{loggedUser.ApprovalModId}]");
+                    }
+                }
+
+                output.Append("```");
+
+                //await RespondAsync(output.ToString());
+                return output.ToString();
+            }
+            
+        }
+
+        [Command("usernotes", RunMode = RunMode.Async)]
+        public async Task CheckNotes(ulong userId = 0)
+        {
+            if (Context.Guild.Id != config.HomeGuildId)
+                return;
+
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451058863995879463))
+                return;
+
+            await RespondAsync(await GetUserInfo(userId));
+        }
+
+        //[Command("usersearch", RunMode = RunMode.Async)]
+        //public async Task SearchNotes(string search = "")
+        //{
+
+        //}
 
         [Command("approve", RunMode = RunMode.Async)]
         public async Task ApproveNewUserAccess([Remainder]string remainder = "")
