@@ -70,7 +70,7 @@ namespace TaranzaSoul
             dbhelper = new DatabaseHelper();
             logger = new Logger();
 
-            var map = new ServiceCollection().AddSingleton(socketClient).AddSingleton(config).AddSingleton(logger).AddSingleton(dbhelper).BuildServiceProvider();
+            var map = new ServiceCollection().AddSingleton(socketClient).AddSingleton(config).AddSingleton(logger).AddSingleton(dbhelper).AddSingleton(restClient).BuildServiceProvider();
 
             await socketClient.LoginAsync(TokenType.Bot, config.Token);
             await socketClient.StartAsync();
