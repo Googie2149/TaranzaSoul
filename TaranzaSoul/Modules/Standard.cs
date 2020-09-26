@@ -383,7 +383,7 @@ namespace TaranzaSoul.Modules.Standard
             try
             {
                 var testChannel = await restClient.GetChannelAsync(431953417024307210) as ITextChannel;
-                var test = testChannel.GetMessageAsync(610236564538130433) as IUserMessage;
+                var test = await testChannel.GetMessageAsync(610236564538130433) as IUserMessage;
 
                 //var test = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).GetMessageAsync(610236564538130433) as SocketUserMessage;
                 //Console.WriteLine($"Got message! Null? {test == null}\nIt has the content: {test?.Content}");
