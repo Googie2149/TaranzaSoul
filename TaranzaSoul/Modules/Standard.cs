@@ -380,7 +380,7 @@ namespace TaranzaSoul.Modules.Standard
             if (Context.User.Id != 102528327251656704)
                 return;
 
-            var test = await (Context.Guild.GetChannel(21) as SocketTextChannel).GetMessageAsync(610236564538130433) as SocketUserMessage;
+            var test = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).GetMessageAsync(610236564538130433) as SocketUserMessage;
 
             test.ModifyAsync(x => x.Content = "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
                 "\n<a:NoU:610225336658952193> - UNO" +
