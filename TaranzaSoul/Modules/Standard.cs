@@ -380,23 +380,29 @@ namespace TaranzaSoul.Modules.Standard
             if (Context.User.Id != 102528327251656704)
                 return;
 
-            var test = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).GetMessageAsync(610236564538130433) as SocketUserMessage;
+            try
+            {
+                var test = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).GetMessageAsync(610236564538130433) as SocketUserMessage;
 
-            await test.ModifyAsync(x => x.Content = "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
-                "\n<a:NoU:610225336658952193> - UNO" +
-                "\n<:sansdee:514849932939624459> - Jackbox" +
-                "\n<a:PANTS:533084296857255947> - Kirby Fighters");
+                await test.ModifyAsync(x => x.Content = "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
+                    "\n<a:NoU:610225336658952193> - UNO" +
+                    "\n<:sansdee:514849932939624459> - Jackbox" +
+                    "\n<a:PANTS:533084296857255947> - Kirby Fighters");
 
-            //var msg = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).SendMessageAsync(
-            //    "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
-            //    "\n<a:NoU:610225336658952193> - UNO" +
-            //    "\n<:sansdee:514849932939624459> - Jackbox" +
-            //    "\n<a:PANTS:533084296857255947> - Kirby Fighters");
+                //var msg = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).SendMessageAsync(
+                //    "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
+                //    "\n<a:NoU:610225336658952193> - UNO" +
+                //    "\n<:sansdee:514849932939624459> - Jackbox" +
+                //    "\n<a:PANTS:533084296857255947> - Kirby Fighters");
 
-            await Task.Delay(1000);
+                await Task.Delay(1000);
 
-            await test.AddReactionsAsync(new GuildEmote[] { await Context.Client.GetGuild(212053857306542080).GetEmoteAsync(610225336658952193), await Context.Guild.GetEmoteAsync(514849932939624459), await Context.Guild.GetEmoteAsync(533084296857255947) });
-
+                await test.AddReactionsAsync(new GuildEmote[] { /*await Context.Client.GetGuild(212053857306542080).GetEmoteAsync(610225336658952193),*/ await Context.Guild.GetEmoteAsync(514849932939624459), await Context.Guild.GetEmoteAsync(533084296857255947) });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
+            }
         }
 
         [Command("revoke", RunMode = RunMode.Async)]
