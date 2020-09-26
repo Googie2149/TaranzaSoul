@@ -380,16 +380,22 @@ namespace TaranzaSoul.Modules.Standard
             if (Context.User.Id != 102528327251656704)
                 return;
 
-            var msg = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).SendMessageAsync(
-                "Got a pronoun? Click on one (or more) of the <:friendheartjamba:749338964887863387>s below for a special pronoun-indicating role!" +
-                "\n<:friendheartred:749337968166305853> - she/her" +
-                "\n<:friendheartteal:749337968371695616> - he/him" +
-                "\n<:friendheartorange:749337967826567229> - they/them" +
-                "\n<:friendheartgrey:749351231167791144> - other/no preference");
+            var test = await (Context.Guild.GetChannel(21) as SocketTextChannel).GetMessageAsync(610236564538130433) as SocketUserMessage;
+
+            test.ModifyAsync(x => x.Content = "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
+                "\n<a:NoU:610225336658952193> - UNO" +
+                "\n<:sansdee:514849932939624459> - Jackbox" +
+                "\n<a:PANTS:533084296857255947> - Kirby Fighters");
+
+            //var msg = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).SendMessageAsync(
+            //    "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
+            //    "\n<a:NoU:610225336658952193> - UNO" +
+            //    "\n<:sansdee:514849932939624459> - Jackbox" +
+            //    "\n<a:PANTS:533084296857255947> - Kirby Fighters");
 
             await Task.Delay(1000);
 
-            await msg.AddReactionsAsync(new GuildEmote[] { await Context.Guild.GetEmoteAsync(749337968166305853), await Context.Guild.GetEmoteAsync(749337968371695616), await Context.Guild.GetEmoteAsync(749337967826567229), await Context.Guild.GetEmoteAsync(749351231167791144) });
+            await test.AddReactionsAsync(new GuildEmote[] { await Context.Client.GetGuild(212053857306542080).GetEmoteAsync(610225336658952193), await Context.Guild.GetEmoteAsync(514849932939624459), await Context.Guild.GetEmoteAsync(533084296857255947) });
 
         }
 

@@ -428,6 +428,12 @@ namespace TaranzaSoul
                     case "friendheartgrey":
                         role = user.Guild.GetRole(749344514963144714);
                         break;
+                    case "sansdee":
+                        role = user.Guild.GetRole(759220094898667610);
+                        break;
+                    case "PANTS":
+                        role = user.Guild.GetRole(759219920771874877);
+                        break;
                 }
 
                 if (role == null)
@@ -500,6 +506,12 @@ namespace TaranzaSoul
                         break;
                     case "friendheartgrey":
                         role = user.Guild.GetRole(749344514963144714);
+                        break;
+                    case "sansdee":
+                        role = user.Guild.GetRole(759220094898667610);
+                        break;
+                    case "PANTS":
+                        role = user.Guild.GetRole(759219920771874877);
                         break;
                 }
 
