@@ -383,6 +383,7 @@ namespace TaranzaSoul.Modules.Standard
             try
             {
                 var test = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).GetMessageAsync(610236564538130433) as SocketUserMessage;
+                Console.WriteLine($"Got message! Null? {test == null}\nIt has the content: {test?.Content}");
 
                 await test.ModifyAsync(x => x.Content = "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
                     "\n<a:NoU:610225336658952193> - UNO" +
