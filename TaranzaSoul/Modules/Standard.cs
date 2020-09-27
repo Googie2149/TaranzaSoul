@@ -292,6 +292,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("usernotes", RunMode = RunMode.Async)]
+        [Hide]
         public async Task CheckNotes(ulong userId = 0)
         {
             if (Context.Guild.Id != config.HomeGuildId)
@@ -310,6 +311,7 @@ namespace TaranzaSoul.Modules.Standard
         //}
 
         [Command("approve", RunMode = RunMode.Async)]
+        [Hide]
         public async Task ApproveNewUserAccess([Remainder]string remainder = "")
         {
             if (Context.Guild.Id != config.HomeGuildId)
@@ -410,6 +412,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("revoke", RunMode = RunMode.Async)]
+        [Hide]
         public async Task RevokeUserAccess([Remainder]string remainder = "")
         {
             if (Context.Guild.Id != config.HomeGuildId)
@@ -476,23 +479,25 @@ namespace TaranzaSoul.Modules.Standard
             await RespondAsync($"{unrecognized.ToString()}\n{removed.ToString()}");
         }
 
-        [Command("togglespoilers")]
-        public async Task ToggleSpoilerRemoval()
-        {
-            if (Context.Guild.Id != config.HomeGuildId)
-                return;
+        //[Command("togglespoilers")]
+        //[Hide]
+        //public async Task ToggleSpoilerRemoval()
+        //{
+        //    if (Context.Guild.Id != config.HomeGuildId)
+        //        return;
 
-            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(config.StaffId))
-                return;
+        //    if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(config.StaffId))
+        //        return;
 
-            config.RemoveSpoilers = !config.RemoveSpoilers;
-            await config.Save();
+        //    config.RemoveSpoilers = !config.RemoveSpoilers;
+        //    await config.Save();
 
-            await RespondAsync($"Set `remove_spoilers` to `{config.RemoveSpoilers}`");
-        }
+        //    await RespondAsync($"Set `remove_spoilers` to `{config.RemoveSpoilers}`");
+        //}
 
         [Command("watch")]
         [Summary("idk go watch some tv")]
+        [Hide]
         [Priority(1000)]
         public async Task WatchList([Remainder]string remainder = "")
         {
@@ -556,6 +561,7 @@ namespace TaranzaSoul.Modules.Standard
 
         [Command("watch clear")]
         [Summary("tv is boring")]
+        [Hide]
         [Priority(1001)]
         public async Task ClearWatch([Remainder]string remainder = "")
         {
@@ -596,6 +602,7 @@ namespace TaranzaSoul.Modules.Standard
         [Command("watch all")]
         [Summary("tivo guide!!!!!")]
         [Priority(1001)]
+        [Hide]
         public async Task ListWatch()
         {
             if (Context.Guild.Id != config.HomeGuildId)
@@ -616,6 +623,7 @@ namespace TaranzaSoul.Modules.Standard
 
         [Command("setnick")]
         [Summary("Change my nickname!")]
+        [Hide]
         public async Task SetNickname(string Nick = "")
         {
             if (!config.OwnerIds.Contains(Context.User.Id))
@@ -629,6 +637,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("quit", RunMode = RunMode.Async)]
+        [Hide]
         [Priority(1000)]
         public async Task ShutDown()
         {
@@ -646,6 +655,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("restart", RunMode = RunMode.Async)]
+        [Hide]
         [Priority(1000)]
         public async Task Restart()
         {
@@ -665,6 +675,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("update", RunMode = RunMode.Async)]
+        [Hide]
         [Priority(1000)]
         public async Task UpdateAndRestart()
         {
@@ -684,6 +695,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("deadlocksim", RunMode = RunMode.Async)]
+        [Hide]
         [Priority(1000)]
         public async Task DeadlockSimulation()
         {
