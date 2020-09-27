@@ -712,8 +712,8 @@ namespace TaranzaSoul.Modules.Standard
             //    return;
             //}
 
-            await RespondAsync("This command is disabled temporarily. The dev broke some stuff, go yell at them.");
-            return;
+            //await RespondAsync("This command is disabled temporarily. The dev broke some stuff, go yell at them.");
+            //return;
 
             try
             {
@@ -723,7 +723,7 @@ namespace TaranzaSoul.Modules.Standard
                     return;
                 }
 
-                string temp = FriendCode.ToLower().Replace("-", "").Replace(".", "").Replace("sw", "");
+                string temp = FriendCode.ToLower().Replace("-", "").Replace(".", "").Replace("_", "").Replace("sw", "");
 
                 ulong parsedFriendCode = 0;
 
@@ -741,107 +741,106 @@ namespace TaranzaSoul.Modules.Standard
 
                     var user = await dbhelper.GetSwitchFC(Context.User.Id);
 
-                    
-
                     if (user == null)
                         await dbhelper.AddFriendCode(Context.User.Id, parsedFriendCode, 0, SwitchName);
                     else
                         await dbhelper.EditFriendCode(Context.User.Id, parsedFriendCode, 0, SwitchName);
 
-                    var AllFCs = await dbhelper.GetAllFriendCodes();
+                    #region Old Pin stuff
+                    //var AllFCs = await dbhelper.GetAllFriendCodes();
 
-                    StringBuilder output = new StringBuilder();
-                    List<string> outGoingMessages = new List<string>();
-                    output.AppendLine("Please only friend people with their permission.\nTo add yourself, use `@Secretary Susie register 0000-0000-0000 SwitchName`");
+                    //StringBuilder output = new StringBuilder();
+                    //List<string> outGoingMessages = new List<string>();
+                    //output.AppendLine("Please only friend people with their permission.\nTo add yourself, use `@Secretary Susie register 0000-0000-0000 SwitchName`");
 
-                    foreach (var kv in AllFCs)
-                    {
-                        string addition = $"<@{kv.Key}>: `{kv.Value.FriendCode.ToString("0000-0000-0000")}` {kv.Value.SwitchNickname}";
+                    //foreach (var kv in AllFCs)
+                    //{
+                    //    string addition = $"<@{kv.Key}>: `{kv.Value.FriendCode.ToString("0000-0000-0000")}` {kv.Value.SwitchNickname}";
 
-                        if (output.Length + addition.Length > 2000)
-                        {
-                            outGoingMessages.Add(output.ToString());
-                            output.Clear();
-                        }
-                            
-                        output.AppendLine(addition);
-                    }
+                    //    if (output.Length + addition.Length > 2000)
+                    //    {
+                    //        outGoingMessages.Add(output.ToString());
+                    //        output.Clear();
+                    //    }
 
-                    List<IUserMessage> pinnedMessages = new List<IUserMessage>();
-                    List<ulong> deletedMessages = new List<ulong>();
-                    var channel = Context.Client.GetChannel(619088469339144202) as SocketTextChannel;
+                    //    output.AppendLine(addition);
+                    //}
 
-                    bool changedMessages = true;
+                    //List<IUserMessage> pinnedMessages = new List<IUserMessage>();
+                    //List<ulong> deletedMessages = new List<ulong>();
+                    //var channel = Context.Client.GetChannel(619088469339144202) as SocketTextChannel;
 
-                    if (config.FCPinnedMessages.Count() == 0)
-                        config.FCPinnedMessages.Add(config.FCPinnedMessageId);
+                    //bool changedMessages = true;
 
-                    foreach (var m in config.FCPinnedMessages)
-                    {
-                        var message = await channel.GetMessageAsync(m) as IUserMessage;
+                    //if (config.FCPinnedMessages.Count() == 0)
+                    //    config.FCPinnedMessages.Add(config.FCPinnedMessageId);
 
-                        if (message == null)
-                        {
-                            await Task.Delay(1000);
-                            if (message == null)
-                            {
-                                //await RespondAsync("Well this is embarassing, I can't seem to fetch the pinned message. Hold tight.");
-                                //return;
+                    //foreach (var m in config.FCPinnedMessages)
+                    //{
+                    //    var message = await channel.GetMessageAsync(m) as IUserMessage;
 
-                                message = await channel.SendMessageAsync("Please wait...");
-                                deletedMessages.Add(m);
-                                changedMessages = true;
+                    //    if (message == null)
+                    //    {
+                    //        await Task.Delay(1000);
+                    //        if (message == null)
+                    //        {
+                    //            //await RespondAsync("Well this is embarassing, I can't seem to fetch the pinned message. Hold tight.");
+                    //            //return;
 
-                                if (message?.Id == null || message.Id < 5)
-                                {
-                                    await Task.Delay(1000);
-                                    pinnedMessages.Add(message);
-                                }
-                                else
-                                    pinnedMessages.Add(message);
+                    //            message = await channel.SendMessageAsync("Please wait...");
+                    //            deletedMessages.Add(m);
+                    //            changedMessages = true;
 
-                                //config.FCPinnedMessageId = message.Id;
+                    //            if (message?.Id == null || message.Id < 5)
+                    //            {
+                    //                await Task.Delay(1000);
+                    //                pinnedMessages.Add(message);
+                    //            }
+                    //            else
+                    //                pinnedMessages.Add(message);
 
-                                //await Config.Save();
-                            }
-                            else
-                                pinnedMessages.Add(message);
-                        }
-                        else
-                            pinnedMessages.Add(message);
-                    }
+                    //            //config.FCPinnedMessageId = message.Id;
 
-                    if (outGoingMessages.Count() > config.FCPinnedMessages.Count())
-                    {
-                        changedMessages = true;
-                        var message = await channel.SendMessageAsync("Please wait...");
+                    //            //await Config.Save();
+                    //        }
+                    //        else
+                    //            pinnedMessages.Add(message);
+                    //    }
+                    //    else
+                    //        pinnedMessages.Add(message);
+                    //}
 
-                        if (message?.Id == null || message.Id < 5)
-                        {
-                            await Task.Delay(1000);
-                            pinnedMessages.Add(message);
-                        }
-                        else
-                            pinnedMessages.Add(message);
-                    }
+                    //if (outGoingMessages.Count() > config.FCPinnedMessages.Count())
+                    //{
+                    //    changedMessages = true;
+                    //    var message = await channel.SendMessageAsync("Please wait...");
 
-                    foreach (var d in deletedMessages)
-                        config.FCPinnedMessages.Remove(d);
+                    //    if (message?.Id == null || message.Id < 5)
+                    //    {
+                    //        await Task.Delay(1000);
+                    //        pinnedMessages.Add(message);
+                    //    }
+                    //    else
+                    //        pinnedMessages.Add(message);
+                    //}
 
-                    if (changedMessages)
-                        await config.Save();
+                    //foreach (var d in deletedMessages)
+                    //    config.FCPinnedMessages.Remove(d);
 
-                    pinnedMessages.Reverse();
+                    //if (changedMessages)
+                    //    await config.Save();
 
-                    foreach (var u in pinnedMessages)
-                    {
-                        if (changedMessages)
-                            await u.UnpinAsync();
-                    }
+                    //pinnedMessages.Reverse();
+
+                    //foreach (var u in pinnedMessages)
+                    //{
+                    //    if (changedMessages)
+                    //        await u.UnpinAsync();
+                    //}
 
                     //IUserMessage messagetemp;
 
-                    
+
 
                     //if (config.FCPinnedMessageId == 0)
                     //{
@@ -887,11 +886,12 @@ namespace TaranzaSoul.Modules.Standard
                     //await messagetemp.ModifyAsync(x => x.Content = output.ToString());
 
                     //await messagetemp.PinAsync();
+                    #endregion
 
-                    if (Context.Channel.Id != 619088469339144202)
-                        await RespondAsync($"{Context.User.Mention} you've been added! Check the pins in <#619088469339144202>!");
-                    else
-                        await RespondAsync($"{Context.User.Mention} you've been added! Check the pins!");
+                    //if (Context.Channel.Id != 619088469339144202)
+                    //    await RespondAsync($"{Context.User.Mention} you've been added! Check the pins in <#619088469339144202>!");
+                    //else
+                        await RespondAsync($"{Context.User.Mention} you've been added!"/* Check the pins!"*/);
                 }
                 else
                 {
@@ -909,14 +909,14 @@ namespace TaranzaSoul.Modules.Standard
         [Priority(1000)]
         public async Task GetFC([Remainder]string remainder = "")
         {
-            await RespondAsync("This command is disabled temporarily. The dev broke some stuff, go yell at them.");
-            return;
+            //await RespondAsync("This command is disabled temporarily. The dev broke some stuff, go yell at them.");
+            //return;
 
             SocketGuildUser user;
 
             if (Context.Message.MentionedUserIds.Where(x => x != Context.Client.CurrentUser.Id).Count() > 1)
             {
-                await RespondAsync("I can currently under development and can only return a single friend code at a time. Try mentioning only one person, or checking the pins in <#619088469339144202>.");
+                await RespondAsync("I am currently under development and can only return a single friend code at a time. Only ping one person at a time.");
                 return;
             }
             else if (Context.Message.MentionedUserIds.Where(x => x != Context.Client.CurrentUser.Id).Count() == 1)
