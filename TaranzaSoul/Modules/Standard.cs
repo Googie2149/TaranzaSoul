@@ -702,6 +702,23 @@ namespace TaranzaSoul.Modules.Standard
             Environment.Exit((int)ExitCodes.ExitCode.DeadlockEscape);
         }
 
+        [Command("unregister")]
+        [Priority(1000)]
+        public async Task RemoveFriendCode()
+        {
+            SwitchUser FriendCode = await dbhelper.GetSwitchFC(Context.User.Id);
+
+            if (FriendCode == null)
+            {
+                await RespondAsync("You're not even registered!");
+            }
+            else
+            {
+                await dbhelper.RemoveFriendCode(Context.User.Id);
+                await RespondAsync("Your friend code has been removed.");
+            }
+        }
+
         [Command("register")]
         [Priority(1000)]
         public async Task AddFriendCode(string FriendCode = "", [Remainder]string SwitchName = "")

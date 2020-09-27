@@ -138,6 +138,30 @@ namespace TaranzaSoul
             return temp;
         }
 
+        public async Task RemoveFriendCode(ulong userId)
+        {
+            try
+            {
+                using (SQLiteConnection db = new SQLiteConnection(FCConnectionString))
+                {
+                    await db.OpenAsync();
+
+                    using (var cmd = new SQLiteCommand("delete from switchfcs where UserId = @1;", db))
+                    {
+                        cmd.Parameters.AddWithValue("@1", userId.ToString());
+
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+
+                    db.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting a friend code!\nMessage: {ex.Message}\nSource: {ex.Source}\n{ex.InnerException}");
+            }
+        }
+
         public async Task BulkAddFriendCodes(IEnumerable<SwitchUser> users)
         {
             try
