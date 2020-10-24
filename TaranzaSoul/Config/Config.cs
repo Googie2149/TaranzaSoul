@@ -79,6 +79,16 @@ namespace TaranzaSoul
         [JsonProperty("color_abusers")]
         public Dictionary<ulong, DateTimeOffset> BlacklistedUsers { get; set; } = new Dictionary<ulong, DateTimeOffset>();
 
+        // This is super awful and will be replaced before the next time this happens
+        [JsonProperty("vote_start")]
+        public DateTimeOffset VoteStartTime = DateTimeOffset.MinValue;
+
+        [JsonProperty("user_votes_gigi")]
+        public List<ulong> UserVotesGigi = new List<ulong>();
+
+        [JsonProperty("user_votes_leo")]
+        public List<ulong> UserVotesLeo = new List<ulong>();
+
         public async static Task<Config> Load()
         {
             if (File.Exists("config.json"))
