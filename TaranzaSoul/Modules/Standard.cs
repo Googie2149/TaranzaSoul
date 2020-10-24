@@ -325,7 +325,7 @@ namespace TaranzaSoul.Modules.Standard
 
             if (config.VoteStartTime != DateTimeOffset.MinValue)
             {
-                await RespondAsync("It's already started! You can use `;resetvotetimethisisalongcommand` to reset the start time. This does not undo any counted votes.");
+                await RespondAsync("It's already started! You can use `!resetvotetimethisisalongcommand` to reset the start time. This does not undo any counted votes.");
                 return;
             }
 
@@ -391,7 +391,7 @@ namespace TaranzaSoul.Modules.Standard
             {
                 if (input == "" && !config.UserVotesGigi.Contains(Context.User.Id) && !config.UserVotesLeo.Contains(Context.User.Id))
                 {
-                    await RespondAsync("Voting is active, use either `;vote gigi` or `;vote leo` to case your vote.");
+                    await RespondAsync("Voting is active, use either `!vote gigi` or `!vote leo` to case your vote.");
                     return;
                 }
 
@@ -428,7 +428,7 @@ namespace TaranzaSoul.Modules.Standard
                 }
                 else
                 {
-                    await RespondAsync("Voting is active, use either `;vote gigi` or `;vote leo` to case your vote. ||No, you can't vote for random people.||");
+                    await RespondAsync("Voting is active, use either `!vote gigi` or `!vote leo` to case your vote. ||No, you can't vote for random people.||");
                 }
 
                 var images = Directory.GetFiles($@"./Images/vote{vote}/", "*.*").Where(x => valid.Contains(x.Substring(x.LastIndexOf('.')))).ToList();
