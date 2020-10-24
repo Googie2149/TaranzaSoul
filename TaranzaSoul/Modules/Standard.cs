@@ -325,7 +325,7 @@ namespace TaranzaSoul.Modules.Standard
 
             if (config.VoteStartTime != DateTimeOffset.MinValue)
             {
-                await RespondAsync("It's already started!");
+                await RespondAsync("It's already started! You can use `;resetvotetimethisisalongcommand` to reset the start time. This does not undo any counted votes.");
                 return;
             }
 
@@ -334,6 +334,26 @@ namespace TaranzaSoul.Modules.Standard
             await config.Save();
 
             await RespondAsync($"Voting has started! It is currently `{config.VoteStartTime:g}` and voting will end in 24 hours at `{config.VoteStartTime.AddHours(24):g}`.");
+        }
+
+        [Command("resetvotetimethisisalongcommand")]
+        [Hide]
+        public async Task ResetVoteTime()
+        {
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(190657363798261769))
+                return;
+
+            if (Context.Channel.Id != 186342269274554368)
+            {
+                await RespondAsync("This command only works in <#186342269274554368>!");
+                return;
+            }
+
+            config.VoteStartTime = DateTimeOffset.MinValue;
+
+            await config.Save();
+
+            await RespondAsync("It's done");
         }
 
         [Command("vote check")]
