@@ -310,7 +310,7 @@ namespace TaranzaSoul.Modules.Standard
 
         //}
 
-        [Command("vote start")]
+        [Command("votestart")]
         [Hide]
         public async Task StartVote()
         {
@@ -356,7 +356,7 @@ namespace TaranzaSoul.Modules.Standard
             await RespondAsync("It's done");
         }
 
-        [Command("vote check")]
+        [Command("votecheck")]
         [Hide]
         public async Task CheckVotes()
         {
