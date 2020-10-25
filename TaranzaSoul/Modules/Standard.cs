@@ -369,7 +369,7 @@ namespace TaranzaSoul.Modules.Standard
                 return;
             }
 
-            await RespondAsync($"Current standings:\n`Team Gigi: {config.UserVotesGigi:000}` votes\n`Team Leo:  {config.UserVotesLeo:000}`");
+            await RespondAsync($"Current standings:\n`Team Gigi: {config.UserVotesGigi.Count():000}` votes\n`Team Leo:  {config.UserVotesLeo.Count():000}`");
         }
 
         [Command("vote")]
