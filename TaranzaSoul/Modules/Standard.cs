@@ -545,6 +545,9 @@ namespace TaranzaSoul.Modules.Standard
 
                 await Task.Delay(1000);
 
+                //var emote = await Context.Guild.GetEmoteAsync(514849932939624459);
+
+
                 //await test.AddReactionsAsync(new GuildEmote[] { /*await Context.Client.GetGuild(212053857306542080).GetEmoteAsync(610225336658952193),*/ await Context.Guild.GetEmoteAsync(514849932939624459), await Context.Guild.GetEmoteAsync(533084296857255947) });
             }
             catch (Exception ex)
