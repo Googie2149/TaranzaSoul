@@ -304,6 +304,69 @@ namespace TaranzaSoul.Modules.Standard
             await RespondAsync(await GetUserInfo(userId));
         }
 
+        [Command("editnote", RunMode = RunMode.Async)]
+        [Hide]
+        public async Task EditNotes([Remainder]string remainder)
+        {
+            if (Context.Guild.Id != config.HomeGuildId)
+                return;
+
+            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451058863995879463))
+                return;
+
+            List<ulong> users;
+            string note;
+
+            WatchListHelper(remainder, out users, out note);
+
+            if (users.Count() == 0)
+            {
+                await RespondAsync("None of those mentioned were valid user Ids!");
+                return;
+            }
+
+            if (users.Count() > 1)
+            {
+                await RespondAsync("You're not supposed to edit more than one user with a single note.");
+                return;
+            }
+
+            if (note == "")
+            {
+                await RespondAsync("The note cannot be blank!");
+                return;
+            }
+
+            //if (Context.Guild.GetUser(users.First()) == null)
+            //{
+            //    await RespondAsync("That user isn't in this server!");
+            //    return;
+            //}
+
+            var loggedUser = await dbhelper.GetLoggedUser(users.First());
+
+            if (loggedUser == null)
+            {
+                await RespondAsync("That user hasn't been seen in this server.");
+                return;
+            }
+            else
+            {
+                if (loggedUser.ApprovedAccess)
+                {
+                    await dbhelper.ModApproveUser(users.First(), Context.User.Id, note);
+                    await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention}'s note has been changed.");
+
+                    return;
+                }
+                else
+                {
+                    await RespondAsync("That user hasn't been approved yet!");
+                    return;
+                }
+            }
+        }
+
         //[Command("usersearch", RunMode = RunMode.Async)]
         //public async Task SearchNotes(string search = "")
         //{
@@ -486,11 +549,11 @@ namespace TaranzaSoul.Modules.Standard
                 return;
             }
 
-            if (Context.Guild.GetUser(users.First()) == null)
-            {
-                await RespondAsync("That user isn't in this server!");
-                return;
-            }
+            //if (Context.Guild.GetUser(users.First()) == null)
+            //{
+            //    await RespondAsync("That user isn't in this server!");
+            //    return;
+            //}
 
             var loggedUser = await dbhelper.GetLoggedUser(users.First());
 
@@ -511,11 +574,17 @@ namespace TaranzaSoul.Modules.Standard
             var role = Context.Guild.GetRole(config.AccessRoleId);
 
             await dbhelper.ModApproveUser(users.First(), Context.User.Id, note);
-            await Task.Delay(500);
-            await Context.Guild.GetUser(users.First()).AddRoleAsync(role);
-            await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server.");
 
-            //logger.RegisterNewUser(users.First());
+            if (Context.Guild.GetUser(users.First()) != null)
+            {
+                await Task.Delay(500);
+                await Context.Guild.GetUser(users.First()).AddRoleAsync(role);
+                await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server.");
+            }
+            else
+            {
+                await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server. They will recieve the role when they rejoin.");
+            }
         }
 
         [Command("addnewline")]
@@ -546,6 +615,8 @@ namespace TaranzaSoul.Modules.Standard
                 await Task.Delay(1000);
 
                 //var emote = await Context.Guild.GetEmoteAsync(514849932939624459);
+
+                
 
 
                 //await test.AddReactionsAsync(new GuildEmote[] { /*await Context.Client.GetGuild(212053857306542080).GetEmoteAsync(610225336658952193),*/ await Context.Guild.GetEmoteAsync(514849932939624459), await Context.Guild.GetEmoteAsync(533084296857255947) });
