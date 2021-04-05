@@ -292,7 +292,6 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("usernotes", RunMode = RunMode.Async)]
-        [Hide]
         public async Task CheckNotes(ulong userId = 0)
         {
             if (Context.Guild.Id != config.HomeGuildId)
@@ -305,7 +304,6 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("editnote", RunMode = RunMode.Async)]
-        [Hide]
         public async Task EditNotes([Remainder]string remainder)
         {
             if (Context.Guild.Id != config.HomeGuildId)
@@ -517,7 +515,6 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("approve", RunMode = RunMode.Async)]
-        [Hide]
         public async Task ApproveNewUserAccess([Remainder]string remainder = "")
         {
             if (Context.Guild.Id != config.HomeGuildId)
