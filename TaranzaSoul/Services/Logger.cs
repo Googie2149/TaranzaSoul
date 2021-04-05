@@ -256,9 +256,9 @@ namespace TaranzaSoul
                                         string output = "";
 
                                         if (config.AlternateStaffMention)
-                                            output = $"<@&{config.AlternateStaffId}> {u.Mention} needs access.";
+                                            output = $"<@&{config.AlternateStaffId}> {u.Mention} doesn't have the role when they should. Is there a reason, or did I miss it while offline?";
                                         else
-                                            output = $"<@&{config.StaffId}> {u.Mention} needs access.";
+                                            output = $"<@&{config.StaffId}> {u.Mention} doesn't have the role when they should. Is there a reason, or did I miss it while offline?";
 
                                         if (loggedUsers[u.Id].ApprovalModId != 0)
                                         {
