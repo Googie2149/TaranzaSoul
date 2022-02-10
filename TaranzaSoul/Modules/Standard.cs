@@ -373,149 +373,149 @@ namespace TaranzaSoul.Modules.Standard
 
         //}
 
-        [Command("votestart")]
-        [Hide]
-        public async Task StartVote()
-        {
-            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(190657363798261769))
-                return;
+        //[Command("votestart")]
+        //[Hide]
+        //public async Task StartVote()
+        //{
+        //    if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(190657363798261769))
+        //        return;
 
-            if (Context.Channel.Id != 186342269274554368)
-            {
-                await RespondAsync("This command only works in <#186342269274554368>!");
-                return;
-            }
+        //    if (Context.Channel.Id != 186342269274554368)
+        //    {
+        //        await RespondAsync("This command only works in <#186342269274554368>!");
+        //        return;
+        //    }
 
-            if (config.VoteStartTime != DateTimeOffset.MinValue)
-            {
-                await RespondAsync("It's already started! You can use `!resetvotetimethisisalongcommand` to reset the start time. This does not undo any counted votes.");
-                return;
-            }
+        //    if (config.VoteStartTime != DateTimeOffset.MinValue)
+        //    {
+        //        await RespondAsync("It's already started! You can use `!resetvotetimethisisalongcommand` to reset the start time. This does not undo any counted votes.");
+        //        return;
+        //    }
 
-            config.VoteStartTime = DateTimeOffset.Now;
+        //    config.VoteStartTime = DateTimeOffset.Now;
 
-            await config.Save();
+        //    await config.Save();
 
-            await RespondAsync($"Voting has started! It is currently `{config.VoteStartTime:g}` and voting will end in 24 hours at `{config.VoteStartTime.AddHours(24):g}`.");
-        }
+        //    await RespondAsync($"Voting has started! It is currently `{config.VoteStartTime:g}` and voting will end in 24 hours at `{config.VoteStartTime.AddHours(24):g}`.");
+        //}
 
-        [Command("resetvotetimethisisalongcommand")]
-        [Hide]
-        public async Task ResetVoteTime()
-        {
-            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(190657363798261769))
-                return;
+        //[Command("resetvotetimethisisalongcommand")]
+        //[Hide]
+        //public async Task ResetVoteTime()
+        //{
+        //    if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(190657363798261769))
+        //        return;
 
-            if (Context.Channel.Id != 186342269274554368)
-            {
-                await RespondAsync("This command only works in <#186342269274554368>!");
-                return;
-            }
+        //    if (Context.Channel.Id != 186342269274554368)
+        //    {
+        //        await RespondAsync("This command only works in <#186342269274554368>!");
+        //        return;
+        //    }
 
-            config.VoteStartTime = DateTimeOffset.MinValue;
+        //    config.VoteStartTime = DateTimeOffset.MinValue;
 
-            await config.Save();
+        //    await config.Save();
 
-            await RespondAsync("It's done");
-        }
+        //    await RespondAsync("It's done");
+        //}
 
-        [Command("votecheck")]
-        [Hide]
-        public async Task CheckVotes()
-        {
-            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(132721372848848896))
-                return;
+        //[Command("votecheck")]
+        //[Hide]
+        //public async Task CheckVotes()
+        //{
+        //    if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(132721372848848896))
+        //        return;
 
-            if (Context.Channel.Id != 186342269274554368)
-            {
-                await RespondAsync("This command only works in <#186342269274554368>!");
-                return;
-            }
+        //    if (Context.Channel.Id != 186342269274554368)
+        //    {
+        //        await RespondAsync("This command only works in <#186342269274554368>!");
+        //        return;
+        //    }
 
-            await RespondAsync($"Current standings:\n`Team Gigi: {config.UserVotesGigi.Count():000}` votes\n`Team Leo:  {config.UserVotesLeo.Count():000}`");
-        }
+        //    await RespondAsync($"Current standings:\n`Team Gigi: {config.UserVotesGigi.Count():000}` votes\n`Team Leo:  {config.UserVotesLeo.Count():000}`");
+        //}
 
-        [Command("vote")]
-        [Hide]
-        public async Task CastVote([Remainder]string input = "")
-        {
-            if (config.VoteStartTime == DateTimeOffset.MinValue)
-            {
-                await RespondAsync("Voting hasn't begun yet! Shoo!");
-                return;
-            }
+        //[Command("vote")]
+        //[Hide]
+        //public async Task CastVote([Remainder]string input = "")
+        //{
+        //    if (config.VoteStartTime == DateTimeOffset.MinValue)
+        //    {
+        //        await RespondAsync("Voting hasn't begun yet! Shoo!");
+        //        return;
+        //    }
 
-            if (Context.Channel.Id != 391434450837307392)
-            {
-                await RespondAsync("Vote in <#391434450837307392>!");
-                return;
-            }
+        //    if (Context.Channel.Id != 391434450837307392)
+        //    {
+        //        await RespondAsync("Vote in <#391434450837307392>!");
+        //        return;
+        //    }
 
-            if (config.VoteStartTime < DateTimeOffset.Now && DateTimeOffset.Now < config.VoteStartTime.AddHours(24))
-            {
-                if (input == "" && !config.UserVotesGigi.Contains(Context.User.Id) && !config.UserVotesLeo.Contains(Context.User.Id))
-                {
-                    await RespondAsync("Voting is active, use either `!vote gigi` or `!vote leo` to case your vote.");
-                    return;
-                }
+        //    if (config.VoteStartTime < DateTimeOffset.Now && DateTimeOffset.Now < config.VoteStartTime.AddHours(24))
+        //    {
+        //        if (input == "" && !config.UserVotesGigi.Contains(Context.User.Id) && !config.UserVotesLeo.Contains(Context.User.Id))
+        //        {
+        //            await RespondAsync("Voting is active, use either `!vote gigi` or `!vote leo` to case your vote.");
+        //            return;
+        //        }
 
-                if (config.UserVotesGigi.Contains(Context.User.Id))
-                {
-                    await RespondAsync("You've already voted for Gigi!");
-                    return;
-                }
-                else if (config.UserVotesLeo.Contains(Context.User.Id))
-                {
-                    await RespondAsync("You've already voted for Leo!");
-                    return;
-                }
+        //        if (config.UserVotesGigi.Contains(Context.User.Id))
+        //        {
+        //            await RespondAsync("You've already voted for Gigi!");
+        //            return;
+        //        }
+        //        else if (config.UserVotesLeo.Contains(Context.User.Id))
+        //        {
+        //            await RespondAsync("You've already voted for Leo!");
+        //            return;
+        //        }
 
-                input = input.ToLower();
-                Random asdf = new Random();
-                string[] valid = new string[] { ".jpg", ".jpeg", ".png", ".gif" };
-                string file = "";
-                string vote = "";
+        //        input = input.ToLower();
+        //        Random asdf = new Random();
+        //        string[] valid = new string[] { ".jpg", ".jpeg", ".png", ".gif" };
+        //        string file = "";
+        //        string vote = "";
 
-                if (input == "leo" || input == "<@278237013969338368>" || input == "<@!278237013969338368>" || input == "leounlimited" || input == "278237013969338368" || input == "leounlimited#3876")
-                {
-                    config.UserVotesLeo.Add(Context.User.Id);
-                    await ((IGuildUser)Context.User).AddRoleAsync(Context.Guild.GetRole(767585897322381333));
-                    vote = "Leo";
-                    //return;
-                }
-                else if (input == "gigi" || input == "<@241151177197092866>" || input == "<@!241151177197092866>" || input == "241151177197092866" || input == "gigi#6763")
-                {
-                    config.UserVotesGigi.Add(Context.User.Id);
-                    await ((IGuildUser)Context.User).AddRoleAsync(Context.Guild.GetRole(767585693953163274));
-                    vote = "Gigi";
-                    //return;
-                }
-                else
-                {
-                    await RespondAsync("Voting is active, use either `!vote gigi` or `!vote leo` to case your vote. ||No, you can't vote for random people.||");
-                }
+        //        if (input == "leo" || input == "<@278237013969338368>" || input == "<@!278237013969338368>" || input == "leounlimited" || input == "278237013969338368" || input == "leounlimited#3876")
+        //        {
+        //            config.UserVotesLeo.Add(Context.User.Id);
+        //            await ((IGuildUser)Context.User).AddRoleAsync(Context.Guild.GetRole(767585897322381333));
+        //            vote = "Leo";
+        //            //return;
+        //        }
+        //        else if (input == "gigi" || input == "<@241151177197092866>" || input == "<@!241151177197092866>" || input == "241151177197092866" || input == "gigi#6763")
+        //        {
+        //            config.UserVotesGigi.Add(Context.User.Id);
+        //            await ((IGuildUser)Context.User).AddRoleAsync(Context.Guild.GetRole(767585693953163274));
+        //            vote = "Gigi";
+        //            //return;
+        //        }
+        //        else
+        //        {
+        //            await RespondAsync("Voting is active, use either `!vote gigi` or `!vote leo` to case your vote. ||No, you can't vote for random people.||");
+        //        }
 
-                var images = Directory.GetFiles($@"./Images/vote{vote}/", "*.*").Where(x => valid.Contains(x.Substring(x.LastIndexOf('.')))).ToList();
-                images.AddRange(Directory.GetFiles($@"./Images/voteGeneric/", "*.*").Where(x => valid.Contains(x.Substring(x.LastIndexOf('.')))).ToList());
+        //        var images = Directory.GetFiles($@"./Images/vote{vote}/", "*.*").Where(x => valid.Contains(x.Substring(x.LastIndexOf('.')))).ToList();
+        //        images.AddRange(Directory.GetFiles($@"./Images/voteGeneric/", "*.*").Where(x => valid.Contains(x.Substring(x.LastIndexOf('.')))).ToList());
 
-                if (images.Count() == 0)
-                {
-                    // No images available
-                    await RespondAsync($"Your vote for Team {vote} has been cast.");
-                    return;
-                }
-                else if (images.Count() >= 1)
-                {
-                    file = images.OrderBy(x => asdf.Next()).FirstOrDefault();
-                }
+        //        if (images.Count() == 0)
+        //        {
+        //            // No images available
+        //            await RespondAsync($"Your vote for Team {vote} has been cast.");
+        //            return;
+        //        }
+        //        else if (images.Count() >= 1)
+        //        {
+        //            file = images.OrderBy(x => asdf.Next()).FirstOrDefault();
+        //        }
 
-                await Context.Channel.SendFileAsync(file, $"Your vote for Team {vote} has been cast.");
-            }
-            else
-            {
-                await RespondAsync("Voting has ended.");
-            }
-        }
+        //        await Context.Channel.SendFileAsync(file, $"Your vote for Team {vote} has been cast.");
+        //    }
+        //    else
+        //    {
+        //        await RespondAsync("Voting has ended.");
+        //    }
+        //}
 
         [Command("approve", RunMode = RunMode.Async)]
         public async Task ApproveNewUserAccess([Remainder]string remainder = "")
