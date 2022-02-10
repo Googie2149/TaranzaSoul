@@ -1468,6 +1468,31 @@ namespace TaranzaSoul.Modules.Standard
         {
             await RespondAsync("listen!");
         }
+
+        [Command("embeds")]
+        public async Task GiveMeEmbeds()
+        {
+            var user = Context.User as SocketGuildUser;
+            var role = Context.Guild.GetRole(941147540781428776);
+
+            if (user.Roles.Contains(role))
+            {
+                await ReplyAsync("You already have the ability to send embeds (images, gifs, website previews, etc) in this server!");
+                return;
+            }
+
+            if (DateTimeOffset.Now.AddHours(-24) > user.JoinedAt)
+            {
+                await user.AddRoleAsync(role);
+                await ReplyAsync("Done! You should be able to send embeds within the server now.");
+                return;
+            }
+            else
+            {
+                await ReplyAsync("You have to be in the server for at least 24 hours first!");
+                return;
+            }
+        }
     }
 
     public class JsonUser
