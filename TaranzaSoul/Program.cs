@@ -542,6 +542,17 @@ namespace TaranzaSoul
                 
             //}
 
+            if ((msg.Channel.Id == 195126987558354944 || msg.Channel.Id == 599165344019644426) &&
+                (msg.Content.ToLower().StartsWith("https://tenor.com/") || msg.Content.ToLower().StartsWith("https://giphy.com/")))
+            {
+                await msg.DeleteAsync();
+
+                var sentMessage = await msg.Channel.SendMessageAsync($"{msg.Author.Mention} please don't post reaction gifs in the art channels!");
+
+                await Task.Delay(5000);
+                await sentMessage.DeleteAsync();
+            }
+
             if (msg.Author.Id == 102528327251656704 && msg.Content.ToLower() == "<@267405866162978816> update colors")
             {
                 RoleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");
