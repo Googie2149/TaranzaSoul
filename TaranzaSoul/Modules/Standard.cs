@@ -1323,19 +1323,19 @@ namespace TaranzaSoul.Modules.Standard
 
                 if (user != null)
                 {
-                    if (callingPosition + 1 < (user as SocketGuildUser).GetRoles().Where(x => x.Permissions.RawValue != 0).OrderByDescending(x => x.Position).FirstOrDefault().Position)
-                    {
-                        output.AppendLine($"<:vError:625705714324865024> You do not have permission to interact with **{user.Username}**#{user.Discriminator}");
-                    }
-                    else
-                    {
+                    //if (callingPosition < (user as SocketGuildUser).GetRoles().Where(x => x.Permissions.RawValue != 0).OrderByDescending(x => x.Position).FirstOrDefault().Position)
+                    //{
+                    //    output.AppendLine($"<:vError:625705714324865024> You do not have permission to interact with **{user.Username}**#{user.Discriminator}");
+                    //}
+                    //else
+                    //{
                         if (user.IsBot)
                             output.AppendLine($"<:vError:625705714324865024> Strikes cannot be given to bots (**{user.Username}**#{user.Discriminator} (ID:{user.Id}))");
                         else
                         {
                             output.AppendLine($"<:vSuccess:625705714429722624> Successfully gave `{strikes}` strikes to **{user.Username}**#{user.Discriminator}");
                             strikedUsers.Add(user);
-                        }
+                        //}
                     }
                 }
                 else
