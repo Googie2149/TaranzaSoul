@@ -1493,30 +1493,6 @@ namespace TaranzaSoul.Modules.Standard
                 return;
             }
         }
-
-        [Command("addembedrole")]
-        public async Task AddEmbeds()
-        {
-            Task.Run(async () =>
-            {
-                await ReplyAsync("Starting...");
-                var role = Context.Guild.GetRole(941147540781428776);
-
-                foreach (var u in Context.Guild.Users)
-                {
-                    var user = u as SocketGuildUser;
-
-                    if (DateTimeOffset.Now.AddHours(-24) > user.JoinedAt && !user.Roles.Contains(role))
-                    {
-                        await user.AddRoleAsync(role);
-                    }
-
-                    await Task.Delay(1000);
-                }
-
-                await ReplyAsync("Done!");
-            });
-        }
     }
 
     public class JsonUser
