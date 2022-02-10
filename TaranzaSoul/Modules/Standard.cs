@@ -1452,6 +1452,8 @@ namespace TaranzaSoul.Modules.Standard
                 builder.AddField($"{u.ToString()}", punishmentGenerator.ToString());
             }
 
+            builder.WithFooter("This is a joke, no punishments were actually given.");
+
             if (!zap)
                 await ReplyAsync(message: output.ToString(), embed: builder.Build());
             else
