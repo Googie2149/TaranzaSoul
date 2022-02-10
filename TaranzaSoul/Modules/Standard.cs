@@ -292,6 +292,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("usernotes", RunMode = RunMode.Async)]
+        [Hide]
         public async Task CheckNotes(ulong userId = 0)
         {
             if (Context.Guild.Id != config.HomeGuildId)
@@ -304,6 +305,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("editnote", RunMode = RunMode.Async)]
+        [Hide]
         public async Task EditNotes([Remainder]string remainder)
         {
             if (Context.Guild.Id != config.HomeGuildId)
@@ -434,6 +436,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("vote")]
+        [Hide]
         public async Task CastVote([Remainder]string input = "")
         {
             if (config.VoteStartTime == DateTimeOffset.MinValue)
