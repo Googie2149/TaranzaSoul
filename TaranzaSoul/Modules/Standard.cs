@@ -1323,7 +1323,7 @@ namespace TaranzaSoul.Modules.Standard
 
                 if (user != null)
                 {
-                    if (callingPosition < (user as SocketGuildUser).GetRoles().Where(x => x.Permissions.RawValue != 0).OrderByDescending(x => x.Position).FirstOrDefault().Position)
+                    if (callingPosition + 1 < (user as SocketGuildUser).GetRoles().Where(x => x.Permissions.RawValue != 0).OrderByDescending(x => x.Position).FirstOrDefault().Position)
                     {
                         output.AppendLine($"<:vError:625705714324865024> You do not have permission to interact with **{user.Username}**#{user.Discriminator}");
                     }
