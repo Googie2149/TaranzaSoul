@@ -407,7 +407,7 @@ namespace TaranzaSoul
             {
                 SocketRole role = null;
                 var user = ((SocketGuildUser)reaction.User);
-
+                
                 switch (reaction.Emote.Name)
                 {
                     case "NoU":
@@ -430,6 +430,9 @@ namespace TaranzaSoul
                         break;
                     case "PANTS":
                         role = user.Guild.GetRole(759219920771874877);
+                        break;
+                    case "⛏️":
+                        role = user.Guild.GetRole(948944486602534912);
                         break;
                 }
 
@@ -506,6 +509,9 @@ namespace TaranzaSoul
                         break;
                     case "PANTS":
                         role = user.Guild.GetRole(759219920771874877);
+                        break;
+                    case "⛏️":
+                        role = user.Guild.GetRole(948944486602534912);
                         break;
                 }
 
@@ -719,7 +725,7 @@ namespace TaranzaSoul
 
                     await Task.Delay(100);
                     await msg.DeleteAsync();
-                    string send = $"{msg.Author.Mention} that's a potential endgame spoiler! That belongs in <#565065746867027987>!";
+                    string send = $"{msg.Author.Mention} that's a potential Forgotten Land spoiler! That belongs in <#565065746867027987>!";
 
                     await msg.Channel.SendMessageAsync(send);
                 }

@@ -597,14 +597,14 @@ namespace TaranzaSoul.Modules.Standard
             try
             {
                 var testChannel = await restClient.GetChannelAsync(431953417024307210) as ITextChannel;
-                var test = await testChannel.GetMessageAsync(610236564538130433) as IUserMessage;
+                //var test = await testChannel.GetMessageAsync(610236564538130433) as IUserMessage;
 
                 //var test = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).GetMessageAsync(610236564538130433) as SocketUserMessage;
                 //Console.WriteLine($"Got message! Null? {test == null}\nIt has the content: {test?.Content}");
 
-                await test.ModifyAsync(x => x.Content = "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
-                    "\n<a:NoU:610225336658952193> - UNO" +
-                    "\n<a:PANTS:533084296857255947> - Kirby Fighters");
+                //await test.ModifyAsync(x => x.Content = "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
+                //    "\n<a:NoU:610225336658952193> - UNO" +
+                //    "\n<a:PANTS:533084296857255947> - Kirby Fighters");
 
                 //var msg = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).SendMessageAsync(
                 //    "If you want to get notified when others want to play something, click on some of the buttons below for a mentionable role!" +
@@ -612,11 +612,13 @@ namespace TaranzaSoul.Modules.Standard
                 //    "\n<:sansdee:514849932939624459> - Jackbox" +
                 //    "\n<a:PANTS:533084296857255947> - Kirby Fighters");
 
+                var msg = await (Context.Guild.GetChannel(431953417024307210) as SocketTextChannel).SendMessageAsync("Click the ⛏️ below to get access to the Forgotten Land spoiler/datamine channel");
+
                 await Task.Delay(1000);
 
-                //var emote = await Context.Guild.GetEmoteAsync(514849932939624459);
+                await msg.AddReactionAsync(new Emoji("⛏️"));
 
-                
+
 
 
                 //await test.AddReactionsAsync(new GuildEmote[] { /*await Context.Client.GetGuild(212053857306542080).GetEmoteAsync(610225336658952193),*/ await Context.Guild.GetEmoteAsync(514849932939624459), await Context.Guild.GetEmoteAsync(533084296857255947) });
