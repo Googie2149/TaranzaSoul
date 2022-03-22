@@ -129,13 +129,14 @@ namespace TaranzaSoul
                 // and my testing server because reasons
             }
         }
-
-        private async Task Client_UserLeft(SocketGuildUser user)
+        private async Task Client_UserLeft(SocketGuild guild, SocketUser userVague)
         {
             try
             {
-                if (user.Guild.Id == config.HomeGuildId)
+                if (guild.Id == config.HomeGuildId)
                 {
+                    SocketGuildUser user = guild.GetUser(userVague.Id);
+
                     string message = $":door: " +
                         $"**User Left** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                         $"{user.Username}#{user.Discriminator} ({user.Id})" +

@@ -200,8 +200,15 @@ namespace TaranzaSoul
             await Task.Delay(-1);
         }
 
-        private async Task SocketClient_GuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
+        private async Task SocketClient_GuildMemberUpdated(Cacheable<SocketGuildUser, ulong> beforeCache, SocketGuildUser after)
         {
+            if (!beforeCache.HasValue)
+            {
+                return;
+            }
+
+            SocketGuildUser before = beforeCache.Value;
+
             if (before.Guild.Id == config.HomeGuildId)
             {
                 var role = before.Guild.GetRole(694426304510033970);
@@ -390,7 +397,7 @@ namespace TaranzaSoul
             });
         }
 
-        private async Task Client_ReactionRemoved(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        private async Task Client_ReactionRemoved(Cacheable<IUserMessage, ulong> messageCache, Cacheable<IMessageChannel, ulong> channelCache, SocketReaction reaction)
         {
             if (reaction.Channel.Id == 431953417024307210 && RoleColors.ContainsKey(reaction.Emote.Name))
             {
@@ -458,7 +465,7 @@ namespace TaranzaSoul
             //}
         }
 
-        private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        private async Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> cache, Cacheable<IMessageChannel, ulong> channelCache, SocketReaction reaction)
         {
             if (reaction.Channel.Id == 431953417024307210 && RoleColors.ContainsKey(reaction.Emote.Name))
             {
