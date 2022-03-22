@@ -733,7 +733,7 @@ namespace TaranzaSoul
 
                     await Task.Delay(100);
                     await msg.DeleteAsync();
-                    string send = $"{msg.Author.Mention} that's a potential Forgotten Land spoiler! That belongs in <#565065746867027987>!";
+                    string send = $"{msg.Author.Mention} that's a potential Forgotten Land spoiler! That belongs in <#268945818470449162>!\nCheck in <#431953417024307210> if you need access.";
 
                     await msg.Channel.SendMessageAsync(send);
                 }
