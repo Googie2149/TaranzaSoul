@@ -721,7 +721,7 @@ namespace TaranzaSoul
 
                     if (tmp.Length > tmp.IndexOf(s + s.Length))
                     {
-                        if (char.IsLetter(tmp[tmp.IndexOf(s + s.Length)]))
+                        if (char.IsLetter(tmp[tmp.IndexOf(s) + s.Length]))
                         {
                             match = false;
                             continue;
