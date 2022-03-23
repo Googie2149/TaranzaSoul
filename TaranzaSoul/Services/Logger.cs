@@ -121,6 +121,7 @@ namespace TaranzaSoul
 
                     client.UserJoined += Client_UserJoined;
                     client.UserLeft += Client_UserLeft;
+                    client.UserLeft += Client_UserLeft1;
                 });
             }
             else if (guild.Id != config.HomeGuildId && guild.Id != 473760817809063936 && guild.Id != 212053857306542080)
@@ -135,7 +136,7 @@ namespace TaranzaSoul
             {
                 if (guild.Id == config.HomeGuildId)
                 {
-                    SocketGuildUser user = guild.GetUser(userVague.Id);
+                    SocketGuildUser user = userVague as SocketGuildUser;
 
                     string message = $":door: " +
                         $"**User Left** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
