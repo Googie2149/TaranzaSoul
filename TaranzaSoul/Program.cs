@@ -730,7 +730,7 @@ namespace TaranzaSoul
                     
                     if (tmp.IndexOf(s) > 0)
                     {
-                        if (char.IsLetter(tmp[tmp.IndexOf(s)]))
+                        if (char.IsLetter(tmp[tmp.IndexOf(s) - 1]))
                         {
                             match = false;
                             continue;
