@@ -696,6 +696,7 @@ namespace TaranzaSoul
                 Console.WriteLine("Filter replaced");
 
                 SpoilerWords = JsonStorage.DeserializeObjectFromFile<List<string>>("filter.json");
+                SpoilerWords = SpoilerWords.Select(x => x.ToLower()).ToList();
                 await msg.Channel.SendMessageAsync("Done!");
                 return;
             }
