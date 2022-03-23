@@ -47,7 +47,8 @@ namespace TaranzaSoul
             {
                 LogLevel = LogSeverity.Verbose,
                 AlwaysDownloadUsers = true,
-                MessageCacheSize = 100
+                MessageCacheSize = 100,
+                GatewayIntents = GatewayIntents.All
             });
             socketClient.Log += Log;
 
