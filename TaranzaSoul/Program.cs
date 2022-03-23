@@ -717,28 +717,51 @@ namespace TaranzaSoul
 
                 if (tmp.Contains(s))
                 {
+                    bool match = true;
 
-                    if (!s.Contains(" "))
+                    if (tmp.Length > tmp.IndexOf(s + s.Length))
                     {
-                        bool match = false;
-
-                        foreach (var word in tmp.Split(' '))
+                        if (char.IsLetter(tmp[tmp.IndexOf(s + s.Length)]))
                         {
-                            if (word == s)
-                            {
-                                match = true;
-                                break;
-                            }
+                            match = false;
+                            continue;
                         }
-
-                        if (!match) continue;
+                    }
+                    
+                    if (tmp.IndexOf(s) > 0)
+                    {
+                        if (char.IsLetter(tmp[tmp.IndexOf(s)]))
+                        {
+                            match = false;
+                            continue;
+                        }
                     }
 
-                    await Task.Delay(100);
-                    await msg.DeleteAsync();
-                    string send = $"{msg.Author.Mention} that's a potential Forgotten Land spoiler! That belongs in <#268945818470449162>!\nCheck in <#431953417024307210> if you need access.";
+                    //if (!s.Contains(" "))
+                    //{
+                    //    bool match = false;
 
-                    await msg.Channel.SendMessageAsync(send);
+                    //    foreach (var word in tmp.Split(' '))
+                    //    {
+                    //        if (word == s)
+                    //        {
+                    //            match = true;
+                    //            break;
+                    //        }
+                    //    }
+
+                    //    if (!match) continue;
+                    //}
+
+                    if (match)
+                    {
+                        await Task.Delay(100);
+                        await msg.DeleteAsync();
+                        string send = $"{msg.Author.Mention} that's a potential Forgotten Land spoiler! That belongs in <#268945818470449162>!\nCheck in <#431953417024307210> if you need access.";
+
+                        await msg.Channel.SendMessageAsync(send);
+                        break;
+                    }
                 }
             }
         }
