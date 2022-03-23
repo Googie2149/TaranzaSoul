@@ -719,7 +719,7 @@ namespace TaranzaSoul
                 {
                     bool match = true;
 
-                    if (tmp.Length > tmp.IndexOf(s + s.Length))
+                    if (tmp.Length > tmp.IndexOf(s) + s.Length)
                     {
                         if (char.IsLetter(tmp[tmp.IndexOf(s) + s.Length]))
                         {
