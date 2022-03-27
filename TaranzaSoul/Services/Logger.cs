@@ -179,6 +179,11 @@ namespace TaranzaSoul
                 {
                     SocketGuildUser user = userVague as SocketGuildUser;
 
+                    if (user.Id == 763820856442486785)
+                    {
+                        await guild.AddBanAsync(user);
+                    }
+
                     string message = $":door: " +
                         $"**User Left** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                         $"{user.Username}#{user.Discriminator} ({user.Id})" +
