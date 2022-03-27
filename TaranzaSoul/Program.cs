@@ -473,16 +473,25 @@ namespace TaranzaSoul
             if (reaction.Channel.Id == 431953417024307210 && RoleColors.ContainsKey(reaction.Emote.Name))
             {
                 var user = ((SocketGuildUser)reaction.User);
+
                 if (user.Roles.Select(x => x.Id).ToList().Contains(957765545086828616))
                     return;
                 //await RemoveAllColors(user.Id);
 
-                if (!user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
-                {
-                    lastRole = DateTimeOffset.Now;
-                    RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, roleId = RoleColors[reaction.Emote.Name] });
-                    //await user.AddRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
-                }
+                var restUser = await restClient.GetGuildUserAsync(user.Guild.Id, user.Id);
+                var roles = restUser.RoleIds.ToList();
+
+                roles = roles.Where(x => !RoleColors.ContainsValue(x)).ToList();
+                roles.Add(RoleColors[reaction.Emote.Name]);
+
+                await restUser.ModifyAsync(x => x.RoleIds = roles);
+
+                //if (!user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
+                //{
+                //    lastRole = DateTimeOffset.Now;
+                //    RoleAdditions.Enqueue(new RoleAddition() { userId = user.Id, roleId = RoleColors[reaction.Emote.Name] });
+                //    //await user.AddRoleAsync(user.Guild.GetRole(RoleColors[reaction.Emote.Name]));
+                //}
             }
             //else if (reaction.Channel.Id == 431953417024307210 && reaction.Emote.Name == "🚫")
             //{
