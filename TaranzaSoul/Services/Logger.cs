@@ -215,9 +215,8 @@ namespace TaranzaSoul
                 {
                     if (user.Id == 763820856442486785)
                     {
-                        await user.SendMessageAsync("Nope, no evading that role.");
                         await Task.Delay(1000);
-                        await user.Guild.AddBanAsync(user);
+                        await user.AddRoleAsync(957765545086828616);
                     }
 
                     string message = $":wave: " +
