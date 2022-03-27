@@ -189,10 +189,12 @@ namespace TaranzaSoul
 
                     if (config.WatchedIds.ContainsKey(user.Id))
                     {
-                        if (config.AlternateStaffMention)
-                            message = $"{message}\n<@&{config.AlternateStaffId}> That user was flagged! {config.WatchedIds[user.Id]}";
-                        else
-                            message = $"{message}\n<@&{config.StaffId}> That user was flagged! {config.WatchedIds[user.Id]}";
+                        //if (config.AlternateStaffMention)
+                        //    message = $"{message}\n<@&{config.AlternateStaffId}> That user was flagged! {config.WatchedIds[user.Id]}";
+                        //else
+                        //    message = $"{message}\n<@&{config.StaffId}> That user was flagged! {config.WatchedIds[user.Id]}";
+
+                        message = $"{message}\nThat user was flagged! {config.WatchedIds[user.Id]}";
                     }
 
                     await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
@@ -218,10 +220,12 @@ namespace TaranzaSoul
 
                     if (config.WatchedIds.ContainsKey(user.Id))
                     {
-                        if (config.AlternateStaffMention)
-                            message = $"{message}\n<@&{config.AlternateStaffId}> This user has been flagged! {config.WatchedIds[user.Id]}";
-                        else
-                            message = $"{message}\n<@&{config.StaffId}> This user has been flagged! {config.WatchedIds[user.Id]}";
+                        //if (config.AlternateStaffMention)
+                        //    message = $"{message}\n<@&{config.AlternateStaffId}> This user has been flagged! {config.WatchedIds[user.Id]}";
+                        //else
+                        //    message = $"{message}\n<@&{config.StaffId}> This user has been flagged! {config.WatchedIds[user.Id]}";
+
+                        message = $"{message}\nThis user has been flagged! {config.WatchedIds[user.Id]}";
                     }
 
                     await (client.GetGuild(config.HomeGuildId).GetChannel(config.MainChannelId) as ISocketMessageChannel)
