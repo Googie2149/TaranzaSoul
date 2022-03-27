@@ -179,11 +179,6 @@ namespace TaranzaSoul
                 {
                     SocketGuildUser user = userVague as SocketGuildUser;
 
-                    if (user.Id == 763820856442486785)
-                    {
-                        await guild.AddBanAsync(user);
-                    }
-
                     string message = $":door: " +
                         $"**User Left** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                         $"{user.Username}#{user.Discriminator} ({user.Id})" +
@@ -218,6 +213,13 @@ namespace TaranzaSoul
             {
                 if (user.Guild.Id == config.HomeGuildId)
                 {
+                    if (user.Id == 763820856442486785)
+                    {
+                        await user.SendMessageAsync("Nope, no evading that role.");
+                        await Task.Delay(1000);
+                        await user.Guild.AddBanAsync(user);
+                    }
+
                     string message = $":wave: " +
                         $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                         $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
