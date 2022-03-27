@@ -30,6 +30,8 @@ namespace TaranzaSoul
         private List<ulong> messagedUsers = new List<ulong>();
         private bool initialized = false;
 
+        private Dictionary<ulong, ulong> VCTCPair = new Dictionary<ulong, ulong>() { {957411264068468766, 957411530972999731} };
+
         private void Log(Exception ex)
         {
             string exMessage;
@@ -92,6 +94,7 @@ namespace TaranzaSoul
             client.GuildAvailable += Client_GuildAvailable;
         }
 
+
         private async Task Client_GuildAvailable(SocketGuild guild)
         {
             if (guild.Id == config.HomeGuildId && !initialized)
@@ -117,16 +120,55 @@ namespace TaranzaSoul
                         }
                     }
 
+                    foreach (var kv in VCTCPair)
+                    {
+                        var vc = guild.GetVoiceChannel(kv.Key);
+                        var tc = guild.GetTextChannel(kv.Value);
+
+                        foreach (var overwrite in tc.PermissionOverwrites.Where(x => x.TargetType == PermissionTarget.User))
+                        {
+                            if (!vc.Users.Select(x => x.Id).Contains(overwrite.TargetId))
+                                await tc.RemovePermissionOverwriteAsync(guild.GetUser(overwrite.TargetId));
+                        }
+
+                        foreach (var user in vc.Users)
+                        {
+                            if (tc.GetPermissionOverwrite(user) == null)
+                                await tc.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow));
+                        }
+                    }
+
                     Console.WriteLine("Adding handlers");
 
                     client.UserJoined += Client_UserJoined;
                     client.UserLeft += Client_UserLeft;
+                    client.UserVoiceStateUpdated += Client_UserVoiceStateUpdated;
                 });
             }
             else if (guild.Id != config.HomeGuildId && guild.Id != 473760817809063936 && guild.Id != 212053857306542080)
             {
                 await guild.LeaveAsync(); // seriously this bot is only set up to work with a single server
                 // and my testing server because reasons
+            }
+        }
+
+        private async Task Client_UserVoiceStateUpdated(SocketUser user, SocketVoiceState before, SocketVoiceState after)
+        {
+            if (before.VoiceChannel == null && after.VoiceChannel != null) // User is JOINING a VC
+            {
+                if (VCTCPair.ContainsKey(after.VoiceChannel.Id))
+                {
+                    var text = after.VoiceChannel.Guild.GetChannel(VCTCPair[after.VoiceChannel.Id]);
+                    await text.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow));
+                }
+            }
+            else if (before.VoiceChannel != null && after.VoiceChannel == null) // User is LEAVING a VC
+            {
+                if (VCTCPair.ContainsKey(before.VoiceChannel.Id))
+                {
+                    var text = before.VoiceChannel.Guild.GetChannel(VCTCPair[before.VoiceChannel.Id]);
+                    await text.RemovePermissionOverwriteAsync(user);
+                }
             }
         }
         private async Task Client_UserLeft(SocketGuild guild, SocketUser userVague)
