@@ -497,6 +497,8 @@ namespace TaranzaSoul
             {
                 SocketRole role = null;
                 var user = ((SocketGuildUser)reaction.User);
+                if (user.Roles.Select(x => x.Id).ToList().Contains(957765545086828616))
+                    return;
 
                 switch (reaction.Emote.Name)
                 {
