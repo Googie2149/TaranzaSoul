@@ -212,17 +212,19 @@ namespace TaranzaSoul
 
             if (before.Guild.Id == config.HomeGuildId)
             {
-                var role = before.Guild.GetRole(694426304510033970);
+                var role = before.Guild.GetRole(957765545086828616);
                 if (!before.Roles.Contains(role) && after.Roles.Contains(role))
                 {
-                    await (before.Guild.GetChannel(694425958928875560) as SocketTextChannel)
-                        .SendMessageAsync($"Hi there, {before.Mention}! Welcome to Kirby's stomach!\nNow don't panic, you're not dead, and there *are* plans to build an amusement park in here, but for now just try to enjoy your time here as best you can. You're in good company.");
+                    // they were given a role
+                    List<SocketRole> colors = RoleColors.Select(x => before.Guild.GetRole(x.Value)).ToList();
+
+                    await before.RemoveRolesAsync(before.Roles.Where(x => colors.Contains(x)));
                 }
-                else if (before.Roles.Contains(role) && !after.Roles.Contains(role))
-                {
-                    await (before.Guild.GetChannel(694425958928875560) as SocketTextChannel)
-                        .SendMessageAsync($"{before.Mention} was spat out. We wish them well outside the safety of Kirby's stomach.");
-                }
+                //else if (before.Roles.Contains(role) && !after.Roles.Contains(role))
+                //{
+                //    await (before.Guild.GetChannel(694425958928875560) as SocketTextChannel)
+                //        .SendMessageAsync($"{before.Mention} was spat out. We wish them well outside the safety of Kirby's stomach.");
+                //}
             }
         }
 
@@ -471,7 +473,8 @@ namespace TaranzaSoul
             if (reaction.Channel.Id == 431953417024307210 && RoleColors.ContainsKey(reaction.Emote.Name))
             {
                 var user = ((SocketGuildUser)reaction.User);
-
+                if (user.Roles.Select(x => x.Id).ToList().Contains(957765545086828616))
+                    return;
                 //await RemoveAllColors(user.Id);
 
                 if (!user.Roles.Contains(user.Guild.GetRole(RoleColors[reaction.Emote.Name])))
