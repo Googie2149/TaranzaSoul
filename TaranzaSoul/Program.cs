@@ -481,7 +481,7 @@ namespace TaranzaSoul
                 var restUser = await restClient.GetGuildUserAsync(user.Guild.Id, user.Id);
                 var roles = restUser.RoleIds.ToList();
 
-                roles = roles.Where(x => !RoleColors.ContainsValue(x) || x != restUser.GuildId).ToList();
+                roles = roles.Where(x => !RoleColors.ContainsValue(x) && x != restUser.GuildId).ToList();
                 roles.Add(RoleColors[reaction.Emote.Name]);
 
                 await restUser.ModifyAsync(x => x.RoleIds = roles);
