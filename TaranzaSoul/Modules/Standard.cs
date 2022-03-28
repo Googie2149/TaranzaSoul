@@ -368,9 +368,11 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("snap")]
-        [RequireOwner]
         public async Task RemoveAllExtraColorRoles(ulong u = 0)
         {
+            if (Context.User.Id != 102528327251656704)
+                return;
+
             var roleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");
 
             if (u != 0)
