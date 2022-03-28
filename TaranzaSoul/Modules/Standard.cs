@@ -412,6 +412,8 @@ namespace TaranzaSoul.Modules.Standard
                         roles.Add(user.Roles.Where(x => roleColors.ContainsValue(x.Id)).OrderByDescending(x => x.Position).First().Id);
 
                         await restUser.ModifyAsync(x => x.RoleIds = roles);
+
+                        await Task.Delay(1500);
                     }
                 }
 
