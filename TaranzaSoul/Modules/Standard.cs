@@ -367,6 +367,56 @@ namespace TaranzaSoul.Modules.Standard
             }
         }
 
+        [Command("snap")]
+        [RequireOwner]
+        public async Task RemoveAllExtraColorRoles(ulong u = 0)
+        {
+            var roleColors = JsonStorage.DeserializeObjectFromFile<Dictionary<string, ulong>>("colors.json");
+
+            if (u != 0)
+            {
+                var user = Context.User as SocketGuildUser;
+
+                if (user.Roles.Select(x => x.Id).Count(x => roleColors.ContainsValue(x)) > 1)
+                {
+                    var restUser = await restClient.GetGuildUserAsync(Context.Guild.Id, user.Id);
+                    var roles = restUser.RoleIds.ToList();
+
+                    roles = roles.Where(x => !roleColors.ContainsValue(x) && x != restUser.GuildId).ToList();
+                    roles.Add(user.Roles.Where(x => roleColors.ContainsValue(x.Id)).OrderByDescending(x => x.Position).First().Id);
+
+                    await restUser.ModifyAsync(x => x.RoleIds = roles);
+                }
+
+                return;
+            }
+
+            Task.Run(async () =>
+            {
+
+                await RespondAsync("This is probably gonna take a while");
+                int removedUsers = 0;
+                int removedRoles = 0;
+                foreach (var user in Context.Guild.Users)
+                {
+                    if (user.Roles.Select(x => x.Id).Count(x => roleColors.ContainsValue(x)) > 1)
+                    {
+                        removedUsers++;
+                        removedRoles += user.Roles.Select(x => x.Id).Count(x => roleColors.ContainsValue(x)) - 1;
+                        var restUser = await restClient.GetGuildUserAsync(Context.Guild.Id, user.Id);
+                        var roles = restUser.RoleIds.ToList();
+
+                        roles = roles.Where(x => !roleColors.ContainsValue(x) && x != restUser.GuildId).ToList();
+                        roles.Add(user.Roles.Where(x => roleColors.ContainsValue(x.Id)).OrderByDescending(x => x.Position).First().Id);
+
+                        await restUser.ModifyAsync(x => x.RoleIds = roles);
+                    }
+                }
+
+                await RespondAsync($"Removed {removedRoles} from {removedUsers} users");
+            });
+        }
+
         //[Command("usersearch", RunMode = RunMode.Async)]
         //public async Task SearchNotes(string search = "")
         //{
