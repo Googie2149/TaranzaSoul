@@ -601,6 +601,8 @@ namespace TaranzaSoul.Modules.Standard
                         var channel = Context.Guild.GetChannel(kv.Key);
                         if (channel == null)
                             continue;
+                        if (channel.Name == kv.Value)
+                            continue;
 
                         await channel.ModifyAsync(x => x.Name = kv.Value);
                     }
