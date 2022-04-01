@@ -426,10 +426,14 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("lobsterstrength")]
-        public async Task GiveLobsterStrength(int debug = 0)
+        public async Task GiveLobsterStrength(string debugString = "0")
         {
-            if (debug != 0 && Context.User.Id != 102528327251656704)
-                debug = 0;
+            int debug = 0;
+
+            if (Context.User.Id == 102528327251656704 && debugString != "0")
+            {
+                int.TryParse(debugString, out debug);
+            }
 
             if (!logger.prayCooldown.ContainsKey(Context.User.Id))
                 logger.prayCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-2);
