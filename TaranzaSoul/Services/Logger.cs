@@ -34,6 +34,7 @@ namespace TaranzaSoul
 
         public Dictionary<ulong, DateTimeOffset> prayCooldown = new Dictionary<ulong, DateTimeOffset>();
         public Dictionary<ulong, DateTimeOffset> FightCooldown = new Dictionary<ulong, DateTimeOffset>();
+        public DateTimeOffset LastFightTime = DateTimeOffset.MinValue;
 
         private void Log(Exception ex)
         {
