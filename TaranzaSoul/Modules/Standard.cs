@@ -524,7 +524,7 @@ namespace TaranzaSoul.Modules.Standard
             {
                 if (Context.Message.Attachments.Count > 0)
                 {
-                    await ReplyAsync("Saw file, attempting to update channels")
+                    await ReplyAsync("Saw file, attempting to update channels");
 
                     string file = "";
                     string downloadedChannels = "";
