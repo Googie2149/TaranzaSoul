@@ -725,11 +725,11 @@ namespace TaranzaSoul.Modules.Standard
 
             Console.WriteLine("13");
 
-            if (milestone)
-            {
-                await Task.Delay(1500);
-                await msg.PinAsync();
-            }
+            //if (milestone)
+            //{
+            //    await Task.Delay(1500);
+            //    await msg.PinAsync();
+            //}
         }
 
         [Command("channels")]
