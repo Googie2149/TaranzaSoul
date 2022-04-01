@@ -477,7 +477,7 @@ namespace TaranzaSoul.Modules.Standard
                 else if (config.ThoughtsAndPrayers == 500)
                 {
                     image = "gold.png";
-                    response = $"Heavy Lobster has received 500 prayers! It's made a full recovery! But can your prayers make it even stronger...?";
+                    response = $"Thank you {Context.User.Mention}! Heavy Lobster has received 500 prayers! It's made a full recovery! But can your prayers make it even stronger...?";
                     milestone = true;
                     color = 0xf8f800;
                 }
@@ -490,7 +490,7 @@ namespace TaranzaSoul.Modules.Standard
                 else if (config.ThoughtsAndPrayers == 1000)
                 {
                     image = "silver.png";
-                    response = $"We've gone too far. Heavy Lobster has now gone where no robot has gone before. It has become a perfect being and we can no longer control it. Please stop praying for it";
+                    response = $"We've gone too far. Heavy Lobster has now gone where no robot has gone before. It has become a perfect being and we can no longer control it. Please stop praying for it. {Context.User.Mention} this is your fault.";
                     milestone = true;
                     color = 0xf8f8f8;
                 }
