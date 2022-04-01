@@ -429,7 +429,7 @@ namespace TaranzaSoul.Modules.Standard
         public async Task GiveLobsterStrength()
         {
             if (!prayCooldown.ContainsKey(Context.User.Id))
-                prayCooldown[Context.User.Id] = DateTimeOffset.Now;
+                prayCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-2);
 
             if (prayCooldown[Context.User.Id] >= DateTimeOffset.Now.AddHours(-1))
             {
