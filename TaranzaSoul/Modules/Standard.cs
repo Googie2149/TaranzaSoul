@@ -30,7 +30,7 @@ namespace TaranzaSoul.Modules.Standard
         private Logger logger;
         private DiscordRestClient restClient;
 
-        private Dictionary<ulong, DateTimeOffset> prayCooldown = new Dictionary<ulong, DateTimeOffset>();
+        //private Dictionary<ulong, DateTimeOffset> prayCooldown = new Dictionary<ulong, DateTimeOffset>();
         private DateTimeOffset FightCooldown = DateTimeOffset.MinValue;
 
         enum FakePunishments
@@ -428,12 +428,12 @@ namespace TaranzaSoul.Modules.Standard
         [Command("lobsterstrength")]
         public async Task GiveLobsterStrength()
         {
-            if (!prayCooldown.ContainsKey(Context.User.Id))
-                prayCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-2);
+            if (!logger.prayCooldown.ContainsKey(Context.User.Id))
+                logger.prayCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-2);
 
-            if (prayCooldown[Context.User.Id] >= DateTimeOffset.Now.AddMinutes(-15))
+            if (logger.prayCooldown[Context.User.Id] >= DateTimeOffset.Now.AddMinutes(-15))
             {
-                TimeSpan t = prayCooldown[Context.User.Id] - DateTimeOffset.Now.AddMinutes(-15);
+                TimeSpan t = logger.prayCooldown[Context.User.Id] - DateTimeOffset.Now.AddMinutes(-15);
 
                 Task.Run(async () =>
                 {
@@ -449,7 +449,7 @@ namespace TaranzaSoul.Modules.Standard
             }
             else
             {
-                prayCooldown[Context.User.Id] = DateTimeOffset.Now;
+                logger.prayCooldown[Context.User.Id] = DateTimeOffset.Now;
                 config.ThoughtsAndPrayers++;
                 string image = "./Images/";
                 string response = "";

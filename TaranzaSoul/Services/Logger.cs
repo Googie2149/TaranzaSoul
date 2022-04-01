@@ -32,6 +32,8 @@ namespace TaranzaSoul
 
         private Dictionary<ulong, ulong> VCTCPair = new Dictionary<ulong, ulong>() { {957411264068468766, 957411530972999731} };
 
+        public Dictionary<ulong, DateTimeOffset> prayCooldown = new Dictionary<ulong, DateTimeOffset>();
+
         private void Log(Exception ex)
         {
             string exMessage;
