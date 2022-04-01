@@ -602,7 +602,9 @@ namespace TaranzaSoul.Modules.Standard
 
             if (debug == "0" && logger.LastFightTime >= DateTimeOffset.Now.AddMinutes(-1))
             {
-                builder.WithDescription($"Lord Meta Knight is preparing for the next fight. You'll have your chance soon.");
+                TimeSpan t = logger.LastFightTime - DateTimeOffset.Now.AddMinutes(-1);
+
+                builder.WithDescription($"Lord Meta Knight is preparing for the next fight. He'll be ready for another in about {t.Seconds:00} seconds.");
                 await Context.Channel.SendMessageAsync(embed: builder.Build());
                 return;
             }
@@ -618,7 +620,7 @@ namespace TaranzaSoul.Modules.Standard
                 //Task.Run(async () =>
                 //{
 
-                builder.WithDescription($"Lord Meta Knight is currently fighting other challengers. You'll be able to have have your rematch in {t.Minutes:0}:{t.Seconds:00}.")
+                builder.WithDescription($"Lord Meta Knight is currently fighting other challengers. You'll be able to have have your rematch in {t.Minutes:0}:{t.Seconds:00}")
                     .WithThumbnailUrl("attachment://cooldown.png");
 
                 await Context.Channel.SendFileAsync("./Images/cooldown.png", embed: builder.Build());
