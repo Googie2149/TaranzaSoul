@@ -626,8 +626,6 @@ namespace TaranzaSoul.Modules.Standard
                                 exMessage = null;
 
                             Console.WriteLine(exMessage);
-
-                            return;
                         }
                     }
 
