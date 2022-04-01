@@ -700,7 +700,28 @@ namespace TaranzaSoul.Modules.Standard
 
             Console.WriteLine("12");
 
-            var msg = await Context.Channel.SendFileAsync(image, embed: builder.Build());
+            try
+            {
+                var msg = await Context.Channel.SendFileAsync(image, embed: builder.Build());
+
+            }
+            catch (Exception ex)
+            {
+                await Context.Message.Channel.SendMessageAsync($"what {ex.Message}");
+                string exMessage;
+                if (ex != null)
+                {
+                    while (ex is AggregateException && ex.InnerException != null)
+                        ex = ex.InnerException;
+                    exMessage = $"{ex.Message}";
+                    if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
+                        exMessage += $"\n{ex.StackTrace}";
+                }
+                else
+                    exMessage = null;
+
+                Console.WriteLine(exMessage);
+            }
 
             Console.WriteLine("13");
 
