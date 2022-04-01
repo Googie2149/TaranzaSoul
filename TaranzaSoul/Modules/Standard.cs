@@ -18,6 +18,7 @@ using System.IO;
 using RestSharp;
 using Newtonsoft.Json;
 using TaranzaSoul.Preconditions;
+using System.Net;
 
 namespace TaranzaSoul.Modules.Standard
 {
@@ -523,7 +524,86 @@ namespace TaranzaSoul.Modules.Standard
             {
                 if (Context.Message.Attachments.Count > 0)
                 {
+                    string file = "";
+                    string downloadedChannels = "";
 
+                    if (Context.Message.Attachments.FirstOrDefault().Filename.ToLower().EndsWith(".json"))
+                        file = Context.Message.Attachments.FirstOrDefault().Url;
+                    else
+                    {
+                        await Context.Message.Channel.SendMessageAsync("That isn't a .json file!");
+                        return;
+                    }
+
+                    await Task.Run(async () =>
+                    {
+                        Console.WriteLine($"setting download url to: {file}");
+
+                        try
+                        {
+                            using (WebClient client = new WebClient())
+                            {
+                                Console.WriteLine("Downloading...");
+
+                                downloadedChannels = client.DownloadString(new Uri(file));
+                                Console.WriteLine("Downloaded");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            await Context.Message.Channel.SendMessageAsync($"There was an error downloading that file:\n{ex.Message}");
+                            string exMessage;
+                            if (ex != null)
+                            {
+                                while (ex is AggregateException && ex.InnerException != null)
+                                    ex = ex.InnerException;
+                                exMessage = $"{ex.Message}";
+                                if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
+                                    exMessage += $"\n{ex.StackTrace}";
+                            }
+                            else
+                                exMessage = null;
+
+                            Console.WriteLine(exMessage);
+
+                            return;
+                        }
+                    });
+
+                    var tempChannels = new Dictionary<ulong, string>();
+
+                    try
+                    {
+                        tempChannels = JsonConvert.DeserializeObject<Dictionary<ulong, string>>(downloadedChannels);
+                    }
+                    catch (Exception ex)
+                    {
+                        await Context.Message.Channel.SendMessageAsync($"There was an error loading that file:\n{ex.Message}");
+                        string exMessage;
+                        if (ex != null)
+                        {
+                            while (ex is AggregateException && ex.InnerException != null)
+                                ex = ex.InnerException;
+                            exMessage = $"{ex.Message}";
+                            if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
+                                exMessage += $"\n{ex.StackTrace}";
+                        }
+                        else
+                            exMessage = null;
+
+                        Console.WriteLine(exMessage);
+
+                        return;
+                    }
+
+                    foreach (var kv in tempChannels)
+                    {
+                        var channel = Context.Guild.GetChannel(kv.Key);
+                        if (channel == null)
+                            continue;
+
+                        await channel.ModifyAsync(x => x.Name = kv.Value);
+                    }
                 }
                 else
                 {
