@@ -528,12 +528,15 @@ namespace TaranzaSoul.Modules.Standard
                 else
                 {
                     Dictionary<ulong, string> channels = new Dictionary<ulong, string>();
-                    foreach (var c in Context.Guild.Channels.OrderBy(x => x.Position))
+                    foreach (var c in Context.Guild.Channels.OrderByDescending(x => x.Position))
                     {
+                        var perms = c.GetPermissionOverwrite(Context.Guild.EveryoneRole);
+                        if (perms.HasValue && perms.Value.ViewChannel == PermValue.Deny)
+                            continue;
                         channels[c.Id] = c.Name;
                     }
 
-                    await Context.Channel.SendMemoryFile("channels.json", JsonConvert.SerializeObject(channels));
+                    await Context.Channel.SendMemoryFile("channels.json", JsonConvert.SerializeObject(channels, Formatting.Indented));
                 }
             }
         }
