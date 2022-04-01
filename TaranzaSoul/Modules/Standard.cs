@@ -19,6 +19,7 @@ using RestSharp;
 using Newtonsoft.Json;
 using TaranzaSoul.Preconditions;
 using System.Net;
+using System.Security.Cryptography;
 
 namespace TaranzaSoul.Modules.Standard
 {
@@ -32,7 +33,7 @@ namespace TaranzaSoul.Modules.Standard
         private DiscordRestClient restClient;
 
         //private Dictionary<ulong, DateTimeOffset> prayCooldown = new Dictionary<ulong, DateTimeOffset>();
-        private DateTimeOffset FightCooldown = DateTimeOffset.MinValue;
+        //private DateTimeOffset FightCooldown = DateTimeOffset.MinValue;
 
         enum FakePunishments
         {
@@ -51,6 +52,26 @@ namespace TaranzaSoul.Modules.Standard
             dbhelper = _dbhelper;
             logger = _logger;
             restClient = _restClient;
+        }
+
+        private RNGCryptoServiceProvider rand = new RNGCryptoServiceProvider();
+
+        private int RandomInteger(int min, int max)
+        {
+            uint scale = uint.MaxValue;
+            while (scale == uint.MaxValue)
+            {
+                // Get four random bytes.
+                byte[] four_bytes = new byte[4];
+                rand.GetBytes(four_bytes);
+
+                // Convert that into an uint.
+                scale = BitConverter.ToUInt32(four_bytes, 0);
+            }
+
+            // Add min to the scaled difference between max and min.
+            return (int)(min + (max - min) *
+                (scale / (double)uint.MaxValue));
         }
 
         private void Log(Exception ex)
@@ -513,6 +534,79 @@ namespace TaranzaSoul.Modules.Standard
                     await Task.Delay(1500);
                     await msg.PinAsync();
                 }
+            }
+        }
+
+        [Command("die")]
+        [Hide]
+        public async Task SortaBan()
+        {
+            if (Context.User.Id != 959178492493307994)
+            {
+                return;
+            }
+
+            var darkmetaknight = Context.Guild.GetUser(959472251399471184);
+            if (darkmetaknight == null)
+                return;
+
+            await darkmetaknight.KickAsync("You are not welcome in my server.");
+
+            await Context.Channel.SendFileAsync("./Images/death.gif", "Dark Meta Knight was utterly **decimated** by Meta Knight. We've lost him.");
+        }
+
+        [Command("fight")]
+        [Hide]
+        public async Task FightTheKnight(string debug = "0")
+        {
+            if (!logger.FightCooldown.ContainsKey(Context.User.Id))
+                logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-3);
+
+            if (debug == "0" && logger.FightCooldown[Context.User.Id] >= DateTimeOffset.Now.AddMinutes(-60))
+            {
+                TimeSpan t = logger.FightCooldown[Context.User.Id] - DateTimeOffset.Now.AddMinutes(-60);
+
+                //Task.Run(async () =>
+                //{
+                    EmbedBuilder builder = new EmbedBuilder();
+
+                    builder.WithDescription($"Lord Meta Knight is currently fighting other challengers. You'll be able to have have your rematch in {t.Minutes:0}:{t.Seconds:00}.")
+                    .WithThumbnailUrl("cooldown.png").WithColor(0x2a28a5);
+
+                await Context.Channel.SendFileAsync("./Images/cooldown.png", embed: builder.Build());
+
+                    //var msg = await Context.Channel.SendMessageAsync($" (Try again after {t.Minutes:0}:{t.Seconds:00})");
+
+                    //await Task.Delay(1000 * 3);
+
+                    //await msg.DeleteAsync();
+                    //await Context.Message.DeleteAsync();
+                //});
+
+                return;
+            }
+
+            int result = RandomInteger(0, 100);
+
+            if (Context.User.Id == 102528327251656704 && debug != "0")
+            {
+                if (debug == "win")
+                    result = 62;
+                else
+                    result = 4;
+            }
+            else 
+            {
+                logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now;
+            }
+
+            if (result == 62)
+            {
+
+            }
+            else
+            {
+
             }
         }
 
