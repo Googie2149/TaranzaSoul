@@ -562,16 +562,18 @@ namespace TaranzaSoul.Modules.Standard
             if (!logger.FightCooldown.ContainsKey(Context.User.Id))
                 logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-3);
 
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.WithColor(0x2a28a5);
+
             if (debug == "0" && logger.FightCooldown[Context.User.Id] >= DateTimeOffset.Now.AddMinutes(-60))
             {
                 TimeSpan t = logger.FightCooldown[Context.User.Id] - DateTimeOffset.Now.AddMinutes(-60);
 
                 //Task.Run(async () =>
                 //{
-                    EmbedBuilder builder = new EmbedBuilder();
 
                     builder.WithDescription($"Lord Meta Knight is currently fighting other challengers. You'll be able to have have your rematch in {t.Minutes:0}:{t.Seconds:00}.")
-                    .WithThumbnailUrl("cooldown.png").WithColor(0x2a28a5);
+                    .WithThumbnailUrl("cooldown.png");
 
                 await Context.Channel.SendFileAsync("./Images/cooldown.png", embed: builder.Build());
 
@@ -600,13 +602,41 @@ namespace TaranzaSoul.Modules.Standard
                 logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now;
             }
 
+            bool milestone = false;
+            string image = "";
+
             if (result == 62)
             {
-
+                builder.WithDescription("Ngh... Damn! Impossible! You win this time...").WithThumbnailUrl("metaknightlose.png");
+                milestone = true;
+                image = "./Images/metaknightlose.png";
             }
             else
             {
+                int response = RandomInteger(0, 12);
 
+                string[] responses = new string[] {"You lose. Come back when you can put up a fight.",
+                    "The victory is mine. Return when you're more fit to challenge me.",
+                    "Your skills are not up to par. I win.",
+                    "Victory is my destiny. Your fate is defeat.",
+                    "You weren't fit to seize the victory. You cannot hope to overcome me as you are.",
+                    "You lack the power to best me. Lament at your own failure.",
+                    "You've already lost. Perish from my sight.",
+                    "You have much left to learn. I am the winner.",
+                    "The winner is I. Know my power!",
+                    "You are no match for Galaxia. Concede.",
+                    "You fail. Such is the fate that befalls all who oppose me."};
+
+                builder.WithDescription(responses[response]).WithThumbnailUrl("metaknightwin.png");
+                image = "./Images/metaknightwin.png";
+            }
+
+            var msg = await Context.Channel.SendFileAsync(image, embed: builder.Build());
+
+            if (milestone)
+            {
+                await Task.Delay(1500);
+                await msg.PinAsync();
             }
         }
 
