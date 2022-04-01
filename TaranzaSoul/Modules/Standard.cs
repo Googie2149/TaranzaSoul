@@ -30,6 +30,9 @@ namespace TaranzaSoul.Modules.Standard
         private Logger logger;
         private DiscordRestClient restClient;
 
+        private Dictionary<ulong, DateTimeOffset> prayCooldown = new Dictionary<ulong, DateTimeOffset>();
+        private DateTimeOffset FightCooldown = DateTimeOffset.MinValue;
+
         enum FakePunishments
         {
             None = 0,
@@ -368,6 +371,7 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("snap")]
+        [Hide]
         public async Task RemoveAllExtraColorRoles(ulong u = 0)
         {
             if (Context.User.Id != 102528327251656704)
@@ -419,6 +423,77 @@ namespace TaranzaSoul.Modules.Standard
 
                 await RespondAsync($"Removed {removedRoles} from {removedUsers} users");
             });
+        }
+
+        [Command("lobsterstrength")]
+        public async Task GiveLobsterStrength()
+        {
+            if (!prayCooldown.ContainsKey(Context.User.Id))
+                prayCooldown[Context.User.Id] = DateTimeOffset.Now;
+
+            if (prayCooldown[Context.User.Id] >= DateTimeOffset.Now.AddHours(-1))
+            {
+                TimeSpan t = prayCooldown[Context.User.Id] - DateTimeOffset.Now.AddHours(-1);
+
+                Task.Run(async () =>
+                {
+                    var msg = await Context.Channel.SendMessageAsync($"While Heavy Lobster acknowledges your devotion, excessive devotion leads to empty prayers <:wildfrosty:956687678282276934> (Try again after {t.Minutes:0}:{t.Seconds:00})");
+
+                    await Task.Delay(1000 * 3);
+
+                    await msg.DeleteAsync();
+                    await Context.Message.DeleteAsync();
+                });
+
+                return;
+            }
+            else
+            {
+                config.ThoughtsAndPrayers++;
+                string image = "./Images/";
+                string response = "";
+                bool milestone = false;
+                uint color = 0;
+
+                if (config.ThoughtsAndPrayers > 0 && config.ThoughtsAndPrayers < 500)
+                {
+                    image = "broken.png";
+                    response = $"Thank you for your thoughts and prayers for our beloved Halberd guard. 😔 Heavy Lobster has received {config.ThoughtsAndPrayers} prayers.";
+                    color = 0xf04050;
+                }
+                else if (config.ThoughtsAndPrayers == 500)
+                {
+                    image = "gold.png";
+                    response = $"Heavy Lobster has received 500 prayers! It's made a full recovery! But can your prayers make it even stronger...?";
+                    milestone = true;
+                    color = 0xf04050;
+                }
+                else if (config.ThoughtsAndPrayers > 500 && config.ThoughtsAndPrayers < 1000)
+                {
+                    image = "gold.png";
+                    response = $"Our beloved lobster is growing even stronger thanks to your support... Heavy Lobster has received {config.ThoughtsAndPrayers} prayers.";
+                    color = 0xf04050;
+                }
+                else if (config.ThoughtsAndPrayers == 1000)
+                {
+                    image = "silver.png";
+                    response = $"We've gone too far. Heavy Lobster has now gone where no robot has gone before. It has become a perfect being and we can no longer control it. Please stop praying for it";
+                    milestone = true;
+                    color = 0xf8f8f8;
+                }
+                else if (config.ThoughtsAndPrayers > 1000)
+                {
+                    image = "silver.png";
+                    response = $"You can't improve perfection. Heavy Lobster appreciates your support, regardless. Heavy Lobster has received {config.ThoughtsAndPrayers} prayers.";
+                    color = 0xf8f8f8;
+                }
+
+                EmbedBuilder builder = new EmbedBuilder();
+
+                builder.WithColor(color).WithImageUrl($"attachment://{image}").WithDescription(response);
+
+                await Context.Channel.SendFileAsync($"./Images/{image}", embed: builder.Build());
+            }
         }
 
         //[Command("usersearch", RunMode = RunMode.Async)]

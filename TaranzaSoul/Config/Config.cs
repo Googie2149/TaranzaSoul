@@ -89,6 +89,9 @@ namespace TaranzaSoul
         [JsonProperty("user_votes_leo")]
         public List<ulong> UserVotesLeo = new List<ulong>();
 
+        [JsonProperty("thoughts_and_prayers")]
+        public int ThoughtsAndPrayers = 0;
+
         public async static Task<Config> Load()
         {
             if (File.Exists("config.json"))
