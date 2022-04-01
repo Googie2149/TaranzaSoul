@@ -472,13 +472,13 @@ namespace TaranzaSoul.Modules.Standard
                     image = "gold.png";
                     response = $"Heavy Lobster has received 500 prayers! It's made a full recovery! But can your prayers make it even stronger...?";
                     milestone = true;
-                    color = 0xf04050;
+                    color = 0xf8f800;
                 }
                 else if (config.ThoughtsAndPrayers > 500 && config.ThoughtsAndPrayers < 1000)
                 {
                     image = "gold.png";
                     response = $"Our beloved lobster is growing even stronger thanks to your support... Heavy Lobster has received {config.ThoughtsAndPrayers} prayers.";
-                    color = 0xf04050;
+                    color = 0xf8f800;
                 }
                 else if (config.ThoughtsAndPrayers == 1000)
                 {
