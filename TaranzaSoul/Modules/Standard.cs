@@ -515,6 +515,29 @@ namespace TaranzaSoul.Modules.Standard
             }
         }
 
+        [Command("channels")]
+        [Hide]
+        public async Task UpdateChannels()
+        {
+            if ((Context.User as IGuildUser).RoleIds.Contains(config.StaffId))
+            {
+                if (Context.Message.Attachments.Count > 0)
+                {
+
+                }
+                else
+                {
+                    Dictionary<ulong, string> channels = new Dictionary<ulong, string>();
+                    foreach (var c in Context.Guild.Channels.OrderBy(x => x.Position))
+                    {
+                        channels[c.Id] = c.Name;
+                    }
+
+                    await Context.Channel.SendMemoryFile("channels.json", JsonConvert.SerializeObject(channels));
+                }
+            }
+        }
+
         //[Command("usersearch", RunMode = RunMode.Async)]
         //public async Task SearchNotes(string search = "")
         //{
