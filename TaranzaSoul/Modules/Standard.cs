@@ -524,6 +524,8 @@ namespace TaranzaSoul.Modules.Standard
             {
                 if (Context.Message.Attachments.Count > 0)
                 {
+                    await ReplyAsync("Saw file, attempting to update channels")
+
                     string file = "";
                     string downloadedChannels = "";
 
@@ -606,6 +608,8 @@ namespace TaranzaSoul.Modules.Standard
 
                         await channel.ModifyAsync(x => x.Name = kv.Value);
                     }
+
+                    await ReplyAsync("Done!");
                 }
                 else
                 {
