@@ -690,6 +690,10 @@ namespace TaranzaSoul.Modules.Standard
 
                 Console.WriteLine("11");
 
+                Console.WriteLine(result);
+                Console.WriteLine(response);
+                Console.WriteLine(responses[response]);
+
                 builder.WithDescription(responses[response]).WithThumbnailUrl("metaknightwin.png");
                 image = "./Images/metaknightwin.png";
             }
@@ -697,6 +701,8 @@ namespace TaranzaSoul.Modules.Standard
             Console.WriteLine("12");
 
             var msg = await Context.Channel.SendFileAsync(image, embed: builder.Build());
+
+            Console.WriteLine("13")
 
             if (milestone)
             {
