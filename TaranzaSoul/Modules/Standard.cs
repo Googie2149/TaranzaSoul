@@ -449,6 +449,7 @@ namespace TaranzaSoul.Modules.Standard
             }
             else
             {
+                prayCooldown[Context.User.Id] = DateTimeOffset.Now;
                 config.ThoughtsAndPrayers++;
                 string image = "./Images/";
                 string response = "";
