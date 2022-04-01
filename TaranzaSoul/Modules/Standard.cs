@@ -668,7 +668,7 @@ namespace TaranzaSoul.Modules.Standard
             if (result == 62)
             {
                 Console.WriteLine("1342");
-                builder.WithDescription("Ngh... Damn! Impossible! You win this time...").WithThumbnailUrl("attachment://metaknightlose.png");
+                builder.WithDescription($"Ngh... Damn! Impossible! You win this time, {Context.User.Mention}...").WithThumbnailUrl("attachment://metaknightlose.png");
                 milestone = true;
                 image = "./Images/metaknightlose.png";
 
@@ -708,6 +708,12 @@ namespace TaranzaSoul.Modules.Standard
             {
                 var msg = await Context.Channel.SendFileAsync(image, embed: builder.Build());
 
+                if (milestone)
+                {
+                    await Task.Delay(1500);
+                    await msg.PinAsync();
+                }
+
             }
             catch (Exception ex)
             {
@@ -729,11 +735,7 @@ namespace TaranzaSoul.Modules.Standard
 
             Console.WriteLine("13");
 
-            //if (milestone)
-            //{
-            //    await Task.Delay(1500);
-            //    await msg.PinAsync();
-            //}
+            
         }
 
         [Command("channels")]
