@@ -431,7 +431,7 @@ namespace TaranzaSoul.Modules.Standard
             if (!prayCooldown.ContainsKey(Context.User.Id))
                 prayCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-2);
 
-            if (prayCooldown[Context.User.Id] <= DateTimeOffset.Now.AddMinutes(-15))
+            if (prayCooldown[Context.User.Id] >= DateTimeOffset.Now.AddMinutes(-15))
             {
                 TimeSpan t = prayCooldown[Context.User.Id] - DateTimeOffset.Now.AddMinutes(-15);
 
