@@ -598,6 +598,8 @@ namespace TaranzaSoul.Modules.Standard
             EmbedBuilder builder = new EmbedBuilder();
             builder.WithColor(0x2a28a5);
 
+            Console.WriteLine("1");
+
             if (debug == "0" && logger.LastFightTime >= DateTimeOffset.Now.AddMinutes(-1))
             {
                 builder.WithDescription($"Lord Meta Knight is preparing for the next fight. You'll have your chance soon.");
@@ -605,14 +607,23 @@ namespace TaranzaSoul.Modules.Standard
                 return;
             }
 
+            Console.WriteLine("2");
+
             if (debug == "0" && logger.FightCooldown[Context.User.Id] >= DateTimeOffset.Now.AddMinutes(-60))
             {
                 TimeSpan t = logger.FightCooldown[Context.User.Id] - DateTimeOffset.Now.AddMinutes(-60);
+
+                Console.WriteLine("3");
+
+                //Task.Run(async () =>
+                //{
 
                 builder.WithDescription($"Lord Meta Knight is currently fighting other challengers. You'll be able to have have your rematch in {t.Minutes:0}:{t.Seconds:00}.")
                     .WithThumbnailUrl("attachment://cooldown.png");
 
                 await Context.Channel.SendFileAsync("./Images/cooldown.png", embed: builder.Build());
+
+                Console.WriteLine("4");
 
                 //var msg = await Context.Channel.SendMessageAsync($" (Try again after {t.Minutes:0}:{t.Seconds:00})");
 
@@ -625,7 +636,11 @@ namespace TaranzaSoul.Modules.Standard
                 return;
             }
 
+            Console.WriteLine("5");
+
             int result = RandomInteger(0, 100);
+
+            Console.WriteLine("6");
 
             if (Context.User.Id == 102528327251656704 && debug != "0")
             {
@@ -633,26 +648,35 @@ namespace TaranzaSoul.Modules.Standard
                     result = 62;
                 else
                     result = 4;
+
+                Console.WriteLine("30000");
             }
             else 
             {
                 logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now;
                 logger.LastFightTime = DateTimeOffset.Now;
+                Console.WriteLine("7");
             }
 
             bool milestone = false;
             string image = "";
 
+            Console.WriteLine("8");
+
             if (result == 62)
             {
+                Console.WriteLine("1342");
                 builder.WithDescription("Ngh... Damn! Impossible! You win this time...").WithThumbnailUrl("attachment://metaknightlose.png");
                 milestone = true;
                 image = "./Images/metaknightlose.png";
+
                 Console.WriteLine($"User {Context.User.Id} won");
             }
             else
             {
-                int response = RandomInteger(0, 12);
+                Console.WriteLine("9");
+                int response = RandomInteger(0, 11);
+                Console.WriteLine("10");
 
                 string[] responses = new string[] {"You lose. Come back when you can put up a fight.",
                     "The victory is mine. Return when you're more fit to challenge me.",
@@ -666,17 +690,48 @@ namespace TaranzaSoul.Modules.Standard
                     "You are no match for Galaxia. Concede.",
                     "You fail. Such is the fate that befalls all who oppose me."};
 
+                Console.WriteLine("11");
+
+                Console.WriteLine(result);
+                Console.WriteLine(response);
+                Console.WriteLine(responses[response]);
+
                 builder.WithDescription(responses[response]).WithThumbnailUrl("attachment://metaknightwin.png");
                 image = "./Images/metaknightwin.png";
             }
 
+            Console.WriteLine("12");
+
+            try
+            {
                 var msg = await Context.Channel.SendFileAsync(image, embed: builder.Build());
 
-            ////if (milestone)
-            ////{
-            ////    await Task.Delay(1500);
-            ////    await msg.PinAsync();
-            ////}
+            }
+            catch (Exception ex)
+            {
+                await Context.Message.Channel.SendMessageAsync($"what {ex.Message}");
+                string exMessage;
+                if (ex != null)
+                {
+                    while (ex is AggregateException && ex.InnerException != null)
+                        ex = ex.InnerException;
+                    exMessage = $"{ex.Message}";
+                    if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
+                        exMessage += $"\n{ex.StackTrace}";
+                }
+                else
+                    exMessage = null;
+
+                Console.WriteLine(exMessage);
+            }
+
+            Console.WriteLine("13");
+
+            //if (milestone)
+            //{
+            //    await Task.Delay(1500);
+            //    await msg.PinAsync();
+            //}
         }
 
         [Command("channels")]
