@@ -578,10 +578,12 @@ namespace TaranzaSoul.Modules.Standard
 
             builder.WithColor(color).WithImageUrl($"attachment://{image}").WithDescription(response);
 
-            var msg = await Context.Channel.GetMessageAsync(959490277964398592, CacheMode.AllowDownload);
+            var test = await (Context.Guild.GetChannel(391434450837307392) as SocketTextChannel).GetMessageAsync(959490277964398592) as SocketUserMessage;
+
+            //var msg = await Context.Channel.GetMessageAsync(959490277964398592, CacheMode.AllowDownload);
             await Task.Delay(2000);
 
-            await (msg as SocketUserMessage).ModifyAsync(x => x.Embed = builder.Build());
+            await test.ModifyAsync(x => x.Embed = builder.Build()) ;
 
             //var msg = await Context.Channel.SendFileAsync($"./Images/{image}", embed: builder.Build());
         }
