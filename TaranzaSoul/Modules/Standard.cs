@@ -528,11 +528,16 @@ namespace TaranzaSoul.Modules.Standard
                 else
                 {
                     Dictionary<ulong, string> channels = new Dictionary<ulong, string>();
-                    foreach (var c in Context.Guild.Channels.OrderByDescending(x => x.Position))
+                    foreach (var c in Context.Guild.Channels.OrderBy(x => x.Position))
                     {
+                        var type = c.GetChannelType();
+                        if (type == ChannelType.PrivateThread || type == ChannelType.PublicThread || type == ChannelType.NewsThread)
+                            continue;
+
                         var perms = c.GetPermissionOverwrite(Context.Guild.EveryoneRole);
                         if (perms.HasValue && perms.Value.ViewChannel == PermValue.Deny)
                             continue;
+
                         channels[c.Id] = c.Name;
                     }
 
