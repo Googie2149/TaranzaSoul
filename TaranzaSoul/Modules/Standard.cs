@@ -555,38 +555,38 @@ namespace TaranzaSoul.Modules.Standard
             await Context.Channel.SendFileAsync("./Images/death.gif", "Dark Meta Knight was utterly **decimated** by Meta Knight. We've lost him.");
         }
 
-        [Command("fix")]
-        [Hide]
-        public async Task FixThing()
-        {
-            if (Context.User.Id != 102528327251656704)
-            {
-                return;
-            }
+        //[Command("fix")]
+        //[Hide]
+        //public async Task FixThing()
+        //{
+        //    if (Context.User.Id != 102528327251656704)
+        //    {
+        //        return;
+        //    }
 
-            string image = "./Images/";
-            string response = "";
-            bool milestone = false;
-            uint color = 0;
+        //    string image = "./Images/";
+        //    string response = "";
+        //    bool milestone = false;
+        //    uint color = 0;
 
-            image = "gold.png";
-            response = $"Thank you {Context.User.Mention}! Heavy Lobster has received 250 prayers! It's made a full recovery! But can your prayers make it even stronger...?";
-            milestone = true;
-            color = 0xf8f800;
+        //    image = "gold.png";
+        //    response = $"Thank you {Context.User.Mention}! Heavy Lobster has received 250 prayers! It's made a full recovery! But can your prayers make it even stronger...?";
+        //    milestone = true;
+        //    color = 0xf8f800;
 
-            EmbedBuilder builder = new EmbedBuilder();
+        //    EmbedBuilder builder = new EmbedBuilder();
 
-            builder.WithColor(color).WithImageUrl($"attachment://{image}").WithDescription(response);
+        //    builder.WithColor(color).WithImageUrl($"attachment://{image}").WithDescription(response);
 
-            var test = await (Context.Guild.GetChannel(391434450837307392) as SocketTextChannel).GetMessageAsync(959490277964398592) as SocketUserMessage;
+        //    var test = await (Context.Guild.GetChannel(391434450837307392) as SocketTextChannel).GetMessageAsync(959490277964398592) as SocketUserMessage;
 
-            //var msg = await Context.Channel.GetMessageAsync(959490277964398592, CacheMode.AllowDownload);
-            await Task.Delay(2000);
+        //    //var msg = await Context.Channel.GetMessageAsync(959490277964398592, CacheMode.AllowDownload);
+        //    await Task.Delay(2000);
 
-            await test.ModifyAsync(x => x.Embed = builder.Build()) ;
+        //    await test.ModifyAsync(x => x.Embed = builder.Build()) ;
 
-            //var msg = await Context.Channel.SendFileAsync($"./Images/{image}", embed: builder.Build());
-        }
+        //    //var msg = await Context.Channel.SendFileAsync($"./Images/{image}", embed: builder.Build());
+        //}
 
         [Command("fight")]
         [Hide]
@@ -600,7 +600,9 @@ namespace TaranzaSoul.Modules.Standard
 
             if (debug == "0" && logger.LastFightTime >= DateTimeOffset.Now.AddMinutes(-1))
             {
-                builder.WithDescription($"Lord Meta Knight is preparing for the next fight. ");
+                builder.WithDescription($"Lord Meta Knight is preparing for the next fight. You'll have your chance soon.");
+                await Context.Channel.SendMessageAsync(embed: builder.Build());
+                return;
             }
 
             if (debug == "0" && logger.FightCooldown[Context.User.Id] >= DateTimeOffset.Now.AddMinutes(-60))
