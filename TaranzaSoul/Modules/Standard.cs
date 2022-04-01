@@ -469,33 +469,33 @@ namespace TaranzaSoul.Modules.Standard
                 bool milestone = false;
                 uint color = 0;
 
-                if (config.ThoughtsAndPrayers > 0 && config.ThoughtsAndPrayers < 500)
+                if (config.ThoughtsAndPrayers > 0 && config.ThoughtsAndPrayers < 250)
                 {
                     image = "broken.png";
                     response = $"Thank you for your thoughts and prayers for our beloved Halberd guard. 😔 Heavy Lobster has received {config.ThoughtsAndPrayers} prayers.";
                     color = 0xf04050;
                 }
-                else if (config.ThoughtsAndPrayers == 500)
+                else if (config.ThoughtsAndPrayers == 250)
                 {
                     image = "gold.png";
                     response = $"Thank you {Context.User.Mention}! Heavy Lobster has received 500 prayers! It's made a full recovery! But can your prayers make it even stronger...?";
                     milestone = true;
                     color = 0xf8f800;
                 }
-                else if (config.ThoughtsAndPrayers > 500 && config.ThoughtsAndPrayers < 1000)
+                else if (config.ThoughtsAndPrayers > 250 && config.ThoughtsAndPrayers < 500)
                 {
                     image = "gold.png";
                     response = $"Our beloved lobster is growing even stronger thanks to your support... Heavy Lobster has received {config.ThoughtsAndPrayers} prayers.";
                     color = 0xf8f800;
                 }
-                else if (config.ThoughtsAndPrayers == 1000)
+                else if (config.ThoughtsAndPrayers == 500)
                 {
                     image = "silver.png";
                     response = $"We've gone too far. Heavy Lobster has now gone where no robot has gone before. It has become a perfect being and we can no longer control it. Please stop praying for it. {Context.User.Mention} this is your fault.";
                     milestone = true;
                     color = 0xf8f8f8;
                 }
-                else if (config.ThoughtsAndPrayers > 1000)
+                else if (config.ThoughtsAndPrayers > 500)
                 {
                     image = "silver.png";
                     response = $"You can't improve perfection. Heavy Lobster appreciates your support, regardless. Heavy Lobster has received {config.ThoughtsAndPrayers} prayers.";
