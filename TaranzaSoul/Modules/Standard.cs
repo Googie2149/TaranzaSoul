@@ -598,15 +598,37 @@ namespace TaranzaSoul.Modules.Standard
                         return;
                     }
 
-                    foreach (var kv in tempChannels)
+                    try
                     {
-                        var channel = Context.Guild.GetChannel(kv.Key);
-                        if (channel == null)
-                            continue;
-                        if (channel.Name == kv.Value)
-                            continue;
+                        foreach (var kv in tempChannels)
+                        {
+                            var channel = Context.Guild.GetChannel(kv.Key);
+                            if (channel == null)
+                                continue;
+                            if (channel.Name == kv.Value)
+                                continue;
 
-                        await channel.ModifyAsync(x => x.Name = kv.Value);
+                            await channel.ModifyAsync(x => x.Name = kv.Value);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await Context.Message.Channel.SendMessageAsync($"There was an error doing that:\n{ex.Message}");
+                        string exMessage;
+                        if (ex != null)
+                        {
+                            while (ex is AggregateException && ex.InnerException != null)
+                                ex = ex.InnerException;
+                            exMessage = $"{ex.Message}";
+                            if (exMessage != "Reconnect failed: HTTP/1.1 503 Service Unavailable")
+                                exMessage += $"\n{ex.StackTrace}";
+                        }
+                        else
+                            exMessage = null;
+
+                        Console.WriteLine(exMessage);
+
+                        return;
                     }
 
                     await ReplyAsync("Done!");
