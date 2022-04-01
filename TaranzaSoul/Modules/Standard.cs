@@ -702,7 +702,7 @@ namespace TaranzaSoul.Modules.Standard
 
             var msg = await Context.Channel.SendFileAsync(image, embed: builder.Build());
 
-            Console.WriteLine("13")
+            Console.WriteLine("13");
 
             if (milestone)
             {
