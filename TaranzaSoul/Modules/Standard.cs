@@ -426,12 +426,12 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("lobsterstrength")]
-        public async Task GiveLobsterStrength()
+        public async Task GiveLobsterStrength(int debug = 0)
         {
             if (!logger.prayCooldown.ContainsKey(Context.User.Id))
                 logger.prayCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-2);
 
-            if (logger.prayCooldown[Context.User.Id] >= DateTimeOffset.Now.AddMinutes(-15))
+            if (debug == 0 && logger.prayCooldown[Context.User.Id] >= DateTimeOffset.Now.AddMinutes(-15))
             {
                 TimeSpan t = logger.prayCooldown[Context.User.Id] - DateTimeOffset.Now.AddMinutes(-15);
 
@@ -450,7 +450,12 @@ namespace TaranzaSoul.Modules.Standard
             else
             {
                 logger.prayCooldown[Context.User.Id] = DateTimeOffset.Now;
-                config.ThoughtsAndPrayers++;
+
+                if (debug == 0)
+                    config.ThoughtsAndPrayers++;
+                else
+                    config.ThoughtsAndPrayers += debug;
+
                 string image = "./Images/";
                 string response = "";
                 bool milestone = false;
@@ -493,7 +498,13 @@ namespace TaranzaSoul.Modules.Standard
 
                 builder.WithColor(color).WithImageUrl($"attachment://{image}").WithDescription(response);
 
-                await Context.Channel.SendFileAsync($"./Images/{image}", embed: builder.Build());
+                var msg = await Context.Channel.SendFileAsync($"./Images/{image}", embed: builder.Build());
+
+                if (milestone)
+                {
+                    await Task.Delay(1500);
+                    await msg.PinAsync();
+                }
             }
         }
 
