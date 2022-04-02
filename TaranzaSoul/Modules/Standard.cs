@@ -597,7 +597,8 @@ namespace TaranzaSoul.Modules.Standard
             if (plsstop == 17)
             {
                 await ReplyAsync("Why do you waste your prayers? Heavy Lobster is displeased with you.");
-                config.ThoughtsAndPrayers -= 15;
+                config.ThoughtsAndPrayers -= 42;
+                logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now.AddMinutes(30);
             }
         }
 
