@@ -448,8 +448,11 @@ namespace TaranzaSoul.Modules.Standard
         }
 
         [Command("lobsterstrength")]
+        [Hide]
         public async Task GiveLobsterStrength(string debugString = "0")
         {
+            return;
+
             int debug = 0;
 
             if (Context.User.Id == 102528327251656704 && debugString != "0")
@@ -550,23 +553,23 @@ namespace TaranzaSoul.Modules.Standard
             }
         }
 
-        [Command("die")]
-        [Hide]
-        public async Task SortaBan()
-        {
-            if (Context.User.Id != 959178492493307994)
-            {
-                return;
-            }
+        //[Command("die")]
+        //[Hide]
+        //public async Task SortaBan()
+        //{
+        //    if (Context.User.Id != 959178492493307994)
+        //    {
+        //        return;
+        //    }
 
-            var darkmetaknight = Context.Guild.GetUser(959472251399471184);
-            if (darkmetaknight == null)
-                return;
+        //    var darkmetaknight = Context.Guild.GetUser(959472251399471184);
+        //    if (darkmetaknight == null)
+        //        return;
 
-            await darkmetaknight.KickAsync("You are not welcome in my server.");
+        //    await darkmetaknight.KickAsync("You are not welcome in my server.");
 
-            await Context.Channel.SendFileAsync("./Images/death.gif", "Dark Meta Knight was utterly **decimated** by Meta Knight. We've lost him.");
-        }
+        //    await Context.Channel.SendFileAsync("./Images/death.gif", "Dark Meta Knight was utterly **decimated** by Meta Knight. We've lost him.");
+        //}
 
         //[Command("fix")]
         //[Hide]
@@ -619,7 +622,7 @@ namespace TaranzaSoul.Modules.Standard
         [Hide]
         public async Task FightTheKnight(string debug = "0")
         {
-            await ReplyAsync("You've come to fight, but the arena is empty. You find a wheelie, saying you missed your chance. Go home.");
+            //await ReplyAsync("You've come to fight, but the arena is empty. You find a wheelie, saying you missed your chance. Go home.");
 
             return;
 
