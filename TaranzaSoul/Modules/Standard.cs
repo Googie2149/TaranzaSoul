@@ -592,6 +592,8 @@ namespace TaranzaSoul.Modules.Standard
         [Hide]
         public async Task FightTheKnight(string debug = "0")
         {
+            return;
+
             if (!logger.FightCooldown.ContainsKey(Context.User.Id))
                 logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-3);
 
