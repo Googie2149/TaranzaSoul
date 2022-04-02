@@ -516,11 +516,24 @@ namespace TaranzaSoul.Modules.Standard
                     milestone = true;
                     color = 0xf8f8f8;
                 }
-                else if (config.ThoughtsAndPrayers > 500)
+                else if (config.ThoughtsAndPrayers > 500 && config.ThoughtsAndPrayers < 1000)
                 {
                     image = "silver.png";
                     response = $"You can't improve perfection. Heavy Lobster appreciates your support, regardless. Heavy Lobster has received {config.ThoughtsAndPrayers} prayers.";
                     color = 0xf8f8f8;
+                }
+                else if (config.ThoughtsAndPrayers == 1000)
+                {
+                    image = "SuperChargedHeavyLobster.png";
+                    color = 0x85e2ff;
+                    milestone = true;
+                    response = $"We continued praying, and now look where it has gotten us. The end has come, Heavy Lobster has gone beyond mere perfection. {Context.User.Mention}, you have brought about Super Charged Heavy Lobster and doomed us all. You may not wish to be found when the crew's patrol reaches this area.";
+                }
+                else if (config.ThoughtsAndPrayers > 1000)
+                {
+                    image = "SuperChargedHeavyLobster.png";
+                    color = 0x85e2ff;
+                    response = $"Have we not already gone far enough? Must we continue to tempt fate? Super Charged Heavy Lobster has received {config.ThoughtsAndPrayers} prayers, and continues to grow stronger.";
                 }
 
                 EmbedBuilder builder = new EmbedBuilder();
