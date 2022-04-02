@@ -601,27 +601,27 @@ namespace TaranzaSoul.Modules.Standard
         //    //var msg = await Context.Channel.SendFileAsync($"./Images/{image}", embed: builder.Build());
         //}
 
-        [Command("molestrength")]
-        [Hide]
-        public async Task whydopeopledothis()
-        {
-            int plsstop = RandomInteger(0, 25);
+        //[Command("molestrength")]
+        //[Hide]
+        //public async Task whydopeopledothis()
+        //{
+        //    int plsstop = RandomInteger(0, 25);
 
-            if (plsstop == 17)
-            {
-                await ReplyAsync("Why do you waste your prayers? Heavy Lobster is displeased with you.");
-                config.ThoughtsAndPrayers -= 42;
-                logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now.AddMinutes(30);
-            }
-        }
+        //    if (plsstop == 17)
+        //    {
+        //        await ReplyAsync("Why do you waste your prayers? Heavy Lobster is displeased with you.");
+        //        config.ThoughtsAndPrayers -= 42;
+        //        logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now.AddMinutes(30);
+        //    }
+        //}
 
         [Command("fight")]
         [Hide]
         public async Task FightTheKnight(string debug = "0")
         {
-            await ReplyAsync("You've come to fight, but the arena is empty. You find a wheelie, saying you missed your chance. Go home.");
+            //await ReplyAsync("You've come to fight, but the arena is empty. You find a wheelie, saying you missed your chance. Go home.");
 
-            return;
+            //return;
 
             if (!logger.FightCooldown.ContainsKey(Context.User.Id))
                 logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-3);
