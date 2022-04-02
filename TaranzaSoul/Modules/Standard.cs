@@ -619,9 +619,9 @@ namespace TaranzaSoul.Modules.Standard
         [Hide]
         public async Task FightTheKnight(string debug = "0")
         {
-            //await ReplyAsync("You've come to fight, but the arena is empty. You find a wheelie, saying you missed your chance. Go home.");
+            await ReplyAsync("You've come to fight, but the arena is empty. You find a wheelie, saying you missed your chance. Go home.");
 
-            //return;
+            return;
 
             if (!logger.FightCooldown.ContainsKey(Context.User.Id))
                 logger.FightCooldown[Context.User.Id] = DateTimeOffset.Now.AddHours(-3);
