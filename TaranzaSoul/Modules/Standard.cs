@@ -588,10 +588,25 @@ namespace TaranzaSoul.Modules.Standard
         //    //var msg = await Context.Channel.SendFileAsync($"./Images/{image}", embed: builder.Build());
         //}
 
+        [Command("molestrength")]
+        [Hide]
+        public async Task whydopeopledothis()
+        {
+            int plsstop = RandomInteger(0, 30);
+
+            if (plsstop == 17)
+            {
+                await ReplyAsync("Why do you waste your prayers? Heavy Lobster is displeased with you.");
+                config.ThoughtsAndPrayers -= 15;
+            }
+        }
+
         [Command("fight")]
         [Hide]
         public async Task FightTheKnight(string debug = "0")
         {
+            await ReplyAsync("You've come to fight, but the arena is empty. You find a wheelie, saying you missed your chance. Go home.");
+
             return;
 
             if (!logger.FightCooldown.ContainsKey(Context.User.Id))
