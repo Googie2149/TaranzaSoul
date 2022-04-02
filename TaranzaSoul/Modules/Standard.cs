@@ -592,7 +592,7 @@ namespace TaranzaSoul.Modules.Standard
         [Hide]
         public async Task whydopeopledothis()
         {
-            int plsstop = RandomInteger(0, 30);
+            int plsstop = RandomInteger(0, 25);
 
             if (plsstop == 17)
             {
