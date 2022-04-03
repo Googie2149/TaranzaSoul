@@ -581,10 +581,12 @@ namespace TaranzaSoul
 
                     
 
-                    await msg.Channel.SendMessageAsync(messageReference: msg.Reference, 
+                    await msg.Channel.SendMessageAsync(messageReference: new MessageReference(msg.Id),
                         text: "Hello r/place user! While we acknowledge the enthusiasm for Reddit's April Fool's event, we're not affiliated with any of the Kirby's on the canvas. " +
                         "If you're looking to use any of the space on or around the various Kirby's, we won't stop you, but we also don't have any say over those areas. " +
                         "If you're looking for permission or wanting people for something else you're organizing, we suggest you look in the megathreads on r/place.");
+
+                    
 
                     return;
                 }
