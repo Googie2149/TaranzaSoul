@@ -559,6 +559,8 @@ namespace TaranzaSoul
             //}
         }
 
+        private List<ulong> placeUsers = new List<ulong>();
+
         private async Task Client_MessageReceived(SocketMessage msg)
         {
             //if (msg.Source == MessageSource.System)
@@ -569,6 +571,22 @@ namespace TaranzaSoul
 
                 
             //}
+
+            if (msg.Channel.Id == 132720341058453504 && msg.Content.ToLower().Contains("r/place"))
+            {
+                var user = msg.Author as IGuildUser;
+                if (user.JoinedAt > DateTimeOffset.Now.AddDays(-1) && !placeUsers.Contains(user.Id))
+                {
+                    placeUsers.Add(user.Id);
+
+                    await msg.Channel.SendMessageAsync(messageReference: msg.Reference, 
+                        text: "Hello r/place user! While we acknowledge the enthusiasm for Reddit's April Fool's event, we're not affiliated with any of the Kirby's on the canvas. " +
+                        "If you're looking to use any of the space on or around the various Kirby's, we won't stop you, but we also don't have any say over those areas. " +
+                        "If you're looking for permission or wanting people for something else you're organizing, we suggest you look in the megathreads on r/place.");
+
+                    return;
+                }
+            }
 
             if ((msg.Channel.Id == 195126987558354944 || msg.Channel.Id == 599165344019644426) &&
                 (msg.Content.ToLower().StartsWith("https://tenor.com/") || msg.Content.ToLower().StartsWith("https://giphy.com/")))
