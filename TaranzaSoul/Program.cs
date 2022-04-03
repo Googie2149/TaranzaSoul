@@ -572,12 +572,14 @@ namespace TaranzaSoul
                 
             //}
 
-            if (msg.Channel.Id == 132720341058453504 && msg.Content.ToLower().Contains("r/place"))
+            if (msg.Content.ToLower().Contains("r/place"))
             {
                 var user = msg.Author as IGuildUser;
                 if (user.JoinedAt > DateTimeOffset.Now.AddDays(-1) && !placeUsers.Contains(user.Id))
                 {
                     placeUsers.Add(user.Id);
+
+                    
 
                     await msg.Channel.SendMessageAsync(messageReference: msg.Reference, 
                         text: "Hello r/place user! While we acknowledge the enthusiasm for Reddit's April Fool's event, we're not affiliated with any of the Kirby's on the canvas. " +
