@@ -572,25 +572,25 @@ namespace TaranzaSoul
                 
             //}
 
-            if (msg.Content.ToLower().Contains("r/place"))
-            {
-                var user = msg.Author as IGuildUser;
-                if (user.JoinedAt > DateTimeOffset.Now.AddDays(-1) && !placeUsers.Contains(user.Id))
-                {
-                    placeUsers.Add(user.Id);
+            //if (msg.Content.ToLower().Contains("r/place"))
+            //{
+            //    var user = msg.Author as IGuildUser;
+            //    if (user.JoinedAt > DateTimeOffset.Now.AddDays(-1) && !placeUsers.Contains(user.Id))
+            //    {
+            //        placeUsers.Add(user.Id);
 
                     
 
-                    await msg.Channel.SendMessageAsync(messageReference: new MessageReference(msg.Id),
-                        text: "Hello r/place user! While we acknowledge the enthusiasm for Reddit's April Fool's event, we're not affiliated with any of the Kirbys on the canvas. " +
-                        "If you're looking to use any of the space on or around the various Kirbys, we won't stop you, but we also don't have any say over those areas. " +
-                        "If you're looking for permission or wanting people for something else you're organizing, we suggest you look in the megathreads on r/place.");
+            //        await msg.Channel.SendMessageAsync(messageReference: new MessageReference(msg.Id),
+            //            text: "Hello r/place user! While we acknowledge the enthusiasm for Reddit's April Fool's event, we're not affiliated with any of the Kirbys on the canvas. " +
+            //            "If you're looking to use any of the space on or around the various Kirbys, we won't stop you, but we also don't have any say over those areas. " +
+            //            "If you're looking for permission or wanting people for something else you're organizing, we suggest you look in the megathreads on r/place.");
 
                     
 
-                    return;
-                }
-            }
+            //        return;
+            //    }
+            //}
 
             if ((msg.Channel.Id == 195126987558354944 || msg.Channel.Id == 599165344019644426) &&
                 (msg.Content.ToLower().StartsWith("https://tenor.com/") || msg.Content.ToLower().StartsWith("https://giphy.com/")))
