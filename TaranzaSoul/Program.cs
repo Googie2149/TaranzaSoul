@@ -535,6 +535,9 @@ namespace TaranzaSoul
                     case "⛏️":
                         role = user.Guild.GetRole(948944486602534912);
                         break;
+                    case "borbDoodle":
+                        role = user.Guild.GetRole(904533609346654249);
+                        break;
                 }
 
                 if (role == null)
