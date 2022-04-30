@@ -744,7 +744,11 @@ namespace TaranzaSoul
                 || msg.Channel.Id == 952748828858155038 || msg.Channel.Id == 186342269274554368 || msg.Channel.Id == 529898152547844116
                 || msg.Channel.Id == 952748828858155038 || msg.Channel.Id == 447789034131947530 || msg.Channel.Id == 429821654068101120
                 || msg.Channel.Id == 508903543856562176 || msg.Channel.Id == 346371452620111872 || msg.Channel.Id == 955554476264161300
-                || msg.Channel.Id == 268945818470449162 || msg.Channel.Id == 957411530972999731)
+                || msg.Channel.Id == 268945818470449162 || msg.Channel.Id == 957411530972999731 || msg.Channel.Id == 635234053016256524
+                || msg.Channel.Id == 361589776433938432 || msg.Channel.Id == 937410715659149373 || msg.Channel.Id == 429821654068101120
+                || msg.Channel.Id == 186342269274554368 || msg.Channel.Id == 772590802618679377 || msg.Channel.Id == 637466803227983893
+                || msg.Channel.Id == 425752341833187328 || msg.Channel.Id == 776811442795053097 || msg.Channel.Id == 575390652444180481
+                || msg.Channel.Id == 447789034131947530)
                 return;
 
             var tmp = msg.Content.ToLower();
