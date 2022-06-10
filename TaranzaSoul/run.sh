@@ -4,7 +4,7 @@ RESTARTS=0
 EXIT=-1
 rm ./update
 while true; do
-	dotnet run
+	dotnet run -c Release
 	EXIT=$?
 	if [ $EXIT -eq 0 ]; then 
 		echo "Exited cleanly."
