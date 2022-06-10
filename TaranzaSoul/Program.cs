@@ -48,7 +48,9 @@ namespace TaranzaSoul
                 LogLevel = LogSeverity.Verbose,
                 AlwaysDownloadUsers = true,
                 MessageCacheSize = 100,
-                GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | GatewayIntents.GuildMembers | GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
+                GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | 
+                GatewayIntents.GuildMembers | GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
+                | GatewayIntents.GuildMessageReactions
             });
             socketClient.Log += Log;
 
