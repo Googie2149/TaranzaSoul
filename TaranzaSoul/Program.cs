@@ -50,7 +50,7 @@ namespace TaranzaSoul
                 MessageCacheSize = 100,
                 GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | 
                 GatewayIntents.GuildMembers | GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
-                | GatewayIntents.GuildMessageReactions | GatewayIntents.GuildPresences
+                | GatewayIntents.GuildMessageReactions | GatewayIntents.GuildPresences | GatewayIntents.All
             });
             socketClient.Log += Log;
 
