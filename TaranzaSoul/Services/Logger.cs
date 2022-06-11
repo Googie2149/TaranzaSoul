@@ -124,23 +124,23 @@ namespace TaranzaSoul
                         }
                     }
 
-                    foreach (var kv in VCTCPair)
-                    {
-                        var vc = guild.GetVoiceChannel(kv.Key);
-                        var tc = guild.GetTextChannel(kv.Value);
+                    //foreach (var kv in VCTCPair)
+                    //{
+                        //var vc = guild.GetVoiceChannel(kv.Key);
+                        //var tc = guild.GetTextChannel(kv.Value);
 
-                        foreach (var overwrite in tc.PermissionOverwrites.Where(x => x.TargetType == PermissionTarget.User))
-                        {
-                            if (!vc.Users.Select(x => x.Id).Contains(overwrite.TargetId))
-                                await tc.RemovePermissionOverwriteAsync(guild.GetUser(overwrite.TargetId));
-                        }
+                        //foreach (var overwrite in tc.PermissionOverwrites.Where(x => x.TargetType == PermissionTarget.User))
+                        //{
+                            //if (!vc.Users.Select(x => x.Id).Contains(overwrite.TargetId))
+                                //await tc.RemovePermissionOverwriteAsync(guild.GetUser(overwrite.TargetId));
+                        //}
 
-                        foreach (var user in vc.Users)
-                        {
-                            if (tc.GetPermissionOverwrite(user) == null)
-                                await tc.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow));
-                        }
-                    }
+                        //foreach (var user in vc.Users)
+                        //{
+                            //if (tc.GetPermissionOverwrite(user) == null)
+                                //await tc.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow));
+                        //}
+                    //}
 
                     Console.WriteLine("Adding handlers");
 
