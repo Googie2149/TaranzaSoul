@@ -49,8 +49,7 @@ namespace TaranzaSoul
                 AlwaysDownloadUsers = true,
                 MessageCacheSize = 100,
                 GatewayIntents = GatewayIntents.DirectMessages | GatewayIntents.GuildMessages | 
-                GatewayIntents.GuildMembers | GatewayIntents.GuildVoiceStates | GatewayIntents.Guilds
-                | GatewayIntents.GuildMessageReactions | GatewayIntents.GuildPresences | GatewayIntents.All
+                GatewayIntents.GuildMembers | GatewayIntents.Guilds | GatewayIntents.GuildMessageReactions
             });
             socketClient.Log += Log;
 
