@@ -122,7 +122,7 @@ namespace TaranzaSoul
                         if (!user.Roles.Contains(role))
                         {
                             // I hate dealing with time!
-                            if (user.CreatedAt - DateTimeOffset.UtcNow > TimeSpan.FromDays(config.MinimumAccountAge))
+                            if (DateTimeOffset.UtcNow - user.CreatedAt > TimeSpan.FromDays(config.MinimumAccountAge))
                                 await user.AddRoleAsync(role);
                         }
                     }
@@ -215,7 +215,7 @@ namespace TaranzaSoul
                         $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
                         $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`";
 
-                    if (user.CreatedAt - DateTimeOffset.UtcNow > TimeSpan.FromDays(config.MinimumAccountAge))
+                    if (DateTimeOffset.UtcNow - user.CreatedAt > TimeSpan.FromDays(config.MinimumAccountAge))
                     {
                         message = ":wave: " + message;
                     }
