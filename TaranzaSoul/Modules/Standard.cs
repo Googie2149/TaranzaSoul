@@ -1064,67 +1064,69 @@ namespace TaranzaSoul.Modules.Standard
             if (Context.Guild.Id != config.HomeGuildId)
                 return;
 
-            if (!((IGuildUser)Context.User).RoleIds.ToList().Contains(451058863995879463))
-                return;
+            var userRoles = ((IGuildUser)Context.User).RoleIds.ToList();
 
-            List<ulong> users;
-            string note;
-
-            WatchListHelper(remainder, out users, out note);
-
-            if (users.Count() == 0)
+            if (userRoles.Contains(190657363798261769) || userRoles.Contains(132721372848848896) || userRoles.Contains(451058863995879463))
             {
-                await RespondAsync("None of those mentioned were valid user Ids!");
-                return;
-            }
+                List<ulong> users;
+                string note;
 
-            if (users.Count() > 1)
-            {
-                await RespondAsync("You're not supposed to approve more than one user with a single note.");
-                return;
-            }
+                WatchListHelper(remainder, out users, out note);
 
-            if (note == "")
-            {
-                await RespondAsync("The note cannot be blank!");
-                return;
-            }
-
-            //if (Context.Guild.GetUser(users.First()) == null)
-            //{
-            //    await RespondAsync("That user isn't in this server!");
-            //    return;
-            //}
-
-            var loggedUser = await dbhelper.GetLoggedUser(users.First());
-
-            if (loggedUser == null)
-            {
-                await RespondAsync("That user hasn't been seen in this server.");
-                return;
-            }
-            else
-            {
-                if (loggedUser.ApprovedAccess)
+                if (users.Count() == 0)
                 {
-                    await RespondAsync("That user already is already approved!");
+                    await RespondAsync("None of those mentioned were valid user Ids!");
                     return;
                 }
-            }
 
-            var role = Context.Guild.GetRole(config.AccessRoleId);
+                if (users.Count() > 1)
+                {
+                    await RespondAsync("You're not supposed to approve more than one user with a single note.");
+                    return;
+                }
 
-            await dbhelper.ModApproveUser(users.First(), Context.User.Id, note);
+                if (note == "")
+                {
+                    await RespondAsync("The note cannot be blank!");
+                    return;
+                }
 
-            if (Context.Guild.GetUser(users.First()) != null)
-            {
-                await Task.Delay(500);
-                await Context.Guild.GetUser(users.First()).AddRoleAsync(role);
-                await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server.");
-            }
-            else
-            {
-                await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server. They will recieve the role when they rejoin.");
+                //if (Context.Guild.GetUser(users.First()) == null)
+                //{
+                //    await RespondAsync("That user isn't in this server!");
+                //    return;
+                //}
+
+                var loggedUser = await dbhelper.GetLoggedUser(users.First());
+
+                if (loggedUser == null)
+                {
+                    await RespondAsync("That user hasn't been seen in this server.");
+                    return;
+                }
+                else
+                {
+                    if (loggedUser.ApprovedAccess)
+                    {
+                        await RespondAsync("That user already is already approved!");
+                        return;
+                    }
+                }
+
+                var role = Context.Guild.GetRole(config.AccessRoleId);
+
+                await dbhelper.ModApproveUser(users.First(), Context.User.Id, note);
+
+                if (Context.Guild.GetUser(users.First()) != null)
+                {
+                    await Task.Delay(500);
+                    await Context.Guild.GetUser(users.First()).AddRoleAsync(role);
+                    await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server.");
+                }
+                else
+                {
+                    await RespondAsync($"{Context.Guild.GetUser(users.First()).Mention} has been approved access to the server. They will recieve the role when they rejoin.");
+                }
             }
         }
 

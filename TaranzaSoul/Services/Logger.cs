@@ -105,6 +105,7 @@ namespace TaranzaSoul
             {
                 // this is used to ensure we don't add multiples of the handler when the bot has to reconnect briefly.
                 // I suppose this means that without a full restart, some users might be missed by the bot.
+                // Resumes should cover this actually
                 // This needs to be moved elsewhere.
                 initialized = true;
 
@@ -114,33 +115,17 @@ namespace TaranzaSoul
 
                     var role = guild.GetRole(config.AccessRoleId);
 
-                    List<SocketGuildUser> newUsers = new List<SocketGuildUser>();
+                    //List<SocketGuildUser> newUsers = new List<SocketGuildUser>();
 
                     foreach (var user in guild.Users)
                     {
                         if (!user.Roles.Contains(role))
                         {
-                            await user.AddRoleAsync(role);
+                            // I hate dealing with time!
+                            if (user.CreatedAt - DateTimeOffset.UtcNow > TimeSpan.FromDays(config.MinimumAccountAge))
+                                await user.AddRoleAsync(role);
                         }
                     }
-
-                    //foreach (var kv in VCTCPair)
-                    //{
-                        //var vc = guild.GetVoiceChannel(kv.Key);
-                        //var tc = guild.GetTextChannel(kv.Value);
-
-                        //foreach (var overwrite in tc.PermissionOverwrites.Where(x => x.TargetType == PermissionTarget.User))
-                        //{
-                            //if (!vc.Users.Select(x => x.Id).Contains(overwrite.TargetId))
-                                //await tc.RemovePermissionOverwriteAsync(guild.GetUser(overwrite.TargetId));
-                        //}
-
-                        //foreach (var user in vc.Users)
-                        //{
-                            //if (tc.GetPermissionOverwrite(user) == null)
-                                //await tc.AddPermissionOverwriteAsync(user, new OverwritePermissions(viewChannel: PermValue.Allow));
-                        //}
-                    //}
 
                     Console.WriteLine("Adding handlers");
 
@@ -243,7 +228,8 @@ namespace TaranzaSoul
 
                     var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
 
-                    await user.AddRoleAsync(role);
+                    if (user.CreatedAt - DateTimeOffset.UtcNow > TimeSpan.FromDays(config.MinimumAccountAge))
+                        await user.AddRoleAsync(role);
                 }
             }
             catch (Exception ex)
@@ -269,7 +255,7 @@ namespace TaranzaSoul
             {
                 if (!messagedUsers.Contains(message.Author.Id))
                 {
-                    if (!message.Content.ToLower().StartsWith("!report") || !message.Content.ToLower().StartsWith($"{client.CurrentUser.Mention} report"))
+                    if (!message.Content.ToLower().StartsWith("!report"))
                     {
                         await message.Channel.SendMessageAsync($"I am a utility bot for {name}. I have few public commands, and am otherwise useless in DMs.\n" +
                             $"To report something to the moderators, please use the `!report` command here, " +
