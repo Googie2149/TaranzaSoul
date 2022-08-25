@@ -208,10 +208,22 @@ namespace TaranzaSoul
                         await user.AddRoleAsync(957765545086828616);
                     }
 
-                    string message = $":wave: " +
+                    bool newAccount = false;
+
+                    string message =
                         $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                         $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
                         $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`";
+
+                    if (user.CreatedAt - DateTimeOffset.UtcNow > TimeSpan.FromDays(config.MinimumAccountAge))
+                    {
+                        message = ":wave: " + message;
+                    }
+                    else
+                    {
+                        newAccount = true;
+                        message = "<:marxist_think:305877855366152193> " + message;
+                    }
 
                     if (config.WatchedIds.ContainsKey(user.Id))
                     {
@@ -228,8 +240,11 @@ namespace TaranzaSoul
 
                     var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
 
-                    if (user.CreatedAt - DateTimeOffset.UtcNow > TimeSpan.FromDays(config.MinimumAccountAge))
+                    if (!newAccount)
                         await user.AddRoleAsync(role);
+                    else
+                        await (client.GetGuild(config.HomeGuildId).GetChannel(config.FilteredChannelId) as ISocketMessageChannel)
+                            .SendMessageAsync(message);
                 }
             }
             catch (Exception ex)
