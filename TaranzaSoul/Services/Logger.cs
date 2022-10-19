@@ -121,9 +121,11 @@ namespace TaranzaSoul
                     {
                         if (!user.Roles.Contains(role))
                         {
-                            // I hate dealing with time!
-                            if (DateTimeOffset.UtcNow - user.CreatedAt > TimeSpan.FromDays(config.MinimumAccountAge))
-                                await user.AddRoleAsync(role);
+                                // I hate dealing with time!
+                                if (user.CreatedAt < new DateTime(2022, 9, 1) &&
+                                (DateTimeOffset.UtcNow - user.CreatedAt) > TimeSpan.FromDays(config.MinimumAccountAge) &&
+                                user.GetAvatarUrl != null)
+                                    await user.AddRoleAsync(role);
                         }
                     }
 
@@ -215,7 +217,7 @@ namespace TaranzaSoul
                         $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
                         $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`";
 
-                    if (DateTimeOffset.UtcNow - user.CreatedAt > TimeSpan.FromDays(config.MinimumAccountAge))
+                    if (DateTimeOffset.UtcNow - user.CreatedAt > TimeSpan.FromDays(config.MinimumAccountAge) && user.GetAvatarUrl != null)
                     {
                         message = ":wave: " + message;
                     }
