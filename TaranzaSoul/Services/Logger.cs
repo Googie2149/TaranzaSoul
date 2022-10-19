@@ -220,11 +220,11 @@ namespace TaranzaSoul
 
                     if (user.GetAvatarUrl() == null && user.CreatedAt.Month == 5 && (user.CreatedAt.Day > 7 || user.CreatedAt.Day < 16))
                     {
-                        message = "<a:PANTS:1032358559003983872> **User Auto-Banned** " + message;
+                        message = "<a:PANTS:533084296857255947> **User Auto-Banned** " + message;
                         newAccount = true;
                         await user.BanAsync();
                     }
-                    if (DateTimeOffset.UtcNow - user.CreatedAt > TimeSpan.FromDays(config.MinimumAccountAge) && user.GetAvatarUrl() != null)
+                    else if (DateTimeOffset.UtcNow - user.CreatedAt > TimeSpan.FromDays(config.MinimumAccountAge) && user.GetAvatarUrl() != null)
                     {
                         message = ":wave: **User Joined** " + message;
                     }
