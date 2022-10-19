@@ -247,6 +247,11 @@ namespace TaranzaSoul
                     else
                         await (client.GetGuild(config.HomeGuildId).GetChannel(config.FilteredChannelId) as ISocketMessageChannel)
                             .SendMessageAsync(message);
+
+                    await (client.GetGuild(config.HomeGuildId).GetChannel(186342269274554368) as ISocketMessageChannel)
+                        .SendMessageAsync($"User {user.Mention}\nAvatar ID: `{user.AvatarId}`\nDisplay Avatar Id: `{user.DisplayAvatarId}`\n" +
+                        $"Avatar URL: `{user.GetAvatarUrl}`\nDefault Avatar Url: `{user.GetDefaultAvatarUrl}`\nDisplay Avatar Url: `{user.GetDisplayAvatarUrl}`\n" +
+                        $"Guild Avatar Url: `{user.GetGuildAvatarUrl}`");
                 }
             }
             catch (Exception ex)
