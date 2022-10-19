@@ -18,6 +18,7 @@ using RestSharp;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
+using Discord.Interactions;
 
 namespace TaranzaSoul
 {
@@ -213,18 +214,24 @@ namespace TaranzaSoul
                     bool newAccount = false;
 
                     string message =
-                        $"**User Joined** `{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
+                        $"`{DateTime.Now.ToString("d")} {DateTime.Now.ToString("T")}`\n" +
                         $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
                         $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`";
 
+                    if (user.GetAvatarUrl() == null && user.CreatedAt.Month == 5 && (user.CreatedAt.Day > 7 || user.CreatedAt.Day < 16))
+                    {
+                        message = "<a:PANTS:1032358559003983872> **User Auto-Banned** " + message;
+                        newAccount = true;
+                        await user.BanAsync();
+                    }
                     if (DateTimeOffset.UtcNow - user.CreatedAt > TimeSpan.FromDays(config.MinimumAccountAge) && user.GetAvatarUrl() != null)
                     {
-                        message = ":wave: " + message;
+                        message = ":wave: **User Joined** " + message;
                     }
                     else
                     {
                         newAccount = true;
-                        message = "<:marxist_think:305877855366152193> " + message;
+                        message = "<:marxist_think:305877855366152193> **Flagged Account** " + message;
                     }
 
                     if (config.WatchedIds.ContainsKey(user.Id))
