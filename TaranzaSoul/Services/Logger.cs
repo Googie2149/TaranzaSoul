@@ -217,7 +217,7 @@ namespace TaranzaSoul
                         $"{user.Username}#{user.Discriminator} ({user.Id}) ({user.Mention})\n" +
                         $"**Account created** `{user.CreatedAt.ToLocalTime().ToString("d")} {user.CreatedAt.ToLocalTime().ToString("T")}`";
 
-                    if (DateTimeOffset.UtcNow - user.CreatedAt > TimeSpan.FromDays(config.MinimumAccountAge) && user.GetAvatarUrl != null)
+                    if (DateTimeOffset.UtcNow - user.CreatedAt > TimeSpan.FromDays(config.MinimumAccountAge) && user.GetAvatarUrl() != null)
                     {
                         message = ":wave: " + message;
                     }
@@ -248,10 +248,10 @@ namespace TaranzaSoul
                         await (client.GetGuild(config.HomeGuildId).GetChannel(config.FilteredChannelId) as ISocketMessageChannel)
                             .SendMessageAsync(message);
 
-                    await (client.GetGuild(config.HomeGuildId).GetChannel(186342269274554368) as ISocketMessageChannel)
-                        .SendMessageAsync($"User {user.Mention}\nAvatar ID: `{user.AvatarId}`\nDisplay Avatar Id: `{user.DisplayAvatarId}`\n" +
-                        $"Avatar URL: `{user.GetAvatarUrl}`\nDefault Avatar Url: `{user.GetDefaultAvatarUrl}`\nDisplay Avatar Url: `{user.GetDisplayAvatarUrl}`\n" +
-                        $"Guild Avatar Url: `{user.GetGuildAvatarUrl}`");
+                    //await (client.GetGuild(config.HomeGuildId).GetChannel(186342269274554368) as ISocketMessageChannel)
+                    //    .SendMessageAsync($"User {user.Mention}\nAvatar ID: `{user.AvatarId}`\nDisplay Avatar Id: `{user.DisplayAvatarId}`\n" +
+                    //    $"Avatar URL: `{user.GetAvatarUrl()}`\nDefault Avatar Url: `{user.GetDefaultAvatarUrl()}`\nDisplay Avatar Url: `{user.GetDisplayAvatarUrl()}`\n" +
+                    //    $"Guild Avatar Url: `{user.GetGuildAvatarUrl()}`");
                 }
             }
             catch (Exception ex)
