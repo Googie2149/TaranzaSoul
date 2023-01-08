@@ -128,7 +128,7 @@ namespace TaranzaSoul
                                 await user.AddRoleAsync(role);
                                 await Task.Delay(1000);
                             }
-                            await user.RemoveRoleAsync(manualAccess);
+                            //await user.RemoveRoleAsync(manualAccess);
                         }
 
                         if (!user.Roles.Contains(role))

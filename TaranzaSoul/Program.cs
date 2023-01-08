@@ -225,8 +225,8 @@ namespace TaranzaSoul
                     }
 
 
-                    await Task.Delay(5000);
-                    await before.RemoveRoleAsync(verified);
+                    //await Task.Delay(5000);
+                    //await before.RemoveRoleAsync(verified);
                 }
 
                 var role = before.Guild.GetRole(957765545086828616);
