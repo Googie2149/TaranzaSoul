@@ -115,6 +115,7 @@ namespace TaranzaSoul
                     await guild.DownloadUsersAsync();
 
                     var role = guild.GetRole(config.AccessRoleId);
+                    var manualAccess = guild.GetRole(1058192748139774033);
 
                     //List<SocketGuildUser> newUsers = new List<SocketGuildUser>();
 
@@ -122,11 +123,20 @@ namespace TaranzaSoul
                     {
                         if (!user.Roles.Contains(role))
                         {
+                            if (user.Roles.Contains(manualAccess))
+                            {
+                                await user.AddRoleAsync(role);
+                                await Task.Delay(1000);
+                                await user.RemoveRoleAsync(manualAccess);
+                            }
+                            else
+                            {
                                 // I hate dealing with time!
-                                if (user.CreatedAt < new DateTime(2022, 9, 1) &&
+                                if (user.CreatedAt < new DateTime(2023, 1, 7) &&
                                 (DateTimeOffset.UtcNow - user.CreatedAt) > TimeSpan.FromDays(config.MinimumAccountAge) &&
                                 user.GetAvatarUrl != null)
                                     await user.AddRoleAsync(role);
+                            }
                         }
                     }
 

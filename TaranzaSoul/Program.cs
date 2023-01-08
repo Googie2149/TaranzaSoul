@@ -213,6 +213,20 @@ namespace TaranzaSoul
 
             if (before.Guild.Id == config.HomeGuildId)
             {
+                if (!before.Roles.Select(x => x.Id).ToList().Contains(1058192748139774033) && after.Roles.Select(x => x.Id).ToList().Contains(1058192748139774033))
+                {
+                    var friend = before.Guild.GetRole(346373986604810240);
+                    var verified = before.Guild.GetRole(1058192748139774033);
+
+                    if (!before.Roles.Contains(friend))
+                    {
+                        await before.AddRoleAsync(friend);
+                        await Task.Delay(1000);
+                    }
+
+                    await before.RemoveRoleAsync(verified);
+                }
+
                 var role = before.Guild.GetRole(957765545086828616);
                 if (!before.Roles.Contains(role) && after.Roles.Contains(role))
                 {
