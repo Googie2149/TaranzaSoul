@@ -224,6 +224,8 @@ namespace TaranzaSoul
                         await Task.Delay(1000);
                     }
 
+
+                    await Task.Delay(5000);
                     await before.RemoveRoleAsync(verified);
                 }
 
