@@ -132,7 +132,7 @@ namespace TaranzaSoul
                             else
                             {
                                 // I hate dealing with time!
-                                if (user.CreatedAt < new DateTime(2023, 1, 7) &&
+                                if (user.CreatedAt < new DateTime(2022, 9, 1) &&
                                 (DateTimeOffset.UtcNow - user.CreatedAt) > TimeSpan.FromDays(config.MinimumAccountAge) &&
                                 user.GetAvatarUrl != null)
                                     await user.AddRoleAsync(role);
