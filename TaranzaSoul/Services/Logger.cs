@@ -119,27 +119,27 @@ namespace TaranzaSoul
 
                     //List<SocketGuildUser> newUsers = new List<SocketGuildUser>();
 
-                    //foreach (var user in guild.Users)
-                    //{
-                    //    if (user.Roles.Contains(manualAccess))
-                    //    {
-                    //        if (!user.Roles.Contains(role))
-                    //        {
-                    //            await user.AddRoleAsync(role);
-                    //            await Task.Delay(1000);
-                    //        }
-                    //        //await user.RemoveRoleAsync(manualAccess);
-                    //    }
+                    foreach (var user in guild.Users)
+                    {
+                        if (user.Roles.Contains(manualAccess))
+                        {
+                            if (!user.Roles.Contains(role))
+                            {
+                                await user.AddRoleAsync(role);
+                                await Task.Delay(1000);
+                            }
+                            //await user.RemoveRoleAsync(manualAccess);
+                        }
 
-                    //    if (!user.Roles.Contains(role))
-                    //    {
-                    //        // I hate dealing with time!
-                    //        if (user.CreatedAt < new DateTime(2022, 9, 1) &&
-                    //        (DateTimeOffset.UtcNow - user.CreatedAt) > TimeSpan.FromDays(config.MinimumAccountAge) &&
-                    //        user.GetAvatarUrl != null)
-                    //            await user.AddRoleAsync(role);
-                    //    }
-                    //}
+                        if (!user.Roles.Contains(role))
+                        {
+                            // I hate dealing with time!
+                            if (user.CreatedAt < new DateTime(2022, 9, 1) &&
+                            (DateTimeOffset.UtcNow - user.CreatedAt) > TimeSpan.FromDays(config.MinimumAccountAge) &&
+                            user.GetAvatarUrl != null)
+                                await user.AddRoleAsync(role);
+                        }
+                    }
 
                     Console.WriteLine("Adding handlers");
 
@@ -260,9 +260,9 @@ namespace TaranzaSoul
 
                     var role = client.GetGuild(config.HomeGuildId).GetRole(config.AccessRoleId);
 
-                    //if (!newAccount)
-                    //    await user.AddRoleAsync(role);
-                    //else
+                    if (!newAccount)
+                        await user.AddRoleAsync(role);
+                    else
                         await (client.GetGuild(config.HomeGuildId).GetChannel(config.FilteredChannelId) as ISocketMessageChannel)
                             .SendMessageAsync(message);
 
