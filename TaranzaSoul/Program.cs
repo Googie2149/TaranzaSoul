@@ -765,7 +765,8 @@ namespace TaranzaSoul
                 || msg.Channel.Id == 361589776433938432 || msg.Channel.Id == 937410715659149373 || msg.Channel.Id == 429821654068101120
                 || msg.Channel.Id == 186342269274554368 || msg.Channel.Id == 772590802618679377 || msg.Channel.Id == 637466803227983893
                 || msg.Channel.Id == 425752341833187328 || msg.Channel.Id == 776811442795053097 || msg.Channel.Id == 575390652444180481
-                || msg.Channel.Id == 447789034131947530 || msg.Channel.Id == 423578054775013377)
+                || msg.Channel.Id == 447789034131947530 || msg.Channel.Id == 423578054775013377 || msg.Channel.Id == 1069427390394142732
+                || msg.Channel.Id == 1077750824547131452)
                 return;
 
             var tmp = msg.Content.ToLower();
