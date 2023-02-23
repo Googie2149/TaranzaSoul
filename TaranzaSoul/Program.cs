@@ -818,7 +818,7 @@ namespace TaranzaSoul
                     {
                         await Task.Delay(100);
                         await msg.DeleteAsync();
-                        string send = $"{msg.Author.Mention} that's a potential late game Return to Dreamland Deluxe spoiler! That belongs in the spoiler thread in <#1019287715159744553>!";
+                        string send = $"{msg.Author.Mention} that's a potential late game Return to Dream Land Deluxe spoiler! That belongs in the spoiler thread in <#1019287715159744553>!";
 
                         await msg.Channel.SendMessageAsync(send);
                         break;
